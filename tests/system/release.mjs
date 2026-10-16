@@ -46,6 +46,7 @@ try {
   browser = await chromium.launch({ channel: 'chrome', headless: true });
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const page = await context.newPage();
+  await page.clock.setFixedTime(new Date('2026-10-16T12:00:00+03:00')); // date-independent: Day 1 is "today's mission"
   await page.goto(base);
   await page.getByTestId('mission').getByTestId('open-u2').click();
   // Answer one warm-up question to completion (production has no answer hints: tap until done).

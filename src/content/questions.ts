@@ -1,5 +1,7 @@
 import { t } from '../lib/hebrew';
 import type { Choice, Question, Tx } from './types';
+import { MORE_QUESTIONS } from './questions-more';
+import { EXTRA_QUESTIONS } from './questions-extra';
 
 // Questions are original, written to the textbook's terminology and depth (book question numbers noted
 // where a question is modelled on one). Roles: warmup = nonblocking knowledge check; check = in-unit
@@ -10,7 +12,7 @@ const TRUE = (): Choice[] => [ch('true', 'True', 'נָכוֹן'), ch('false', 'N
 export const TF_CHOICES = TRUE();
 const hint = (en: string, heN: string): Tx => t(en, heN);
 
-export const QUESTIONS: Question[] = [
+const BASE_QUESTIONS: Question[] = [
   // ---------------- Unit 1: our place in the universe ----------------
   {
     kind: 'mc', id: 'u1-q1', unit: 'u1', concept: 'c-universe', role: 'warmup', difficulty: 1,
@@ -255,7 +257,491 @@ export const QUESTIONS: Question[] = [
     hint: hint('Mars is a planet.', 'מַאֲדִים הוּא כּוֹכַב לֶכֶת.'),
     why: t('True: Mars is a planet, lit by the Sun.', 'נָכוֹן: מַאֲדִים הוּא כּוֹכַב לֶכֶת, וְהוּא מוּאָר.'),
   },
+
+  // ---------------- Unit 3: the planets in order ----------------
+  {
+    kind: 'mc', id: 'u3-q1', unit: 'u3', concept: 'c-order', role: 'warmup', difficulty: 1,
+    prompt: t('Which planet is closest to the Sun?', 'אֵיזֶה כּוֹכַב לֶכֶת הֲכִי קָרוֹב לַשֶּׁמֶשׁ?'),
+    choices: [ch('a', 'Mercury', 'חַמָּה'), ch('b', 'Earth', 'כַּדּוּר הָאָרֶץ'), ch('c', 'Neptune', 'נֶפְּטוּן')],
+    correct: 'a',
+    hint: hint('Its Hebrew name comes from חַם (hot).', 'הַשֵּׁם שֶׁלּוֹ דּוֹמֶה לַמִּלָּה "חַם".'),
+    why: t('Mercury (חַמָּה) is the first planet from the Sun.', 'חַמָּה הוּא כּוֹכַב הַלֶּכֶת הָרִאשׁוֹן מֵהַשֶּׁמֶשׁ.'),
+  },
+  {
+    kind: 'mc', id: 'u3-q2', unit: 'u3', concept: 'c-order', role: 'check', difficulty: 1, visual: 'solar-order',
+    prompt: t('Which planet is third from the Sun?', 'אֵיזֶה כּוֹכַב לֶכֶת הוּא הַשְּׁלִישִׁי מֵהַשֶּׁמֶשׁ?'),
+    simpler: t('Planet number 3?', 'כּוֹכַב לֶכֶת מִסְפָּר 3?'),
+    choices: [ch('a', 'Earth', 'כַּדּוּר הָאָרֶץ'), ch('b', 'Mars', 'מַאֲדִים'), ch('c', 'Venus', 'נוֹגַהּ')],
+    correct: 'a',
+    hint: hint('Count: Mercury is 1, Venus is 2…', 'סְפוֹר: חַמָּה 1, נוֹגַהּ 2…'),
+    why: t('Mercury 1, Venus 2, Earth 3.', 'חַמָּה 1, נוֹגַהּ 2, כַּדּוּר הָאָרֶץ 3.'),
+  },
+  {
+    kind: 'mc', id: 'u3-q3', unit: 'u3', concept: 'c-order', role: 'check', difficulty: 2,
+    prompt: t('Which planet comes right after Mars (going away from the Sun)?', 'אֵיזֶה כּוֹכַב לֶכֶת בָּא מִיָּד אַחֲרֵי מַאֲדִים?'),
+    simpler: t('After Mars comes…?', 'אַחֲרֵי מַאֲדִים בָּא…?'),
+    choices: [ch('a', 'Jupiter', 'צֶדֶק'), ch('b', 'Saturn', 'שַׁבְּתַאי'), ch('c', 'Earth', 'כַּדּוּר הָאָרֶץ')],
+    correct: 'a',
+    hint: hint('After Mars there is the asteroid belt, and then the biggest planet.', 'אַחֲרֵי מַאֲדִים יֵשׁ חֲגוֹרַת אַסְטֵרוֹאִידִים, וְאָז כּוֹכַב הַלֶּכֶת הַגָּדוֹל בְּיוֹתֵר.'),
+    why: t('Mars is 4th; Jupiter (צֶדֶק) is 5th.', 'מַאֲדִים רְבִיעִי, צֶדֶק חֲמִישִׁי.'),
+  },
+  {
+    kind: 'tf', id: 'u3-q4', unit: 'u3', concept: 'c-order', role: 'check', difficulty: 1,
+    prompt: t('True or not? "Neptune is the farthest planet from the Sun."', 'נָכוֹן אוֹ לֹא? "נֶפְּטוּן הוּא כּוֹכַב הַלֶּכֶת הָרָחוֹק בְּיוֹתֵר מֵהַשֶּׁמֶשׁ."'),
+    truth: true,
+    hint: hint('Which planet is number 8?', 'מִי כּוֹכַב לֶכֶת מִסְפָּר 8?'),
+    why: t('True: Neptune is the 8th and farthest planet.', 'נָכוֹן: נֶפְּטוּן הוּא הַשְּׁמִינִי וְהָרָחוֹק בְּיוֹתֵר.'),
+  },
+  {
+    kind: 'mc', id: 'u3-q5', unit: 'u3', concept: 'c-order', role: 'review', difficulty: 1,
+    prompt: t('How many planets are there in the Solar System?', 'כַּמָּה כּוֹכְבֵי לֶכֶת יֵשׁ בְּמַעֲרֶכֶת הַשֶּׁמֶשׁ?'),
+    choices: [ch('a', 'Eight', 'שְׁמוֹנָה'), ch('b', 'Nine', 'תִּשְׁעָה'), ch('c', 'Seven', 'שִׁבְעָה')],
+    correct: 'a',
+    hint: hint('From Mercury to Neptune — count them.', 'מֵחַמָּה עַד נֶפְּטוּן — סְפוֹר.'),
+    why: t('Eight planets, from Mercury to Neptune. (Book p.175, q.2)', 'שְׁמוֹנָה כּוֹכְבֵי לֶכֶת, מֵחַמָּה עַד נֶפְּטוּן.'),
+  },
+  {
+    kind: 'tf', id: 'u3-q6', unit: 'u3', concept: 'c-order', role: 'review', difficulty: 2,
+    prompt: t('True or not? "Venus is between Mercury and Earth."', 'נָכוֹן אוֹ לֹא? "נוֹגַהּ נִמְצָא בֵּין חַמָּה לְכַדּוּר הָאָרֶץ."'),
+    truth: true,
+    hint: hint('Venus is number 2.', 'נוֹגַהּ הוּא מִסְפָּר 2.'),
+    why: t('True: Mercury 1, Venus 2, Earth 3.', 'נָכוֹן: חַמָּה 1, נוֹגַהּ 2, כַּדּוּר הָאָרֶץ 3.'),
+  },
+  {
+    kind: 'mc', id: 'u3-q7', unit: 'u3', concept: 'c-order', role: 'review', difficulty: 2,
+    prompt: t('Which planet is sixth from the Sun?', 'אֵיזֶה כּוֹכַב לֶכֶת הוּא הַשִּׁישִּׁי מֵהַשֶּׁמֶשׁ?'),
+    choices: [ch('a', 'Saturn', 'שַׁבְּתַאי'), ch('b', 'Uranus', 'אוּרָנוּס'), ch('c', 'Jupiter', 'צֶדֶק')],
+    correct: 'a',
+    hint: hint('Jupiter is 5th. What comes next?', 'צֶדֶק הוּא הַחֲמִישִׁי. מָה בָּא אַחֲרָיו?'),
+    why: t('Jupiter 5, Saturn 6.', 'צֶדֶק 5, שַׁבְּתַאי 6.'),
+  },
+  {
+    kind: 'mc', id: 'u3-q8', unit: 'u3', concept: 'c-names', role: 'warmup', difficulty: 1,
+    prompt: t('What is "Mars" in Hebrew?', 'אֵיךְ אוֹמְרִים Mars בְּעִבְרִית?'),
+    choices: [ch('a', 'מַאֲדִים', 'מַאֲדִים'), ch('b', 'צֶדֶק', 'צֶדֶק'), ch('c', 'חַמָּה', 'חַמָּה')],
+    correct: 'a',
+    hint: hint('Mars is the red planet. Red = אָדוֹם.', 'Mars אֲדַמְדַּם. אָדוֹם…'),
+    why: t('מַאֲדִים = Mars (from אָדוֹם, red).', 'מַאֲדִים = Mars'),
+  },
+  {
+    kind: 'match', id: 'u3-q9', unit: 'u3', concept: 'c-names', role: 'check', difficulty: 2,
+    prompt: t('Match the Hebrew name to the English name.', 'הַתְאֵם אֶת הַשֵּׁם בְּעִבְרִית לַשֵּׁם בְּאַנְגְּלִית.'),
+    pairs: [
+      { left: t('Mercury', 'חַמָּה'), right: t('Mercury', 'Mercury') },
+      { left: t('Venus', 'נוֹגַהּ'), right: t('Venus', 'Venus') },
+      { left: t('Jupiter', 'צֶדֶק'), right: t('Jupiter', 'Jupiter') },
+      { left: t('Saturn', 'שַׁבְּתַאי'), right: t('Saturn', 'Saturn') },
+    ],
+    hint: hint('Order helps: חַמָּה is first, like Mercury.', 'הַסֵּדֶר עוֹזֵר: חַמָּה רִאשׁוֹן, כְּמוֹ Mercury.'),
+    why: t('חַמָּה Mercury · נוֹגַהּ Venus · צֶדֶק Jupiter · שַׁבְּתַאי Saturn', 'חַמָּה Mercury · נוֹגַהּ Venus · צֶדֶק Jupiter · שַׁבְּתַאי Saturn'),
+  },
+  {
+    kind: 'mc', id: 'u3-q10', unit: 'u3', concept: 'c-names', role: 'check', difficulty: 2,
+    prompt: t('צֶדֶק is the Hebrew name of…', 'צֶדֶק הוּא הַשֵּׁם בְּעִבְרִית שֶׁל…'),
+    choices: [ch('a', 'Jupiter', 'Jupiter'), ch('b', 'Saturn', 'Saturn'), ch('c', 'Mars', 'Mars')],
+    correct: 'a',
+    hint: hint('צֶדֶק is the biggest planet.', 'צֶדֶק הוּא כּוֹכַב הַלֶּכֶת הַגָּדוֹל בְּיוֹתֵר.'),
+    why: t('צֶדֶק = Jupiter, the biggest planet.', 'צֶדֶק = Jupiter'),
+  },
+  {
+    kind: 'mc', id: 'u3-q11', unit: 'u3', concept: 'c-names', role: 'review', difficulty: 2,
+    prompt: t('What is "Saturn" in Hebrew?', 'אֵיךְ אוֹמְרִים Saturn בְּעִבְרִית?'),
+    choices: [ch('a', 'שַׁבְּתַאי', 'שַׁבְּתַאי'), ch('b', 'אוּרָנוּס', 'אוּרָנוּס'), ch('c', 'נֶפְּטוּן', 'נֶפְּטוּן')],
+    correct: 'a',
+    hint: hint('It is the planet with the big rings, number 6.', 'זֶה כּוֹכַב הַלֶּכֶת עִם הַטַּבָּעוֹת, מִסְפָּר 6.'),
+    why: t('שַׁבְּתַאי = Saturn.', 'שַׁבְּתַאי = Saturn'),
+  },
+  {
+    kind: 'tf', id: 'u3-q12', unit: 'u3', concept: 'c-names', role: 'review', difficulty: 1,
+    prompt: t('True or not? "נוֹגַהּ is Venus."', 'נָכוֹן אוֹ לֹא? "נוֹגַהּ הוּא Venus."'),
+    truth: true,
+    hint: hint('Venus is the 2nd planet. Which Hebrew name is 2nd?', 'Venus הוּא הַשֵּׁנִי. מִי הַשֵּׁנִי בְּעִבְרִית?'),
+    why: t('True: נוֹגַהּ = Venus.', 'נָכוֹן: נוֹגַהּ = Venus'),
+  },
+  {
+    kind: 'mc', id: 'u3-q13', unit: 'u3', concept: 'c-names', role: 'review', difficulty: 2,
+    prompt: t('Which Hebrew name sounds almost the same as the English name?', 'אֵיזֶה שֵׁם בְּעִבְרִית נִשְׁמָע כִּמְעַט כְּמוֹ בְּאַנְגְּלִית?'),
+    choices: [ch('a', 'אוּרָנוּס', 'אוּרָנוּס'), ch('b', 'חַמָּה', 'חַמָּה'), ch('c', 'צֶדֶק', 'צֶדֶק')],
+    correct: 'a',
+    hint: hint('Say each one aloud.', 'אֱמוֹר כָּל שֵׁם בְּקוֹל.'),
+    why: t('אוּרָנוּס sounds like Uranus (and נֶפְּטוּן like Neptune).', 'אוּרָנוּס דּוֹמֶה ל-Uranus.'),
+  },
+
+  // ---------------- Unit 4: rocky planets, gas giants, dwarf planets ----------------
+  {
+    kind: 'tf', id: 'u4-q1', unit: 'u4', concept: 'c-groups', role: 'warmup', difficulty: 1,
+    prompt: t('True or not? "Jupiter has solid ground you could stand on."', 'נָכוֹן אוֹ לֹא? "לְצֶדֶק יֵשׁ קַרְקַע מוּצֶקֶת שֶׁאֶפְשָׁר לַעֲמוֹד עָלֶיהָ."'),
+    truth: false,
+    fix: {
+      prompt: t('So what is Jupiter made of?', 'אָז מִמָּה עָשׂוּי צֶדֶק?'),
+      choices: [ch('a', 'Mostly gas', 'בְּעִיקָּר מִגַּזִּים'), ch('b', 'Rock, like Earth', 'מִסֶּלַע, כְּמוֹ כַּדּוּר הָאָרֶץ'), ch('c', 'Water', 'מִמַּיִם')],
+      correct: 'a',
+    },
+    hint: hint('Jupiter is a gas giant.', 'צֶדֶק הוּא גַּז עֲנָק.'),
+    why: t('Not true: Jupiter is made mostly of gas and has no solid ground. (Book p.179)', 'לֹא נָכוֹן: צֶדֶק עָשׂוּי בְּעִיקָּר מִגַּזִּים, וְאֵין לוֹ קַרְקַע מוּצֶקֶת.'),
+  },
+  {
+    kind: 'mc', id: 'u4-q2', unit: 'u4', concept: 'c-groups', role: 'check', difficulty: 1, visual: 'planet-groups',
+    prompt: t('Which planet is a rocky (Earth-like) planet?', 'אֵיזֶה כּוֹכַב לֶכֶת הוּא אַרְצִי (עָשׂוּי מִסֶּלַע)?'),
+    simpler: t('Which one is made of rock?', 'מִי עָשׂוּי מִסֶּלַע?'),
+    choices: [ch('a', 'Mars', 'מַאֲדִים'), ch('b', 'Jupiter', 'צֶדֶק'), ch('c', 'Neptune', 'נֶפְּטוּן')],
+    correct: 'a',
+    hint: hint('The rocky planets are the four closest to the Sun.', 'הָאַרְצִיִּים הֵם אַרְבַּעַת הַקְּרוֹבִים לַשֶּׁמֶשׁ.'),
+    why: t('Mars is rocky, like Mercury, Venus and Earth.', 'מַאֲדִים אַרְצִי, כְּמוֹ חַמָּה, נוֹגַהּ וְכַדּוּר הָאָרֶץ.'),
+  },
+  {
+    kind: 'mc', id: 'u4-q3', unit: 'u4', concept: 'c-groups', role: 'check', difficulty: 2,
+    prompt: t('In our book, how many planets are gas giants?', 'כַּמָּה כּוֹכְבֵי לֶכֶת הֵם גַּזִּים עֲנָקִיִּים?'),
+    choices: [ch('a', 'Four', 'אַרְבָּעָה'), ch('b', 'Two', 'שְׁנַיִם'), ch('c', 'Eight', 'שְׁמוֹנָה')],
+    correct: 'a',
+    hint: hint('Jupiter, Saturn, Uranus, Neptune — count them.', 'צֶדֶק, שַׁבְּתַאי, אוּרָנוּס, נֶפְּטוּן — סְפוֹר.'),
+    why: t('Four: Jupiter, Saturn, Uranus and Neptune. (Book p.175)', 'אַרְבָּעָה: צֶדֶק, שַׁבְּתַאי, אוּרָנוּס וְנֶפְּטוּן.'),
+  },
+  {
+    kind: 'tf', id: 'u4-q4', unit: 'u4', concept: 'c-groups', role: 'check', difficulty: 2,
+    prompt: t('True or not? "Saturn is a rocky planet."', 'נָכוֹן אוֹ לֹא? "שַׁבְּתַאי הוּא כּוֹכַב לֶכֶת אַרְצִי."'),
+    truth: false,
+    fix: {
+      prompt: t('Which group is Saturn in?', 'לְאֵיזוֹ קְבוּצָה שַׁיָּיךְ שַׁבְּתַאי?'),
+      choices: [ch('a', 'Gas giants', 'גַּזִּים עֲנָקִיִּים'), ch('b', 'Dwarf planets', 'כּוֹכְבֵי לֶכֶת נַנָּסִיִּים'), ch('c', 'Moons', 'יְרֵחִים')],
+      correct: 'a',
+    },
+    hint: hint('Saturn is far from the Sun and made mostly of gas.', 'שַׁבְּתַאי רָחוֹק מֵהַשֶּׁמֶשׁ וְעָשׂוּי בְּעִיקָּר מִגַּזִּים.'),
+    why: t('Not true: Saturn is a gas giant.', 'לֹא נָכוֹן: שַׁבְּתַאי הוּא גַּז עֲנָק.'),
+  },
+  {
+    kind: 'match', id: 'u4-q5', unit: 'u4', concept: 'c-groups', role: 'review', difficulty: 2,
+    prompt: t('Match each body to its group.', 'הַתְאֵם כָּל גּוּף לַקְּבוּצָה שֶׁלּוֹ.'),
+    pairs: [
+      { left: t('Earth', 'כַּדּוּר הָאָרֶץ'), right: t('rocky planet', 'כּוֹכַב לֶכֶת אַרְצִי') },
+      { left: t('Jupiter', 'צֶדֶק'), right: t('gas giant', 'גַּז עֲנָק') },
+      { left: t('Pluto', 'פְּלוּטוֹ'), right: t('dwarf planet', 'כּוֹכַב לֶכֶת נַנָּסִי') },
+    ],
+    hint: hint('Which one is small? Which one is made of gas?', 'מִי קָטָן? מִי עָשׂוּי מִגַּזִּים?'),
+    why: t('Earth: rocky. Jupiter: gas giant. Pluto: dwarf planet.', 'כַּדּוּר הָאָרֶץ: אַרְצִי. צֶדֶק: גַּז עֲנָק. פְּלוּטוֹ: נַנָּסִי.'),
+  },
+  {
+    kind: 'mc', id: 'u4-q6', unit: 'u4', concept: 'c-groups', role: 'review', difficulty: 2,
+    prompt: t('What do Mercury, Venus, Earth and Mars have in common?', 'מָה מְשׁוּתָּף לְחַמָּה, נוֹגַהּ, כַּדּוּר הָאָרֶץ וּמַאֲדִים?'),
+    choices: [ch('a', 'They are made of rock', 'הֵם עֲשׂוּיִים מִסֶּלַע'), ch('b', 'They have big rings', 'יֵשׁ לָהֶם טַבָּעוֹת גְּדוֹלוֹת'), ch('c', 'They are made of gas', 'הֵם עֲשׂוּיִים מִגַּזִּים')],
+    correct: 'a',
+    hint: hint('These are the four closest to the Sun.', 'אֵלֶּה אַרְבַּעַת הַקְּרוֹבִים לַשֶּׁמֶשׁ.'),
+    why: t('They are the rocky (Earth-like) planets.', 'הֵם כּוֹכְבֵי הַלֶּכֶת הָאַרְצִיִּים.'),
+  },
+  {
+    kind: 'mc', id: 'u4-q7', unit: 'u4', concept: 'c-dwarf', role: 'check', difficulty: 1,
+    prompt: t('Pluto is a…', 'פְּלוּטוֹ הוּא…'),
+    choices: [ch('a', 'dwarf planet', 'כּוֹכַב לֶכֶת נַנָּסִי'), ch('b', 'star', 'כּוֹכָב'), ch('c', 'gas giant', 'גַּז עֲנָק')],
+    correct: 'a',
+    hint: hint('Pluto is round, orbits the Sun, and is very small.', 'פְּלוּטוֹ עָגוֹל, מַקִּיף אֶת הַשֶּׁמֶשׁ, וְקָטָן מְאוֹד.'),
+    why: t('Pluto is a dwarf planet. (Book p.180)', 'פְּלוּטוֹ הוּא כּוֹכַב לֶכֶת נַנָּסִי.'),
+  },
+  {
+    kind: 'tf', id: 'u4-q8', unit: 'u4', concept: 'c-dwarf', role: 'check', difficulty: 2,
+    prompt: t('True or not? "A dwarf planet is a small star."', 'נָכוֹן אוֹ לֹא? "כּוֹכַב לֶכֶת נַנָּסִי הוּא כּוֹכָב קָטָן."'),
+    truth: false,
+    fix: {
+      prompt: t('What is a dwarf planet?', 'מָה הוּא כּוֹכַב לֶכֶת נַנָּסִי?'),
+      choices: [
+        ch('a', 'A round body that orbits the Sun and is smaller than a planet', 'גּוּף עָגוֹל שֶׁמַּקִּיף אֶת הַשֶּׁמֶשׁ וְקָטָן מִכּוֹכַב לֶכֶת'),
+        ch('b', 'A moon of Jupiter', 'יָרֵחַ שֶׁל צֶדֶק'),
+        ch('c', 'A piece of a star', 'חֲתִיכָה שֶׁל כּוֹכָב'),
+      ],
+      correct: 'a',
+    },
+    hint: hint('Does a dwarf planet make its own light?', 'הַאִם כּוֹכַב לֶכֶת נַנָּסִי מֵפִיק אוֹר?'),
+    why: t('Not true: a dwarf planet does not make light — it is a small, round body orbiting the Sun.', 'לֹא נָכוֹן: כּוֹכַב לֶכֶת נַנָּסִי לֹא מֵפִיק אוֹר. הוּא גּוּף קָטָן וְעָגוֹל שֶׁמַּקִּיף אֶת הַשֶּׁמֶשׁ.'),
+  },
+  {
+    kind: 'mc', id: 'u4-q9', unit: 'u4', concept: 'c-dwarf', role: 'review', difficulty: 2,
+    prompt: t('Which of these is a dwarf planet?', 'מָה מֵאֵלֶּה הוּא כּוֹכַב לֶכֶת נַנָּסִי?'),
+    choices: [ch('a', 'Ceres', 'צֶרֶס'), ch('b', 'Mars', 'מַאֲדִים'), ch('c', 'The Moon', 'הַיָּרֵחַ')],
+    correct: 'a',
+    hint: hint('Mars is a planet; the Moon orbits Earth.', 'מַאֲדִים כּוֹכַב לֶכֶת; הַיָּרֵחַ מַקִּיף אֶת כַּדּוּר הָאָרֶץ.'),
+    why: t('Ceres is a dwarf planet in the asteroid belt. (Book p.180)', 'צֶרֶס הוּא כּוֹכַב לֶכֶת נַנָּסִי.'),
+  },
+  {
+    kind: 'tf', id: 'u4-q10', unit: 'u4', concept: 'c-dwarf', role: 'review', difficulty: 1,
+    prompt: t('True or not? "A dwarf planet orbits the Sun."', 'נָכוֹן אוֹ לֹא? "כּוֹכַב לֶכֶת נַנָּסִי מַקִּיף אֶת הַשֶּׁמֶשׁ."'),
+    truth: true,
+    hint: hint('Like the planets, it goes around the Sun.', 'כְּמוֹ כּוֹכְבֵי הַלֶּכֶת, הוּא נָע סְבִיב הַשֶּׁמֶשׁ.'),
+    why: t('True: dwarf planets orbit the Sun.', 'נָכוֹן: כּוֹכְבֵי לֶכֶת נַנָּסִיִּים מַקִּיפִים אֶת הַשֶּׁמֶשׁ.'),
+  },
+
+  // ---------------- Unit 5: asteroid belt; inner and outer planets ----------------
+  {
+    kind: 'mc', id: 'u5-q1', unit: 'u5', concept: 'c-belt', role: 'warmup', difficulty: 1,
+    prompt: t('Where is the asteroid belt?', 'אֵיפֹה נִמְצֵאת חֲגוֹרַת הָאַסְטֵרוֹאִידִים?'),
+    choices: [ch('a', 'Between Mars and Jupiter', 'בֵּין מַאֲדִים לְצֶדֶק'), ch('b', 'Between Earth and the Moon', 'בֵּין כַּדּוּר הָאָרֶץ לַיָּרֵחַ'), ch('c', 'After Neptune', 'אַחֲרֵי נֶפְּטוּן')],
+    correct: 'a',
+    hint: hint('It comes right after the four rocky planets.', 'הִיא מִיָּד אַחֲרֵי אַרְבַּעַת כּוֹכְבֵי הַלֶּכֶת הָאַרְצִיִּים.'),
+    why: t('Between Mars and Jupiter. (Book p.176)', 'בֵּין מַאֲדִים לְצֶדֶק.'),
+  },
+  {
+    kind: 'mc', id: 'u5-q2', unit: 'u5', concept: 'c-belt', role: 'check', difficulty: 1, visual: 'asteroid-belt',
+    prompt: t('What are asteroids?', 'מָה הֵם אַסְטֵרוֹאִידִים?'),
+    choices: [
+      ch('a', 'Small pieces of rock that orbit the Sun', 'גּוּשֵׁי סֶלַע קְטַנִּים שֶׁמַּקִּיפִים אֶת הַשֶּׁמֶשׁ'),
+      ch('b', 'Small stars', 'כּוֹכָבִים קְטַנִּים'),
+      ch('c', "Earth's moons", 'יְרֵחִים שֶׁל כַּדּוּר הָאָרֶץ'),
+    ],
+    correct: 'a',
+    hint: hint('Look at the dots in the picture between Mars and Jupiter.', 'הִסְתַּכֵּל עַל הַנְּקֻדּוֹת בֵּין מַאֲדִים לְצֶדֶק.'),
+    why: t('Asteroids are small rocks orbiting the Sun. (Book p.176)', 'אַסְטֵרוֹאִידִים הֵם גּוּשֵׁי סֶלַע קְטַנִּים שֶׁמַּקִּיפִים אֶת הַשֶּׁמֶשׁ.'),
+  },
+  {
+    kind: 'tf', id: 'u5-q3', unit: 'u5', concept: 'c-belt', role: 'check', difficulty: 2,
+    prompt: t('True or not? "The asteroid belt is between Earth and Mars."', 'נָכוֹן אוֹ לֹא? "חֲגוֹרַת הָאַסְטֵרוֹאִידִים נִמְצֵאת בֵּין כַּדּוּר הָאָרֶץ לְמַאֲדִים."'),
+    simpler: t('Is the belt next to Earth?', 'הַאִם הַחֲגוֹרָה לְיַד כַּדּוּר הָאָרֶץ?'),
+    truth: false,
+    fix: {
+      prompt: t('So where is it?', 'אָז אֵיפֹה הִיא?'),
+      choices: [ch('a', 'Between Mars and Jupiter', 'בֵּין מַאֲדִים לְצֶדֶק'), ch('b', 'Between Jupiter and Saturn', 'בֵּין צֶדֶק לְשַׁבְּתַאי'), ch('c', 'Around the Moon', 'סְבִיב הַיָּרֵחַ')],
+      correct: 'a',
+    },
+    hint: hint('Mars is the 4th planet. Is the belt before Mars or after it?', 'מַאֲדִים רְבִיעִי. הַחֲגוֹרָה לִפְנֵי מַאֲדִים אוֹ אַחֲרָיו?'),
+    why: t('Not true: the belt is between Mars and Jupiter.', 'לֹא נָכוֹן: הַחֲגוֹרָה בֵּין מַאֲדִים לְצֶדֶק.'),
+  },
+  {
+    kind: 'mc', id: 'u5-q4', unit: 'u5', concept: 'c-inner-outer', role: 'check', difficulty: 1, visual: 'asteroid-belt',
+    prompt: t('Is Jupiter an inner or an outer planet?', 'צֶדֶק הוּא כּוֹכַב לֶכֶת פְּנִימִי אוֹ חִיצוֹנִי?'),
+    choices: [ch('a', 'Outer — חִיצוֹנִי', 'חִיצוֹנִי'), ch('b', 'Inner — פְּנִימִי', 'פְּנִימִי')],
+    correct: 'a',
+    hint: hint('Is Jupiter before or after the asteroid belt?', 'צֶדֶק לִפְנֵי הַחֲגוֹרָה אוֹ אַחֲרֶיהָ?'),
+    why: t('Jupiter is after the belt, so it is outer.', 'צֶדֶק אַחֲרֵי הַחֲגוֹרָה, לָכֵן הוּא חִיצוֹנִי.'),
+  },
+  {
+    kind: 'tf', id: 'u5-q5', unit: 'u5', concept: 'c-inner-outer', role: 'check', difficulty: 3,
+    prompt: t('True or not? "Inner means the same as rocky."', 'נָכוֹן אוֹ לֹא? "פְּנִימִי" זֶה אוֹתוֹ דָּבָר כְּמוֹ "אַרְצִי".'),
+    simpler: t('Do the two words mean the same thing?', 'הַאִם שְׁתֵּי הַמִּלִּים אוֹמְרוֹת אוֹתוֹ דָּבָר?'),
+    truth: false,
+    fix: {
+      prompt: t('What does "inner" tell us?', 'מָה הַמִּלָּה "פְּנִימִי" אוֹמֶרֶת?'),
+      choices: [
+        ch('a', 'Where the planet is (before the asteroid belt)', 'אֵיפֹה כּוֹכַב הַלֶּכֶת נִמְצָא (לִפְנֵי הַחֲגוֹרָה)'),
+        ch('b', 'What the planet is made of', 'מִמָּה הוּא עָשׂוּי'),
+        ch('c', 'How big the planet is', 'כַּמָּה הוּא גָּדוֹל'),
+      ],
+      correct: 'a',
+    },
+    hint: hint('One word is about place, the other about material.', 'מִלָּה אַחַת עַל מָקוֹם, וְהַשְּׁנִיָּה עַל חוֹמֶר.'),
+    why: t('Not true: inner = where it is; rocky = what it is made of. In our Solar System they happen to be the same four planets.', 'לֹא נָכוֹן: פְּנִימִי = אֵיפֹה. אַרְצִי = מִמָּה הוּא עָשׂוּי.'),
+  },
+  {
+    kind: 'mc', id: 'u5-q6', unit: 'u5', concept: 'c-belt', role: 'review', difficulty: 2,
+    prompt: t('Which dwarf planet is in the asteroid belt?', 'אֵיזֶה כּוֹכַב לֶכֶת נַנָּסִי נִמְצָא בַּחֲגוֹרַת הָאַסְטֵרוֹאִידִים?'),
+    choices: [ch('a', 'Ceres', 'צֶרֶס'), ch('b', 'Pluto', 'פְּלוּטוֹ'), ch('c', 'The Moon', 'הַיָּרֵחַ')],
+    correct: 'a',
+    hint: hint('Pluto is far beyond Neptune.', 'פְּלוּטוֹ רָחוֹק מְאוֹד, אַחֲרֵי נֶפְּטוּן.'),
+    why: t('Ceres is in the asteroid belt. (Book p.180)', 'צֶרֶס נִמְצָא בַּחֲגוֹרַת הָאַסְטֵרוֹאִידִים.'),
+  },
+  {
+    kind: 'tf', id: 'u5-q7', unit: 'u5', concept: 'c-belt', role: 'review', difficulty: 1,
+    prompt: t('True or not? "Most asteroids are between Mars and Jupiter."', 'נָכוֹן אוֹ לֹא? "רוֹב הָאַסְטֵרוֹאִידִים נִמְצָאִים בֵּין מַאֲדִים לְצֶדֶק."'),
+    truth: true,
+    hint: hint('That is where the belt is.', 'שָׁם נִמְצֵאת הַחֲגוֹרָה.'),
+    why: t('True: the biggest group of asteroids is the belt between Mars and Jupiter.', 'נָכוֹן: רוֹב הָאַסְטֵרוֹאִידִים בַּחֲגוֹרָה בֵּין מַאֲדִים לְצֶדֶק.'),
+  },
+  {
+    kind: 'mc', id: 'u5-q8', unit: 'u5', concept: 'c-inner-outer', role: 'review', difficulty: 2,
+    prompt: t('Which planets are the inner planets?', 'מִי כּוֹכְבֵי הַלֶּכֶת הַפְּנִימִיִּים?'),
+    choices: [
+      ch('a', 'Mercury, Venus, Earth, Mars', 'חַמָּה, נוֹגַהּ, כַּדּוּר הָאָרֶץ, מַאֲדִים'),
+      ch('b', 'Jupiter, Saturn, Uranus, Neptune', 'צֶדֶק, שַׁבְּתַאי, אוּרָנוּס, נֶפְּטוּן'),
+      ch('c', 'Earth and the Moon', 'כַּדּוּר הָאָרֶץ וְהַיָּרֵחַ'),
+    ],
+    correct: 'a',
+    hint: hint('Inner = before the asteroid belt, close to the Sun.', 'פְּנִימִיִּים = לִפְנֵי הַחֲגוֹרָה, קָרוֹב לַשֶּׁמֶשׁ.'),
+    why: t('The four planets before the belt are the inner planets.', 'אַרְבַּעַת כּוֹכְבֵי הַלֶּכֶת שֶׁלִּפְנֵי הַחֲגוֹרָה הֵם הַפְּנִימִיִּים.'),
+  },
+  {
+    kind: 'tf', id: 'u5-q9', unit: 'u5', concept: 'c-inner-outer', role: 'review', difficulty: 1,
+    prompt: t('True or not? "Neptune is an outer planet."', 'נָכוֹן אוֹ לֹא? "נֶפְּטוּן הוּא כּוֹכַב לֶכֶת חִיצוֹנִי."'),
+    truth: true,
+    hint: hint('Neptune is the farthest planet.', 'נֶפְּטוּן הוּא הָרָחוֹק בְּיוֹתֵר.'),
+    why: t('True: Neptune is far beyond the belt.', 'נָכוֹן: נֶפְּטוּן רָחוֹק, אַחֲרֵי הַחֲגוֹרָה.'),
+  },
+
+  // ---------------- Unit 6: the Moon ----------------
+  {
+    kind: 'mc', id: 'u6-q1', unit: 'u6', concept: 'c-moon-satellite', role: 'warmup', difficulty: 1,
+    prompt: t('What does the Moon go around?', 'סְבִיב מָה נָע הַיָּרֵחַ?'),
+    choices: [ch('a', 'Around Earth', 'סְבִיב כַּדּוּר הָאָרֶץ'), ch('b', 'Around Mars', 'סְבִיב מַאֲדִים'), ch('c', 'It does not move', 'הוּא לֹא זָז')],
+    correct: 'a',
+    hint: hint('It is "our" Moon.', 'זֶה הַיָּרֵחַ "שֶׁלָּנוּ".'),
+    why: t('The Moon orbits Earth. (Book p.193)', 'הַיָּרֵחַ מַקִּיף אֶת כַּדּוּר הָאָרֶץ.'),
+  },
+  {
+    kind: 'mc', id: 'u6-q2', unit: 'u6', concept: 'c-moon-satellite', role: 'check', difficulty: 1,
+    prompt: t('What is a moon?', 'מָה הוּא יָרֵחַ?'),
+    choices: [
+      ch('a', 'A natural body that orbits a planet', 'גּוּף טִבְעִי שֶׁמַּקִּיף כּוֹכַב לֶכֶת'),
+      ch('b', 'A small star', 'כּוֹכָב קָטָן'),
+      ch('c', 'A planet that orbits the Sun', 'כּוֹכַב לֶכֶת שֶׁמַּקִּיף אֶת הַשֶּׁמֶשׁ'),
+    ],
+    correct: 'a',
+    hint: hint('What does our Moon go around?', 'סְבִיב מָה נָע הַיָּרֵחַ שֶׁלָּנוּ?'),
+    why: t('A moon is a natural body that orbits a planet — a natural satellite. (Glossary p.215)', 'יָרֵחַ הוּא גּוּף טִבְעִי שֶׁמַּקִּיף כּוֹכַב לֶכֶת.'),
+  },
+  {
+    kind: 'tf', id: 'u6-q3', unit: 'u6', concept: 'c-moon-light', role: 'check', difficulty: 2, visual: 'moon-orbit',
+    prompt: t('True or not? "The Moon makes its own light."', 'נָכוֹן אוֹ לֹא? "הַיָּרֵחַ מֵפִיק אוֹר בְּעַצְמוֹ."'),
+    truth: false,
+    fix: {
+      prompt: t('Where does moonlight come from?', 'מֵאֵיפֹה מַגִּיעַ אוֹר הַיָּרֵחַ?'),
+      choices: [ch('a', 'Sunlight that the Moon reflects', 'אוֹר הַשֶּׁמֶשׁ שֶׁהַיָּרֵחַ מַחֲזִיר'), ch('b', 'Fire on the Moon', 'אֵשׁ עַל הַיָּרֵחַ'), ch('c', 'Lamps on Earth', 'מְנוֹרוֹת בְּכַדּוּר הָאָרֶץ')],
+      correct: 'a',
+    },
+    hint: hint('Turn the Sun off in the picture and watch the Moon.', 'כַּבֵּה אֶת הַשֶּׁמֶשׁ בַּתְּמוּנָה וְהִסְתַּכֵּל עַל הַיָּרֵחַ.'),
+    why: t('Not true: the Moon reflects sunlight — it is מוּאָר.', 'לֹא נָכוֹן: הַיָּרֵחַ מַחֲזִיר אֶת אוֹר הַשֶּׁמֶשׁ. הוּא מוּאָר.'),
+  },
+  {
+    kind: 'mc', id: 'u6-q4', unit: 'u6', concept: 'c-moon-light', role: 'check', difficulty: 1,
+    prompt: t('Which word fits the Moon?', 'אֵיזוֹ מִלָּה מַתְאִימָה לַיָּרֵחַ?'),
+    choices: [ch('a', 'מוּאָר — lit by the Sun', 'מוּאָר'), ch('b', 'מֵאִיר — makes its own light', 'מֵאִיר')],
+    correct: 'a',
+    hint: hint('Does the Moon make light, or is it lit?', 'הַיָּרֵחַ מֵפִיק אוֹר, אוֹ שֶׁמְּאִירִים עָלָיו?'),
+    why: t('The Moon is מוּאָר: the Sun lights it.', 'הַיָּרֵחַ מוּאָר: הַשֶּׁמֶשׁ מְאִירָה עָלָיו.'),
+  },
+  {
+    kind: 'match', id: 'u6-q5', unit: 'u6', concept: 'c-moon-satellite', role: 'check', difficulty: 2,
+    prompt: t('Match: what does each body go around?', 'הַתְאֵם: סְבִיב מָה נָע כָּל גּוּף?'),
+    pairs: [
+      { left: t('the Moon', 'הַיָּרֵחַ'), right: t('goes around Earth', 'מַקִּיף אֶת כַּדּוּר הָאָרֶץ') },
+      { left: t('Earth', 'כַּדּוּר הָאָרֶץ'), right: t('goes around the Sun', 'מַקִּיף אֶת הַשֶּׁמֶשׁ') },
+      { left: t('Phobos', 'פוֹבּוֹס'), right: t('goes around Mars', 'מַקִּיף אֶת מַאֲדִים') },
+    ],
+    hint: hint('Moons go around planets; planets go around the Sun.', 'יְרֵחִים מַקִּיפִים כּוֹכְבֵי לֶכֶת. כּוֹכְבֵי לֶכֶת מַקִּיפִים אֶת הַשֶּׁמֶשׁ.'),
+    why: t('Moon → Earth, Earth → Sun, Phobos (a moon of Mars) → Mars.', 'הַיָּרֵחַ ← כַּדּוּר הָאָרֶץ, כַּדּוּר הָאָרֶץ ← הַשֶּׁמֶשׁ, פוֹבּוֹס ← מַאֲדִים.'),
+  },
+  {
+    kind: 'tf', id: 'u6-q6', unit: 'u6', concept: 'c-moon-satellite', role: 'review', difficulty: 1,
+    prompt: t('True or not? "Mars has moons too."', 'נָכוֹן אוֹ לֹא? "גַּם לְמַאֲדִים יֵשׁ יְרֵחִים."'),
+    truth: true,
+    hint: hint('Remember Phobos?', 'זוֹכֵר אֶת פוֹבּוֹס?'),
+    why: t('True: Mars has two small moons. (Book p.179)', 'נָכוֹן: לְמַאֲדִים יֵשׁ שְׁנֵי יְרֵחִים קְטַנִּים.'),
+  },
+  {
+    kind: 'mc', id: 'u6-q7', unit: 'u6', concept: 'c-moon-satellite', role: 'review', difficulty: 2,
+    prompt: t("Complete: \"The Moon is Earth's ___.\"", 'הַשְׁלֵם: "הַיָּרֵחַ הוּא ___ שֶׁל כַּדּוּר הָאָרֶץ."'),
+    choices: [
+      { id: 'a', text: t('natural satellite', 'לַוְיָן טִבְעִי', 'לוויין טבעי') },
+      ch('b', 'star', 'כּוֹכָב'),
+      ch('c', 'planet', 'כּוֹכַב לֶכֶת'),
+    ],
+    correct: 'a',
+    hint: hint('Nobody built it, and it goes around Earth.', 'אַף אֶחָד לֹא בָּנָה אוֹתוֹ, וְהוּא מַקִּיף אֶת כַּדּוּר הָאָרֶץ.'),
+    why: t("The Moon is Earth's natural satellite.", 'הַיָּרֵחַ הוּא לַוְיָן טִבְעִי שֶׁל כַּדּוּר הָאָרֶץ.', 'הירח הוא לוויין טבעי של כדור הארץ.'),
+  },
+  {
+    kind: 'mc', id: 'u6-q8', unit: 'u6', concept: 'c-moon-light', role: 'review', difficulty: 2,
+    prompt: t('Why can we see the Moon at night?', 'לָמָּה רוֹאִים אֶת הַיָּרֵחַ בַּלַּיְלָה?'),
+    choices: [
+      ch('a', 'Sunlight shines on it and reflects to us', 'אוֹר הַשֶּׁמֶשׁ מֵאִיר עָלָיו וְחוֹזֵר אֵלֵינוּ'),
+      ch('b', 'It is a star', 'הוּא כּוֹכָב'),
+      ch('c', 'It is very hot', 'הוּא חַם מְאוֹד'),
+    ],
+    correct: 'a',
+    hint: hint('The Moon is מוּאָר.', 'הַיָּרֵחַ מוּאָר.'),
+    why: t('Sunlight reflects off the Moon toward Earth. (Book p.194, q.3)', 'אוֹר הַשֶּׁמֶשׁ חוֹזֵר מֵהַיָּרֵחַ אֵלֵינוּ.'),
+  },
+  {
+    kind: 'tf', id: 'u6-q9', unit: 'u6', concept: 'c-moon-light', role: 'review', difficulty: 2,
+    prompt: t('True or not? "Only the half of the Moon that faces the Sun is lit."', 'נָכוֹן אוֹ לֹא? "רַק הַצַּד שֶׁל הַיָּרֵחַ שֶׁפּוֹנֶה לַשֶּׁמֶשׁ מוּאָר."'),
+    truth: true,
+    hint: hint('Look at the Moon in the picture.', 'הִסְתַּכֵּל עַל הַיָּרֵחַ בַּתְּמוּנָה.'),
+    why: t('True: the side facing the Sun is lit; the other side is dark.', 'נָכוֹן: הַצַּד שֶׁפּוֹנֶה לַשֶּׁמֶשׁ מוּאָר, הַצַּד הַשֵּׁנִי חָשׁוּךְ.'),
+  },
+
+  // ---------------- Unit 7: periodic motion; rotation vs orbit ----------------
+  {
+    kind: 'tf', id: 'u7-q1', unit: 'u7', concept: 'c-rot-orbit', role: 'warmup', difficulty: 1,
+    prompt: t('True or not? "Earth spins around its own axis."', 'נָכוֹן אוֹ לֹא? "כַּדּוּר הָאָרֶץ מִסְתּוֹבֵב סְבִיב הַצִּיר שֶׁלּוֹ."'),
+    truth: true,
+    hint: hint('Like a spinning top.', 'כְּמוֹ סְבִיבוֹן.'),
+    why: t('True: that is rotation (סִיבּוּב).', 'נָכוֹן: זֶה סִיבּוּב.'),
+  },
+  {
+    kind: 'mc', id: 'u7-q2', unit: 'u7', concept: 'c-periodic', role: 'check', difficulty: 1, visual: 'periodic',
+    prompt: t('What is periodic motion?', 'מָה הִיא תְּנוּעָה מַחֲזוֹרִית?'),
+    choices: [
+      ch('a', 'Motion that repeats regularly, again and again', 'תְּנוּעָה שֶׁחוֹזֶרֶת עַל עַצְמָהּ בְּאוֹפֶן קָבוּעַ'),
+      ch('b', 'Motion that happens only once', 'תְּנוּעָה שֶׁקּוֹרֵית רַק פַּעַם אַחַת'),
+      ch('c', 'Very fast motion', 'תְּנוּעָה מְהִירָה מְאוֹד'),
+    ],
+    correct: 'a',
+    hint: hint('Watch the pendulum in the picture.', 'הִסְתַּכֵּל עַל הַמְּטוּטֶלֶת בַּתְּמוּנָה.'),
+    why: t('Periodic motion repeats regularly. (Book p.185)', 'תְּנוּעָה מַחֲזוֹרִית חוֹזֶרֶת עַל עַצְמָהּ בְּאוֹפֶן קָבוּעַ.'),
+  },
+  {
+    kind: 'mc', id: 'u7-q3', unit: 'u7', concept: 'c-rot-orbit', role: 'check', difficulty: 1, visual: 'rotation-orbit',
+    prompt: t('Earth travels around the Sun. What is this motion called?', 'כַּדּוּר הָאָרֶץ נָע מִסָּבִיב לַשֶּׁמֶשׁ. אֵיךְ קוֹרְאִים לַתְּנוּעָה הַזֹּאת?'),
+    choices: [ch('a', 'Orbit — הַקָּפָה', 'הַקָּפָה'), ch('b', 'Rotation — סִיבּוּב', 'סִיבּוּב')],
+    correct: 'a',
+    hint: hint('Is Earth spinning in place, or travelling around something?', 'כַּדּוּר הָאָרֶץ מִסְתּוֹבֵב בַּמָּקוֹם, אוֹ נָע מִסָּבִיב לְמַשֶּׁהוּ?'),
+    why: t('Travelling around the Sun is an orbit — הַקָּפָה.', 'תְּנוּעָה מִסָּבִיב לַשֶּׁמֶשׁ הִיא הַקָּפָה.'),
+  },
+  {
+    kind: 'tf', id: 'u7-q4', unit: 'u7', concept: 'c-rot-orbit', role: 'check', difficulty: 3,
+    prompt: t('True or not? "Earth orbits itself."', 'נָכוֹן אוֹ לֹא? "כַּדּוּר הָאָרֶץ מַקִּיף אֶת עַצְמוֹ."'),
+    simpler: t('Can something go around itself?', 'אֶפְשָׁר לְהַקִּיף אֶת עַצְמְךָ?'),
+    truth: false,
+    fix: {
+      prompt: t('What is the correct way to say it?', 'אֵיךְ נָכוֹן לְהַגִּיד?'),
+      choices: [
+        ch('a', 'Earth rotates (spins) around its axis', 'כַּדּוּר הָאָרֶץ מִסְתּוֹבֵב סְבִיב צִירוֹ'),
+        ch('b', 'Earth orbits the Moon', 'כַּדּוּר הָאָרֶץ מַקִּיף אֶת הַיָּרֵחַ'),
+        ch('c', 'Earth does not move', 'כַּדּוּר הָאָרֶץ לֹא זָז'),
+      ],
+      correct: 'a',
+    },
+    hint: hint('"Orbit" means going around ANOTHER body.', '"מַקִּיף" — נָע מִסָּבִיב לְגוּף אַחֵר.'),
+    why: t('Not true: Earth rotates on its axis (סִיבּוּב) and orbits the Sun (הַקָּפָה). It does not "orbit itself".', 'לֹא נָכוֹן: כַּדּוּר הָאָרֶץ מִסְתּוֹבֵב סְבִיב צִירוֹ וּמַקִּיף אֶת הַשֶּׁמֶשׁ.'),
+  },
+  {
+    kind: 'match', id: 'u7-q5', unit: 'u7', concept: 'c-rot-orbit', role: 'check', difficulty: 2,
+    prompt: t('Match each word to its meaning.', 'הַתְאֵם כָּל מִלָּה לַפֵּירוּשׁ שֶׁלָּהּ.'),
+    pairs: [
+      { left: t('rotation', 'סִיבּוּב'), right: t('spinning around its own axis', 'מִסְתּוֹבֵב סְבִיב הַצִּיר שֶׁלּוֹ') },
+      { left: t('orbit', 'הַקָּפָה'), right: t('travelling around another body', 'נָע מִסָּבִיב לְגוּף אַחֵר') },
+      { left: t('axis', 'צִיר'), right: t('an imaginary line through the middle', 'קַו דִּמְיוֹנִי בָּאֶמְצַע') },
+    ],
+    hint: hint('Start with צִיר — it is a line.', 'הַתְחֵל בְּ"צִיר" — זֶה קַו.'),
+    why: t('Rotation = spin on the axis. Orbit = go around another body.', 'סִיבּוּב = סְבִיב הַצִּיר. הַקָּפָה = מִסָּבִיב לְגוּף אַחֵר.'),
+  },
+  {
+    kind: 'mc', id: 'u7-q6', unit: 'u7', concept: 'c-periodic', role: 'review', difficulty: 2,
+    prompt: t('Which of these is periodic motion?', 'אֵיזוֹ תְּנוּעָה הִיא מַחֲזוֹרִית?'),
+    choices: [ch('a', 'A clock pendulum', 'מְטוּטֶלֶת שֶׁל שָׁעוֹן'), ch('b', 'A plane taking off once', 'מָטוֹס שֶׁמַּמְרִיא פַּעַם אַחַת'), ch('c', 'A glass breaking', 'כּוֹס שֶׁנִּשְׁבֶּרֶת')],
+    correct: 'a',
+    hint: hint('Which one repeats again and again?', 'מָה חוֹזֵר שׁוּב וָשׁוּב?'),
+    why: t('A pendulum swings back and forth regularly. (Book p.185)', 'מְטוּטֶלֶת נָעָה הָלוֹךְ וָשׁוֹב בְּאוֹפֶן קָבוּעַ.'),
+  },
+  {
+    kind: 'tf', id: 'u7-q7', unit: 'u7', concept: 'c-periodic', role: 'review', difficulty: 1,
+    prompt: t('True or not? "Earth going around the Sun is periodic motion."', 'נָכוֹן אוֹ לֹא? "הַהַקָּפָה שֶׁל כַּדּוּר הָאָרֶץ סְבִיב הַשֶּׁמֶשׁ הִיא תְּנוּעָה מַחֲזוֹרִית."'),
+    truth: true,
+    hint: hint('Does it happen again every year?', 'זֶה חוֹזֵר כָּל שָׁנָה?'),
+    why: t('True: it repeats every year, again and again.', 'נָכוֹן: הִיא חוֹזֶרֶת כָּל שָׁנָה.'),
+  },
+  {
+    kind: 'mc', id: 'u7-q8', unit: 'u7', concept: 'c-rot-orbit', role: 'review', difficulty: 2,
+    prompt: t('A spinning top turns in place. Is that rotation or orbit?', 'סְבִיבוֹן מִסְתּוֹבֵב בַּמָּקוֹם. זֶה סִיבּוּב אוֹ הַקָּפָה?'),
+    choices: [ch('a', 'Rotation — סִיבּוּב', 'סִיבּוּב'), ch('b', 'Orbit — הַקָּפָה', 'הַקָּפָה')],
+    correct: 'a',
+    hint: hint('It stays in the same place.', 'הוּא נִשְׁאָר בְּאוֹתוֹ מָקוֹם.'),
+    why: t('Turning in place = rotation.', 'מִסְתּוֹבֵב בַּמָּקוֹם = סִיבּוּב.'),
+  },
+  {
+    kind: 'tf', id: 'u7-q9', unit: 'u7', concept: 'c-rot-orbit', role: 'review', difficulty: 2,
+    prompt: t('True or not? "Earth rotates and orbits the Sun at the same time."', 'נָכוֹן אוֹ לֹא? "כַּדּוּר הָאָרֶץ מִסְתּוֹבֵב וְגַם מַקִּיף אֶת הַשֶּׁמֶשׁ בְּאוֹתוֹ זְמַן."'),
+    truth: true,
+    hint: hint('Try both buttons together in the picture.', 'נַסֵּה אֶת שְׁנֵי הַכַּפְתּוֹרִים יַחַד בַּתְּמוּנָה.'),
+    why: t('True: both motions happen together, all the time.', 'נָכוֹן: שְׁתֵּי הַתְּנוּעוֹת קוֹרוֹת יַחַד, כָּל הַזְּמַן.'),
+  },
 ];
+
+export const QUESTIONS: Question[] = [...BASE_QUESTIONS, ...MORE_QUESTIONS, ...EXTRA_QUESTIONS];
 
 export const questionById = (id: string): Question => {
   const q = QUESTIONS.find((x) => x.id === id);

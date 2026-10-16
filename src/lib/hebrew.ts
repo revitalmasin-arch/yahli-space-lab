@@ -13,6 +13,11 @@ export function t(en: string, heN: string, he?: string): Tx {
   return { en, heN, he: he ?? stripNiqqud(heN) };
 }
 
+/** Sentence check for word ordering: compares the words, so repeated words (e.g. עָשׂוּי twice) are interchangeable. */
+export function sameSentence(expected: string[], built: string[]): boolean {
+  return built.length === expected.length && built.every((w, i) => w === expected[i]);
+}
+
 export function heText(x: Tx, niqqud: boolean): string {
   return niqqud ? x.heN : x.he;
 }

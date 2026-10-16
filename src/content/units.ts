@@ -1,10 +1,11 @@
 import { t } from '../lib/hebrew';
 import type { Unit } from './types';
+import { MORE_UNITS } from './units-more';
 
 // Explanations are original text written for this app; terminology follows the textbook
 // ("נפלאות המדע", grade 5, gate 5). Page numbers are printed pages. See docs/SOURCES.md.
 
-export const UNITS: Unit[] = [
+const BASE_UNITS: Unit[] = [
   {
     id: 'u1',
     order: 1,
@@ -261,21 +262,22 @@ export const UNITS: Unit[] = [
   {
     id: 'u8',
     order: 8,
-    title: t('Day, year and month', 'יְמָמָה, שָׁנָה וְחוֹדֶשׁ'),
+    title: t('Year, month and the calendar', 'שָׁנָה, חוֹדֶשׁ וְלוּחַ הַשָּׁנָה'),
     subtitle: t('Which motion makes which length of time', 'אֵיזוֹ תְּנוּעָה קוֹבַעַת אֵיזֶה זְמַן'),
     topics: [8],
     minutes: 25,
-    sources: [{ page: 185 }, { page: 186 }, { page: 187 }, { page: 188 }, { page: 189 }, { page: 190 }, { page: 193, note: 'month: outside pp.168-190' }, { page: 194 }],
+    sources: [{ page: 184 }, { page: 185 }, { page: 186 }, { page: 187 }, { page: 193, note: 'month: outside pp.168-190' }, { page: 194 }],
     explain: [
-      { text: 'One full rotation of Earth on its axis takes about 24 hours. That is one יְמָמָה — a day and a night together.', visual: 'day-night', notToScale: true },
-      { text: 'Day and night happen because Earth rotates. The half facing the Sun is lit: day. The other half is dark: night. Turn Earth and watch Israel move from day into night.', visual: 'day-night', notToScale: true },
-      { text: "One full orbit of Earth around the Sun takes about 365 days. That is one year (שָׁנָה). Earth's orbit does NOT make day and night — rotation does.", visual: 'rotation-orbit', notToScale: true },
-      { text: 'The Moon orbits Earth in about one month (about 29½ days).', visual: 'moon-orbit', notToScale: true },
+      { text: 'One full orbit of Earth around the Sun is one year: about 365¼ days. Your age tells how many times Earth has gone around the Sun since you were born. (Book p.186)', visual: 'rotation-orbit', notToScale: true },
+      { text: 'How do we know that a year has passed? The four seasons — spring, summer, autumn, winter — come one after another in a fixed order. After all four, a year has passed. (Book p.186)', visual: 'calendar' },
+      { text: 'Most countries use the general calendar, based on the solar year: 12 months, each with 30 or 31 days, except February with 28. The year starts on 1 January and ends on 31 December. In a calendar, each page is a month, each row a week, each square a day. (Book pp.184, 187)', visual: 'calendar' },
+      { text: 'The Moon goes once around Earth in about 29½ days — about one month. The Hebrew and Muslim calendars are based on the Moon’s month. (Book pp.193–194)', visual: 'moon-orbit', notToScale: true },
     ],
     terms: [
-      { id: 'yemama', word: t('a full day (24 hours)', 'יְמָמָה'), meaning: t('a day and a night together', 'יוֹם וְלַיְלָה יַחַד'), sentence: t('A yemama is a day and a night. It lasts 24 hours.', 'יְמָמָה הִיא יוֹם וְלַיְלָה. הִיא נִמְשֶׁכֶת 24 שָׁעוֹת.') },
       { id: 'shana', word: t('year', 'שָׁנָה'), meaning: t('one orbit of Earth around the Sun', 'הַקָּפָה אַחַת שֶׁל הַשֶּׁמֶשׁ'), sentence: t('A year is one orbit of Earth around the Sun.', 'שָׁנָה הִיא הַקָּפָה אַחַת שֶׁל כַּדּוּר הָאָרֶץ סְבִיב הַשֶּׁמֶשׁ.') },
       { id: 'hodesh', word: t('month', 'חוֹדֶשׁ'), meaning: t('about one orbit of the Moon around Earth', 'בְּעֵרֶךְ הַקָּפָה אַחַת שֶׁל הַיָּרֵחַ'), sentence: t('In about a month, the Moon orbits Earth once.', 'בְּעֵרֶךְ חוֹדֶשׁ הַיָּרֵחַ מַקִּיף אֶת כַּדּוּר הָאָרֶץ פַּעַם אַחַת.') },
+      { id: 'luach', word: t('calendar', 'לוּחַ שָׁנָה'), meaning: t('months, weeks and days on pages', 'חוֹדָשִׁים, שָׁבוּעוֹת וְיָמִים'), sentence: t('The general calendar has 12 months.', 'בְּלוּחַ הַשָּׁנָה הַכְּלָלִי יֵשׁ 12 חוֹדָשִׁים.') },
+      { id: 'onot', word: t('seasons', 'עוֹנוֹת הַשָּׁנָה'), meaning: t('spring, summer, autumn, winter', 'אָבִיב, קַיִץ, סְתָיו, חוֹרֶף'), sentence: t('After four seasons, a year has passed.', 'אַחֲרֵי אַרְבַּע עוֹנוֹת עוֹבֶרֶת שָׁנָה.') },
     ],
     interaction: {
       kind: 'sort',
@@ -339,6 +341,12 @@ export const UNITS: Unit[] = [
     },
   },
 ];
+
+// Display order follows the study plan (Days 1–4); ids stay stable so saved progress is unaffected.
+const DISPLAY_ORDER = ['u1', 'u2', 'u3', 'u4', 'u10', 'u11', 'u5', 'u6', 'u7', 'u12', 'u8', 'u9', 'u13'];
+export const UNITS: Unit[] = [...BASE_UNITS, ...MORE_UNITS]
+  .map((u) => ({ ...u, order: DISPLAY_ORDER.indexOf(u.id) + 1 }))
+  .sort((a, b) => a.order - b.order);
 
 export const unitById = (id: string): Unit => {
   const u = UNITS.find((x) => x.id === id);

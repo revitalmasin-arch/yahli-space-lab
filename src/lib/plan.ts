@@ -11,9 +11,9 @@ export interface PlanDay {
 
 export const PLAN: PlanDay[] = [
   { date: '2026-10-17', units: ['u1', 'u2'], focus: t('Our place in the universe; star vs planet', 'הַמָּקוֹם שֶׁלָּנוּ בַּיְקוּם; כּוֹכָב וְכוֹכַב לֶכֶת') },
-  { date: '2026-10-18', units: ['u3', 'u4'], focus: t('Planet order and groups; review', 'סֵדֶר כּוֹכְבֵי הַלֶּכֶת וּקְבוּצוֹת; חֲזָרָה') },
-  { date: '2026-10-19', units: ['u5', 'u6', 'u7'], focus: t('Asteroid belt, moons, periodic motion; review', 'חֲגוֹרַת הָאַסְטֵרוֹאִידִים, יָרֵחַ, תְּנוּעָה מַחֲזוֹרִית; חֲזָרָה') },
-  { date: '2026-10-20', units: ['u8', 'u9'], focus: t('Year, day, month; conditions for life', 'שָׁנָה, יְמָמָה, חוֹדֶשׁ; תְּנָאִים לְחַיִּים') },
+  { date: '2026-10-18', units: ['u3', 'u4', 'u10', 'u11'], focus: t('Planet order and groups, looking at the sky, fact files and a model; review', 'סֵדֶר כּוֹכְבֵי הַלֶּכֶת, קְבוּצוֹת, מַבִּיטִים בַּשָּׁמַיִם, מִידְעוֹנִים וְדֶגֶם; חֲזָרָה') },
+  { date: '2026-10-19', units: ['u5', 'u6', 'u7', 'u12'], focus: t('Asteroid belt, the Moon, periodic motion, comets and models; review', 'חֲגוֹרַת הָאַסְטֵרוֹאִידִים, יָרֵחַ, תְּנוּעָה מַחֲזוֹרִית, שְׁבִיטִים וּמוֹדֶלִים; חֲזָרָה') },
+  { date: '2026-10-20', units: ['u8', 'u9', 'u13'], focus: t('Year, month and calendar; life on Earth; day, night and time', 'שָׁנָה, חוֹדֶשׁ וְלוּחַ שָׁנָה; חַיִּים; יוֹם, לַיְלָה וּזְמַן') },
   { date: '2026-10-21', units: [], focus: t('Mixed practice and paper practice with Mum', 'תִּרְגּוּל מְעוֹרָב וְתִרְגּוּל עַל דַּף עִם אִמָּא') },
 ];
 

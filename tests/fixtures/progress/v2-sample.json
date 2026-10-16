@@ -1,0 +1,133 @@
+{
+  "schema": 2,
+  "createdAt": "2026-10-17T05:00:00.000Z",
+  "updatedAt": "2026-10-18T06:00:00.000Z",
+  "attempts": [
+    {
+      "id": "a1",
+      "at": "2026-10-17T01:10:00.000Z",
+      "date": "2026-10-17",
+      "qid": "q1",
+      "concept": "c-star",
+      "unit": "u2",
+      "context": "unit",
+      "correctFirstTry": true,
+      "finalCorrect": true,
+      "tries": 1,
+      "assistance": 0,
+      "usedEnglish": false,
+      "usedSimpler": false,
+      "niqqud": true,
+      "afterWorked": false,
+      "fresh": true
+    },
+    {
+      "id": "a2",
+      "at": "2026-10-17T02:10:00.000Z",
+      "date": "2026-10-17",
+      "qid": "q2",
+      "concept": "c-star",
+      "unit": "u2",
+      "context": "unit",
+      "correctFirstTry": false,
+      "finalCorrect": true,
+      "tries": 2,
+      "assistance": 1,
+      "usedEnglish": true,
+      "usedSimpler": false,
+      "niqqud": true,
+      "afterWorked": false,
+      "fresh": true
+    },
+    {
+      "id": "a3",
+      "at": "2026-10-18T03:10:00.000Z",
+      "date": "2026-10-18",
+      "qid": "q3",
+      "concept": "c-star",
+      "unit": "u2",
+      "context": "review",
+      "correctFirstTry": true,
+      "finalCorrect": true,
+      "tries": 1,
+      "assistance": 0,
+      "usedEnglish": false,
+      "usedSimpler": false,
+      "niqqud": true,
+      "afterWorked": false,
+      "fresh": true
+    }
+  ],
+  "productions": [
+    {
+      "id": "p1",
+      "at": "2026-10-17T06:00:00.000Z",
+      "date": "2026-10-17",
+      "taskId": "u2-say",
+      "concept": "c-lit",
+      "unit": "u2",
+      "kind": "say",
+      "result": "pending",
+      "withBank": false
+    },
+    {
+      "id": "p2",
+      "at": "2026-10-18T06:00:00.000Z",
+      "date": "2026-10-18",
+      "taskId": "u2-arrange",
+      "concept": "c-lit",
+      "unit": "u2",
+      "kind": "arrange",
+      "result": "correct",
+      "withBank": true
+    }
+  ],
+  "concepts": {
+    "c-star": {
+      "science": {
+        "box": 2,
+        "due": "2026-10-20",
+        "lastAt": "2026-10-18T06:00:00.000Z"
+      }
+    }
+  },
+  "units": {
+    "u2": {
+      "introducedAt": "2026-10-17T05:01:00.000Z",
+      "practicedAt": "2026-10-17T05:20:00.000Z",
+      "stepsDone": [
+        "explain",
+        "terms",
+        "check"
+      ]
+    }
+  },
+  "xp": {
+    "step:u2:explain": 5,
+    "unit:u2": 10
+  },
+  "time": {
+    "2026-10-17": 1500,
+    "2026-10-18": 600
+  },
+  "settings": {
+    "niqqud": "auto",
+    "celebrations": true,
+    "examDate": "2026-10-22",
+    "deviceLabel": "tablet"
+  },
+  "words": [
+    {
+      "id": "תצפית",
+      "text": "תַּצְפִּית",
+      "addedAt": "2026-10-17T09:00:00.000Z",
+      "glossId": "tazpit"
+    },
+    {
+      "id": "gravity",
+      "text": "gravity",
+      "addedAt": "2026-10-17T09:05:00.000Z",
+      "meaning": "the pull that keeps planets in orbit"
+    }
+  ]
+}

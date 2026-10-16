@@ -22,6 +22,30 @@ After each gate run (pass or fail) and at the end of a work session, back up to 
 `OBSIDIAN_VAULT="C:/Users/revit/Documents/AI COURSE/MyObsidian" npm run backup:obsidian`
 This regenerates the vault folder `yahli-space-lab/`: overview, one note per phase with live gate status, these rules, and a full source snapshot. The phase plan lives in `docs/PHASES.md`.
 
+## Content rules (from the parent, 2026-10-16)
+- **Coverage:** together, the units must cover the textbook's printed pages **168–190 inclusive, in depth**, and every part of that material must be both taught and asked (check + review questions). Each unit names the pages it covers (bookmark).
+- **No invented information.** Every fact must come from the PDF (cite the printed page) or from a reliable scientific source (NASA, ESA, IAU, peer-reviewed or official educational sources — cite it). Analogies and teaching wording are fine; facts are not. Where the book and science disagree, follow the book for the exam answer and note the discrepancy for the adult in `docs/SOURCES.md`.
+- The page-coverage regression test must pass before any release.
+- Every Explore screen has a simplified-Hebrew version in `src/content/explain-he.ts` (same order as `unit.explain`; content test enforces it).
+- Every unit has a memory rhyme in `src/content/songs.ts` that only repeats facts the unit already teaches.
+- Each unit has 3–5 check questions; extra questions on the same material go to `role: 'review'`.
+
+## Kip and "My words" (added 2026-10-17)
+- Kip answers offline, with no AI: from the chapter dictionary `src/content/glossary.ts` (every entry cites its book pages, pp.168–190 or glossary 214–216) and the lesson notes. Matching handles niqqud, Hebrew prefixes, English, and Hebrew typed in Latin letters. Typed text never leaves the device.
+- Words the learner saves go to "My words" (`progress.words`); dictionary words are explained at once, others wait for a meaning written in the Parent area. They feed the vocabulary quiz.
+
+## Progress data
+- Progress schema is **v2** (v2 added `words`). Any change to the stored shape needs a schema bump in `src/progress/schema-version.json`, a migration in `src/progress/migrate.ts`, and migration tests on copied fixture data (`tests/fixtures/progress/`).
+
+## UI conventions (locked on branch UXUI, apply to Day 4 and every later unit)
+- Look: "space lab for a 10-year-old" — starfield background, console panels with `ConsoleTitle` (icon + Hebrew + small English), mission cards with `UnitIcon`. Playful, never babyish.
+- Pictures: real photos via `PhotoBall` / `PhotoRect` / `SaturnPhoto` (`src/visuals/Photo.tsx`) with a drawn fallback underneath. New photos only through `ops/fetch-images.mjs` (license checked, stored locally, credited in the parent area). Diagrams that are not to scale say so.
+- Every new unit gets an entry in `UnitIcon` (`src/visuals/Icons.tsx`) and keeps the mission path with Back / start-this-part-over / start-the-unit-over.
+- Animations start only on tap (play/pause), respect reduced motion, never autoplay sound.
+- Tap-only interactions, ≥44px targets, no horizontal scroll at 800×1280, 1280×800, 1366×768 (check by screenshot).
+- Title "My Space Lab · מַעְבֶּדֶת הֶחָלָל שֶׁלִּי"; greet the learner by the saved name when present.
+
 ## Production safety
 - Yahli's version (production) is never served from the dev server, and is never promoted or restarted without an explicit request from the parent. See README.md for commands.
 - Never clear or overwrite learner progress to resolve an incompatibility; migrate, protect read-only, or ask.
+- Promoting a v2 release over a v1 production migrates Yahli's progress forward (a pre-migration copy is kept). Rolling back to a v1 release after that opens his progress read-only (`--accept-readonly`); tell the parent before either step.
