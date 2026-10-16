@@ -11,7 +11,7 @@ const phase = Number(state.current);
 const steps = [
   { name: 'guardrails', cmds: [`node ops/guardrails.mjs ${phase}`] },
   { name: 'regression', cmds: ['npx tsc --noEmit -p tsconfig.json', 'npx vitest run'] },
-  { name: 'e2e', cmds: [`node tests/browser/flow.mjs --phase ${phase}`] },
+  { name: 'e2e', cmds: [`node tests/browser/flow.mjs --phase ${phase}`, ...(phase >= 3 ? ['node tests/system/release.mjs'] : [])] },
 ];
 
 const results = [];

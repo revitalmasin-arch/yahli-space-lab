@@ -27,6 +27,9 @@ body {
   line-height: 1.7; /* room for niqqud */
   -webkit-text-size-adjust: 100%;
 }
+/* Mixed Hebrew/English: each block takes its direction from its own first strong letter,
+   so English sentences keep their punctuation and arrows in the right place. */
+p, h1, h2, h3, li, strong, label, figcaption, button, .tag { unicode-bidi: plaintext; text-align: start; }
 [lang='en'] { font-family: 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.5; }
 .he-n { font-size: 1.12em; line-height: 1.9; }
 
@@ -54,7 +57,7 @@ button:disabled { opacity: 0.45; cursor: default; }
 button.primary { background: var(--accent); color: #2a1600; border-color: var(--accent); font-weight: 700; }
 button.ghost { background: transparent; }
 button.small { min-height: 40px; padding: 4px 10px; font-size: 0.9rem; }
-button.choice { width: 100%; text-align: start; padding: 10px 14px; }
+button.choice { width: 100%; unicode-bidi: isolate; text-align: start; padding: 10px 14px; }
 button.choice.correct { border-color: var(--good); background: #1d4a3a; }
 button.choice.wrong { border-color: var(--bad); background: #4a1d2a; }
 button.choice.picked { border-color: var(--accent-2); }

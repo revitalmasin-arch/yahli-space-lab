@@ -1,5 +1,5 @@
 {
-  "current": 2,
+  "current": 3,
   "phases": {
     "1": "Foundation: scaffold, content model, progress store with versioned schema + migrations, app shell",
     "2": "Day 1 learning: unit engine + units 1-2 (place in the universe, star vs planet), Day 1 home route, persistence, review",

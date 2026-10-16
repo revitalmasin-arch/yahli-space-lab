@@ -8,6 +8,7 @@ import { Home } from './screens/Home';
 import { UnitPlayer } from './screens/UnitPlayer';
 import { Review } from './screens/Review';
 import { Parent } from './screens/Parent';
+import { useServerRelease } from './lib/ping';
 
 const TITLE = t("Yahli's Space Lab", 'מַעְבֶּדֶת הֶחָלָל שֶׁל יַהֲלִי');
 type Screen = { name: 'home' } | { name: 'unit'; id: string } | { name: 'review' } | { name: 'parent' };
@@ -38,6 +39,7 @@ function useActiveTime() {
 export function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
   useActiveTime();
+  const serverRelease = useServerRelease();
   const go = (s: Screen) => {
     stopSpeaking();
     setScreen(s);
@@ -56,7 +58,7 @@ export function App() {
         {screen.name === 'home' && <Home onUnit={(id) => go({ name: 'unit', id })} onReview={() => go({ name: 'review' })} onParent={() => go({ name: 'parent' })} />}
         {screen.name === 'unit' && <UnitPlayer key={screen.id} unitId={screen.id} onExit={home} />}
         {screen.name === 'review' && <Review onExit={home} />}
-        {screen.name === 'parent' && <Parent onExit={home} />}
+        {screen.name === 'parent' && <Parent onExit={home} serverRelease={serverRelease} />}
       </main>
     </div>
   );
