@@ -12,6 +12,17 @@
           }
         ]
       }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -Command \"[console]::beep(880,180); [console]::beep(1175,260)\"",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

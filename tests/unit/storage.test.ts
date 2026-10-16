@@ -42,6 +42,13 @@ describe('load', () => {
     expect(s.getItem(q[0])).toBe('{garbage'); // still preserved after the next save
   });
 
+  it('regression: loading the same unreadable data twice keeps a single copy', () => {
+    s.setItem(KEYS.progress, '{garbage');
+    load();
+    load();
+    expect(keys(KEYS.quarantinePrefix)).toHaveLength(1);
+  });
+
   it('keeps a copy when some records had to be repaired', () => {
     const d = JSON.parse(fixtureText());
     d.attempts.push({ id: 'broken' });
@@ -104,6 +111,7 @@ describe('backup import', () => {
   it('keeps at most three safety snapshots', async () => {
     const p = load().progress;
     for (let i = 0; i < 5; i++) {
+      p.xp[`k${i}`] = i; // distinct contents (identical snapshots are deduplicated)
       snapshot(p);
       await new Promise((r) => setTimeout(r, 2)); // distinct timestamps
     }
