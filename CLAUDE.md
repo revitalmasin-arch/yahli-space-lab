@@ -22,6 +22,14 @@ After each gate run (pass or fail) and at the end of a work session, back up to 
 `OBSIDIAN_VAULT="C:/Users/revit/Documents/AI COURSE/MyObsidian" npm run backup:obsidian`
 This regenerates the vault folder `yahli-space-lab/`: overview, one note per phase with live gate status, these rules, and a full source snapshot. The phase plan lives in `docs/PHASES.md`.
 
+## UI conventions (locked on branch UXUI, apply to Day 4 and every later unit)
+- Look: "space lab for a 10-year-old" — starfield background, console panels with `ConsoleTitle` (icon + Hebrew + small English), mission cards with `UnitIcon`. Playful, never babyish.
+- Pictures: real photos via `PhotoBall` / `PhotoRect` / `SaturnPhoto` (`src/visuals/Photo.tsx`) with a drawn fallback underneath. New photos only through `ops/fetch-images.mjs` (license checked, stored locally, credited in the parent area). Diagrams that are not to scale say so.
+- Every new unit gets an entry in `UnitIcon` (`src/visuals/Icons.tsx`) and keeps the mission path with Back / start-this-part-over / start-the-unit-over.
+- Animations start only on tap (play/pause), respect reduced motion, never autoplay sound.
+- Tap-only interactions, ≥44px targets, no horizontal scroll at 800×1280, 1280×800, 1366×768 (check by screenshot).
+- Title "My Space Lab · מַעְבֶּדֶת הֶחָלָל שֶׁלִּי"; greet the learner by the saved name when present.
+
 ## Production safety
 - Yahli's version (production) is never served from the dev server, and is never promoted or restarted without an explicit request from the parent. See README.md for commands.
 - Never clear or overwrite learner progress to resolve an incompatibility; migrate, protect read-only, or ask.
