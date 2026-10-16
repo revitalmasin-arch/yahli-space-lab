@@ -47,7 +47,7 @@ body {
 }
 /* Mixed Hebrew/English: each block takes its direction from its own first strong letter,
    so English sentences keep their punctuation and arrows in the right place. */
-p, h1, h2, h3, li, strong, label, figcaption, button, .tag { unicode-bidi: plaintext; text-align: start; }
+p, h1, h2, h3, h4, li, strong, label, figcaption, button, .tag { unicode-bidi: plaintext; text-align: start; }
 [lang='en'] { font-family: 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.5; }
 .he-n { font-size: 1.12em; line-height: 1.9; }
 
@@ -57,9 +57,10 @@ p, h1, h2, h3, li, strong, label, figcaption, button, .tag { unicode-bidi: plain
 .top .logo { width: 52px; height: 52px; flex: none; filter: drop-shadow(0 0 8px var(--glow)); }
 /* Main + Mission Log sidebar. The sidebar sits beside the work on wide screens and opens
    on demand (header button) on the tablet, so the learning screen keeps its width. */
-.layout { display: block; }
+.layout { display: flex; flex-direction: column; }
 .side { display: none; }
-.side.open { display: block; margin-top: 8px; }
+/* On the tablet the log opens at the TOP (right under the header), not after the whole page. */
+.side.open { display: block; order: -1; margin: 8px 0; }
 .log-toggle { margin-inline-start: auto; }
 @media (min-width: 1180px) {
   .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
@@ -75,7 +76,7 @@ p, h1, h2, h3, li, strong, label, figcaption, button, .tag { unicode-bidi: plain
 .liftoff .flame { animation: flicker 0.15s infinite alternate; }
 @keyframes liftoff { to { transform: translate(60px, -140px); } }
 @keyframes flicker { to { opacity: 0.55; } }
-.chart { width: 100%; height: auto; display: block; }
+.chart { width: 100%; max-width: 320px; height: auto; display: block; margin: 0 auto; }
 .legend { display: flex; flex-wrap: wrap; gap: 10px; }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 4px; vertical-align: middle; }
 .data-table { width: 100%; border-collapse: collapse; }
@@ -213,3 +214,8 @@ button.mission-card .steps > span { display: block; height: 100%; background: li
   /* Wide screens: keep the Mission Log sidebar clear; Kip floats over the main column instead. */
   .helper { inset-inline-end: auto; inset-inline-start: 16px; align-items: flex-start; }
 }
+/* Controllers: instrument tiles inside the mission window, under the rocket. */
+.controllers { border-top: 1px dashed var(--line); padding-top: 8px; display: grid; gap: 8px; }
+.controller { background: rgba(6, 10, 30, 0.55); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; box-shadow: inset 0 0 10px rgba(127, 211, 255, 0.08); }
+.controller h4 { margin: 0 0 4px; font-size: 0.92rem; }
+.controller p { margin: 2px 0; }

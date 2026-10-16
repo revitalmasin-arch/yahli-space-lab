@@ -88,21 +88,26 @@ export function MissionLog() {
   const motionOk = typeof window !== 'undefined' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   return (
     <div className="stack" data-testid="mission-log">
-      <section className="panel stack">
+      {/* One window: the rocket on top, the three controllers (separate readouts, never one blended score) below. */}
+      <section className="panel stack mission-window">
         <h3>🚀 Today's mission · הַמְּשִׂימָה</h3>
         <RocketGauge done={done} total={total} celebrate={progress.settings.celebrations && motionOk} />
-      </section>
-      <section className="panel stack">
-        <h3>🔬 Science · מַדָּע</h3>
-        {enoughToChart(days) ? <ScienceChart days={days} /> : <p className="muted small-text" data-testid="starting-to-measure">Starting to measure — the curve appears after a few answers on two different days. It may go up, stay flat or dip: that is normal.</p>}
-      </section>
-      <section className="panel stack">
-        <h3>🗣️ Hebrew · עִבְרִית</h3>
-        <p className="small-text">Answers Mum confirmed: <strong>{heb.confirmed}</strong>{heb.pending ? ` · waiting for Mum: ${heb.pending}` : ''}</p>
-      </section>
-      <section className="panel">
-        <p className="small-text">⭐ <strong>{xpTotal(progress)}</strong> XP <span className="muted">— points for taking part, not a test score</span></p>
-        <p className="muted small-text">Numbers are from this device only.</p>
+        <div className="controllers" data-testid="controllers">
+          <h3>🎛️ Controllers · בַּקָּרִים</h3>
+          <div className="controller">
+            <h4>🔬 Science · מַדָּע</h4>
+            {enoughToChart(days) ? <ScienceChart days={days} /> : <p className="muted small-text" data-testid="starting-to-measure">Starting to measure — the curve appears after a few answers on two different days. It may go up, stay flat or dip: that is normal.</p>}
+          </div>
+          <div className="controller">
+            <h4>🗣️ Hebrew · עִבְרִית</h4>
+            <p className="small-text">Answers Mum confirmed: <strong>{heb.confirmed}</strong>{heb.pending ? ` · waiting for Mum: ${heb.pending}` : ''}</p>
+          </div>
+          <div className="controller">
+            <h4>⭐ XP</h4>
+            <p className="small-text"><strong>{xpTotal(progress)}</strong> XP <span className="muted">— points for taking part, not a test score</span></p>
+          </div>
+          <p className="muted small-text">Numbers are from this device only.</p>
+        </div>
       </section>
     </div>
   );
