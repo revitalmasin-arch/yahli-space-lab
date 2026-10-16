@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { setHelperQuestion } from './helperState';
+import { DragButton } from './DragButton';
 import type { Choice, Question } from '../content/types';
 import { conceptById } from '../content/concepts';
 import { TF_CHOICES } from '../content/questions';
@@ -85,9 +86,10 @@ export function QuestionCard({ q, onDone }: { q: Question; onDone: (o: QuestionO
   }
 
   const rights = useMemo(() => (q.kind === 'match' ? shuffled(q.pairs.map((_, i) => i), q.id) : []), [q]);
-  function pickRight(i: number) {
-    if (q.kind !== 'match' || left === null || solved || level === 3) return;
-    if (i === left) {
+  /** Match the selected (or dragged) left item `from` with right item `i`. */
+  function pickRight(i: number, from: number | null = left) {
+    if (q.kind !== 'match' || from === null || matched.has(from) || solved || level === 3) return;
+    if (i === from) {
       const m = new Set(matched).add(i);
       setMatched(m);
       setLeft(null);
@@ -146,20 +148,24 @@ export function QuestionCard({ q, onDone }: { q: Question; onDone: (o: QuestionO
         </div>
       )}
 
+      {q.kind === 'match' && <p className="muted small-text">Drag each word onto its meaning — or tap the word, then the meaning · גְּרוֹר כָּל מִלָּה לַפֵּירוּשׁ</p>}
       {q.kind === 'match' && (
         <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
           <div className="stack">
             {q.pairs.map((p, i) => (
-              <button key={i} {...testAttr('pair', i)} type="button" className={`choice ${matched.has(i) ? 'correct' : left === i ? 'picked' : ''}`} disabled={matched.has(i) || level === 3} onClick={() => setLeft(i)} aria-pressed={left === i}>
+              <DragButton key={i} {...testAttr('pair', i)} type="button" className={`choice ${matched.has(i) ? 'correct' : left === i ? 'picked' : ''}`} disabled={matched.has(i) || level === 3} onClick={() => setLeft(i)} aria-pressed={left === i}
+                onDropOn={(t) => t.startsWith('pair-') && pickRight(Number(t.slice(5)), i)}>
                 <He x={p.left} />
-              </button>
+              </DragButton>
             ))}
           </div>
           <div className="stack">
             {rights.map((i) => (
-              <button key={i} {...testAttr('pair', i)} type="button" className={`choice ${matched.has(i) ? 'correct' : ''}`} disabled={matched.has(i) || left === null || level === 3} onClick={() => pickRight(i)}>
+              <div key={i} data-drop={`pair-${i}`}>
+              <button {...testAttr('pair', i)} type="button" className={`choice ${matched.has(i) ? 'correct' : ''}`} disabled={matched.has(i) || left === null || level === 3} onClick={() => pickRight(i)}>
                 <He x={q.pairs[i].right} />
               </button>
+              </div>
             ))}
           </div>
         </div>

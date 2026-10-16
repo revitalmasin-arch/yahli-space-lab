@@ -5,6 +5,7 @@ import { sameSentence, stripNiqqud } from '../lib/hebrew';
 import { Bi, useNiqqud } from './Bi';
 import { Speak } from './Speak';
 import { testAttr } from '../lib/testattr';
+import { DragButton } from './DragButton';
 
 export interface ProductionOutcome {
   result: ProductionResult;
@@ -42,16 +43,17 @@ function Arrange({ task, onDone }: { task: Extract<ProductionTask, { kind: 'arra
   return (
     <section className="panel stack" data-testid={`production-${task.id}`}>
       <Bi x={task.prompt} as="h3" />
-      <div className="answer-line" lang="he" dir="rtl" aria-label="your sentence">
+      {state === 'work' && <p className="muted small-text">Drag the words onto the line (drag back to remove) — or tap them · גְּרוֹר אֶת הַמִּלִּים לַשּׁוּרָה</p>}
+      <div className="answer-line" lang="he" dir="rtl" aria-label="your sentence" data-drop="line">
         {line.map((i, n) => (
-          <button key={n} type="button" className="small" disabled={state !== 'work'} onClick={() => setLine(line.filter((_, k) => k !== n))}>{words(task.words[i], niqqud)}</button>
+          <DragButton key={n} type="button" className="small" disabled={state !== 'work'} onClick={() => setLine(line.filter((_, k) => k !== n))} onDropOn={(t) => t === 'bank' && setLine(line.filter((_, k) => k !== n))}>{words(task.words[i], niqqud)}</DragButton>
         ))}
       </div>
       {state === 'work' && (
         <>
-          <div className="word-bank" lang="he" dir="rtl">
+          <div className="word-bank" lang="he" dir="rtl" data-drop="bank">
             {bank.filter((b) => !line.includes(b.i)).map((b) => (
-              <button key={b.i} {...testAttr('pos', b.i)} type="button" onClick={() => setLine([...line, b.i])}>{words(b.w, niqqud)}</button>
+              <DragButton key={b.i} {...testAttr('pos', b.i)} type="button" onClick={() => setLine([...line, b.i])} onDropOn={(t) => t === 'line' && setLine([...line, b.i])}>{words(b.w, niqqud)}</DragButton>
             ))}
           </div>
           {misses === 1 && <p className="feedback help">Almost. Start with the word the sentence is about. · כִּמְעַט! הַתְחֵל בַּמִּלָּה שֶׁהַמִּשְׁפָּט מְדַבֵּר עָלֶיהָ.</p>}
@@ -92,14 +94,17 @@ function Complete({ task, onDone }: { task: Extract<ProductionTask, { kind: 'com
     <section className="panel stack" data-testid={`production-${task.id}`}>
       <Bi x={task.prompt} as="h3" />
       <p lang="he" dir="rtl" className="he-n" style={{ fontSize: '1.3rem' }}>
-        {words(task.before, niqqud)} <strong>{blank}</strong> {words(task.after, niqqud)}
+        {words(task.before, niqqud)} <strong className={state === 'work' ? 'drop-blank' : ''} data-drop="blank">{blank}</strong> {words(task.after, niqqud)}
       </p>
       {state === 'work' && (
-        <div className="word-bank" lang="he" dir="rtl">
-          {bank.map((w) => (
-            <button key={w} {...testAttr('ok', w === task.answer)} type="button" disabled={wrong.includes(w)} onClick={() => pick(w)}>{words(w, niqqud)}</button>
-          ))}
-        </div>
+        <>
+          <p className="muted small-text">Drag the right word into the gap — or tap it · גְּרוֹר אֶת הַמִּלָּה לַמָּקוֹם הָרֵיק</p>
+          <div className="word-bank" lang="he" dir="rtl">
+            {bank.map((w) => (
+              <DragButton key={w} {...testAttr('ok', w === task.answer)} type="button" disabled={wrong.includes(w)} onClick={() => pick(w)} onDropOn={(t) => t === 'blank' && pick(w)}>{words(w, niqqud)}</DragButton>
+            ))}
+          </div>
+        </>
       )}
       {wrong.length === 1 && state === 'work' && <p className="feedback help">Not that word. Which one makes the sentence true? · אֵיזוֹ מִלָּה מַתְאִימָה?</p>}
       {state !== 'work' && (

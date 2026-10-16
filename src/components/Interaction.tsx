@@ -3,8 +3,9 @@ import type { InteractionSpec } from '../content/types';
 import { Visual } from '../visuals/Visual';
 import { Bi, He } from './Bi';
 import { testAttr } from '../lib/testattr';
+import { DragButton } from './DragButton';
 
-// Tap-only interactions (no dragging needed anywhere).
+// Interactions: drag a card onto its target, or tap it and then tap the target (tap always works).
 
 function seededOrder<T>(items: T[], seed: number): T[] {
   return items.map((x, i) => ({ x, k: (i * 7919 + seed * 104729) % 97 })).sort((a, b) => a.k - b.k).map((o) => o.x);
@@ -34,9 +35,10 @@ function Sort({ spec, onDone }: { spec: Extract<InteractionSpec, { kind: 'sort' 
   const left = order.filter((i) => !placed[i.id]);
   const done = left.length === 0;
 
-  const drop = (bin: string) => {
-    if (!selected) return;
-    const item = spec.items.find((i) => i.id === selected)!;
+  const drop = (bin: string, itemId: string | null = selected) => {
+    if (!itemId) return;
+    const item = spec.items.find((i) => i.id === itemId)!;
+    if (!spec.bins.some((b) => b.id === bin)) return;
     if (item.bin === bin) {
       setPlaced({ ...placed, [item.id]: bin });
       setMsg({ ok: true, item: item.id });
@@ -58,17 +60,17 @@ function Sort({ spec, onDone }: { spec: Extract<InteractionSpec, { kind: 'sort' 
     <section className="panel stack" data-testid={`interaction-${spec.id}`}>
       <Bi x={spec.prompt} as="h3" />
       {spec.visual && <Visual id={spec.visual} />}
-      <p className="muted small-text">Tap a card, then tap its group · לְחַץ עַל כַּרְטִיס וְאָז עַל הַקְּבוּצָה</p>
+      <p className="muted small-text">Drag each card onto its group — or tap the card, then the group · גְּרוֹר כָּל כַּרְטִיס לַקְּבוּצָה שֶׁלּוֹ</p>
       <div className="word-bank" role="group" aria-label="cards">
         {left.map((i) => (
-          <button key={i.id} {...testAttr('bin', i.bin)} type="button" className={`choice ${selected === i.id ? 'picked' : ''}`} style={{ width: 'auto' }} aria-pressed={selected === i.id} onClick={() => setSelected(i.id)}>
+          <DragButton key={i.id} {...testAttr('bin', i.bin)} data-card={i.id} type="button" className={`choice ${selected === i.id ? 'picked' : ''}`} style={{ width: 'auto' }} aria-pressed={selected === i.id} onClick={() => setSelected(i.id)} onDropOn={(bin) => drop(bin, i.id)}>
             <He x={i.label} />
-          </button>
+          </DragButton>
         ))}
       </div>
       <div className="sort-bins">
         {spec.bins.map((b) => (
-          <div key={b.id} className={`bin ${selected ? 'target' : ''}`}>
+          <div key={b.id} className={`bin ${selected ? 'target' : ''}`} data-drop={b.id}>
             <button type="button" className="small" style={{ width: '100%' }} disabled={!selected} onClick={() => drop(b.id)} data-testid={`bin-${b.id}`}>
               <He x={b.label} />
             </button>
@@ -119,16 +121,17 @@ function Sequence({ spec, onDone }: { spec: Extract<InteractionSpec, { kind: 'se
     <section className="panel stack" data-testid={`interaction-${spec.id}`}>
       <Bi x={spec.prompt} as="h3" />
       {spec.visual && <Visual id={spec.visual} notToScale />}
-      <ol className="answer-line" aria-label="your order" style={{ listStyle: 'none' }}>
+      <p className="muted small-text">Drag them onto the line in order — or tap them in order · גְּרוֹר לְפִי הַסֵּדֶר</p>
+      <ol className="answer-line" aria-label="your order" style={{ listStyle: 'none' }} data-drop="line">
         {chosen.map((id, n) => (
           <li key={id} className="tag good">{n + 1}. <He x={label(id)} /></li>
         ))}
       </ol>
       <div className="word-bank" role="group" aria-label="choices">
         {spec.items.filter((i) => !chosen.includes(i.id)).map((i) => (
-          <button key={i.id} {...testAttr('pos', spec.order.indexOf(i.id))} type="button" className="choice" style={{ width: 'auto' }} onClick={() => tap(i.id)}>
+          <DragButton key={i.id} {...testAttr('pos', spec.order.indexOf(i.id))} type="button" className="choice" style={{ width: 'auto' }} onClick={() => tap(i.id)} onDropOn={(t) => t === 'line' && tap(i.id)}>
             <He x={i.label} />
-          </button>
+          </DragButton>
         ))}
       </div>
       {note && <p className="feedback help" role="status">{note}</p>}

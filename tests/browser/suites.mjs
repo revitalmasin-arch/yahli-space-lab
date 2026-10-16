@@ -24,6 +24,7 @@ async function driveUnit(page, opts = {}) {
   const q = page.locator('section[data-testid^="question-"]');
   for (let i = 0; i < 200; i++) {
     await page.waitForTimeout(30);
+    if (opts.until && (await visible(page.getByTestId(opts.until)))) return seen;
     if (await visible(page.getByTestId('unit-done'))) return seen;
     for (const h of ['help-1', 'help-2', 'help-3']) if (await visible(page.getByTestId(h))) seen.add(h);
     if (await visible(page.getByTestId('help-3'))) { await page.getByRole('button', { name: /Try a new question/ }).click(); continue; }
@@ -82,16 +83,20 @@ async function driveUnit(page, opts = {}) {
   throw new Error('unit did not finish');
 }
 
-/** Answer/advance until the given stage is showing. */
-async function driveUntil(page, testid) {
-  for (let i = 0; i < 40; i++) {
-    if (await visible(page.getByTestId(testid))) return;
-    if (await visible(page.getByTestId('solved'))) { await page.getByTestId('solved').getByRole('button', { name: /Next/ }).click(); continue; }
-    const right = page.locator('section[data-testid^="question-"] button[data-ok="true"]:not([disabled])');
-    if (await right.count()) { await right.first().click(); continue; }
-    await page.waitForTimeout(50);
-  }
-  throw new Error(`never reached ${testid}`);
+/** Answer/advance (tapping) until the element with this test id is showing. */
+const driveUntil = (page, testid) => driveUnit(page, { until: testid });
+
+/** A real pointer drag: press on `from`, move in steps, release over `to`. */
+async function dragTo(page, from, to) {
+  await to.scrollIntoViewIfNeeded();
+  await from.scrollIntoViewIfNeeded();
+  const a = await from.boundingBox();
+  const b = await to.boundingBox();
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(a.x + a.width / 2 + 12, a.y + a.height / 2 + 12, { steps: 3 });
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+  await page.mouse.up();
 }
 
 export const suites = [
@@ -291,6 +296,36 @@ export const suites = [
         // mission complete → the ship is in orbit; celebrations are off, so it is parked, not moving
         await page.getByTestId('orbit-scene').waitFor();
         assert((await page.getByTestId('orbit-still').count()) === 1, 'with celebrations off the orbit should be a still picture');
+      },
+      'dragging: sort a card onto its group, and build a sentence by dragging words': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u2').last().click();
+        await driveUntil(page, 'interaction-u2-sort');
+        const cards = page.locator('[data-testid="interaction-u2-sort"] button[data-bin]');
+        const before = await cards.count();
+        const bin = await cards.first().getAttribute('data-bin');
+        await dragTo(page, cards.first(), page.locator(`[data-drop="${bin}"]`));
+        assert((await cards.count()) === before - 1, 'dragged card was not placed in its group');
+        // finish the sort by tapping (the tap alternative still works), then go to the sentence task
+        await driveUntil(page, 'production-u2-p1');
+        const prod = page.getByTestId('production-u2-p1');
+        const n = await prod.locator('.word-bank button[data-pos]').count();
+        for (let k = 0; k < n; k++) await dragTo(page, prod.locator(`.word-bank button[data-pos="${k}"]`), prod.locator('[data-drop="line"]'));
+        await prod.getByRole('button', { name: /Check/ }).click();
+        assert(await prod.getByText(/Great sentence/).isVisible(), 'sentence built by dragging was not accepted');
+      },
+      'dragging: match a word to its meaning, and drag a word into a gap': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u1').last().click();
+        await driveUntil(page, 'question-u1-q9');
+        const q = page.getByTestId('question-u1-q9');
+        const leftItem = q.locator('.grid > .stack:first-child button[data-pair="0"]');
+        await dragTo(page, leftItem, q.locator('[data-drop="pair-0"]'));
+        assert(/correct/.test(await leftItem.getAttribute('class')), 'drag-to-match did not match the pair');
+        await driveUntil(page, 'production-u1-p2');
+        const gap = page.getByTestId('production-u1-p2');
+        await dragTo(page, gap.locator('button[data-ok="true"]'), gap.locator('[data-drop="blank"]'));
+        assert(await gap.getByText(/Correct/).isVisible(), 'word dragged into the gap was not accepted');
       },
       'Day 3: unit 5 (asteroid belt, inner/outer) completes tap-only': async ({ page, url }) => {
         await page.goto(url);
