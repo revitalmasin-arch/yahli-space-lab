@@ -7,18 +7,27 @@ import { xpTotal } from '../../src/progress/model';
 const fixture = () => JSON.parse(readFileSync(new URL('../fixtures/progress/v1-sample.json', import.meta.url), 'utf8'));
 
 describe('schema versioning', () => {
-  it('current schema is 1 and the fixture loads untouched', () => {
-    expect(CURRENT_SCHEMA).toBe(1);
-    const m = migrate(fixture());
-    expect(m.ok && m.migrated).toBe(false);
-    const { progress, dropped } = sanitize(m.ok ? m.data : null);
+  it('current schema is 2; v1 data (Yahli’s production data today) migrates with nothing lost', () => {
+    expect(CURRENT_SCHEMA).toBe(2);
+    const input = fixture();
+    const before = JSON.stringify(input);
+    const m = migrate(input);
+    expect(m.ok && m.migrated).toBe(true);
+    if (!m.ok) return;
+    expect(m.data.schema).toBe(2);
+    expect(m.data.words).toEqual([]);
+    const { progress, dropped } = sanitize(m.data);
     expect(dropped).toBe(0);
-    expect(progress.attempts).toHaveLength(3);
-    expect(progress.productions).toHaveLength(2);
+    expect(progress.attempts).toEqual(input.attempts);
+    expect(progress.productions).toEqual(input.productions);
+    expect(progress.units).toEqual(input.units);
+    expect(progress.xp).toEqual(input.xp);
+    expect(progress.settings).toEqual(input.settings);
+    expect(JSON.stringify(input)).toBe(before);
   });
 
   it('refuses data from a newer schema instead of guessing', () => {
-    expect(migrate({ ...fixture(), schema: 2 })).toEqual({ ok: false, reason: 'newer', from: 2 });
+    expect(migrate({ ...fixture(), schema: 3 })).toEqual({ ok: false, reason: 'newer', from: 3 });
   });
 
   it('rejects things that are not progress data', () => {
@@ -111,5 +120,28 @@ describe('merge (import / second tab)', () => {
     const other = base();
     other.concepts['c-star'].science = { box: 3, due: '2026-10-22', lastAt: '2026-10-19T06:00:00.000Z' };
     expect(merge(local, other).concepts['c-star'].science?.box).toBe(3);
+  });
+});
+
+describe('My words (schema 2)', () => {
+  const v2 = () => { const m = migrate(fixture()); if (!m.ok) throw new Error('migrate'); return m.data; };
+  const w = (id: string, extra: object = {}) => ({ id, text: id, addedAt: '2026-10-17T10:00:00.000Z', ...extra });
+
+  it('keeps valid words and drops only broken ones', () => {
+    const d = v2();
+    d.words = [w('תצפית', { glossId: 'tazpit' }), { id: '' }, 'junk', w('orbit', { quiz: { right: 1, wrong: 0, lastAt: 'x' } })];
+    const { progress, dropped } = sanitize(d);
+    expect(dropped).toBe(2);
+    expect(progress.words.map((x) => x.id)).toEqual(['תצפית', 'orbit']);
+  });
+
+  it('merging two devices keeps every word, the meaning, and the newer quiz result', () => {
+    const a = sanitize({ ...v2(), words: [w('יממה', { quiz: { right: 1, wrong: 0, lastAt: '2026-10-17' } }), w('only-a')] }).progress;
+    const b = sanitize({ ...v2(), words: [w('יממה', { meaning: 'day + night', quiz: { right: 2, wrong: 1, lastAt: '2026-10-18' } }), w('only-b')] }).progress;
+    const m = merge(a, b);
+    expect(m.words.map((x) => x.id).sort()).toEqual(['only-a', 'only-b', 'יממה'].sort());
+    const y = m.words.find((x) => x.id === 'יממה')!;
+    expect(y.meaning).toBe('day + night');
+    expect(y.quiz?.right).toBe(2);
   });
 });

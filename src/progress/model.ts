@@ -1,4 +1,4 @@
-// Progress data, schema version 1. Every change to these shapes needs a schema bump and a
+// Progress data, schema version 2 (v2 added `words`, 2026-10-16). Every change to these shapes needs a schema bump and a
 // migration in migrate.ts (see tests/unit/migrate.test.ts).
 
 export type Context = 'warmup' | 'unit' | 'review' | 'lookback';
@@ -75,8 +75,23 @@ export interface Settings {
   learnerName?: string;
 }
 
+/** A word the learner did not understand and saved to "My words" (schema 2). */
+export interface SavedWord {
+  /** normalized spelling (no niqqud, lower case): one entry per word */
+  id: string;
+  /** as the learner typed or pasted it */
+  text: string;
+  addedAt: string;
+  /** chapter-dictionary entry that explains it, when there is one */
+  glossId?: string;
+  /** meaning written by the parent, for words not in the dictionary */
+  meaning?: string;
+  /** vocabulary-quiz results */
+  quiz?: { right: number; wrong: number; lastAt: string };
+}
+
 export interface Progress {
-  schema: 1;
+  schema: 2;
   createdAt: string;
   updatedAt: string;
   attempts: Attempt[];
@@ -88,6 +103,7 @@ export interface Progress {
   /** active study seconds per Jerusalem date */
   time: Record<string, number>;
   settings: Settings;
+  words: SavedWord[];
 }
 
 export const DEFAULT_EXAM_DATE = '2026-10-22';
@@ -95,7 +111,7 @@ export const DEFAULT_EXAM_DATE = '2026-10-22';
 export function emptyProgress(now = new Date()): Progress {
   const iso = now.toISOString();
   return {
-    schema: 1,
+    schema: 2,
     createdAt: iso,
     updatedAt: iso,
     attempts: [],
@@ -105,6 +121,7 @@ export function emptyProgress(now = new Date()): Progress {
     xp: {},
     time: {},
     settings: { niqqud: 'auto', celebrations: true, examDate: DEFAULT_EXAM_DATE, deviceLabel: '' },
+    words: [],
   };
 }
 

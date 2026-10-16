@@ -13,9 +13,11 @@ import { Logo } from './visuals/Icons';
 import { NameTab } from './components/NameTab';
 import { MissionLog } from './components/MissionLog';
 import { HelperAlien } from './components/HelperAlien';
+import { SelectionSaver, WordBar } from './components/WordBar';
+import { MyWords } from './screens/MyWords';
 
 const TITLE = t('My Space Lab', 'מַעְבֶּדֶת הֶחָלָל שֶׁלִּי');
-type Screen = { name: 'home' } | { name: 'unit'; id: string } | { name: 'review' } | { name: 'parent' };
+type Screen = { name: 'home' } | { name: 'unit'; id: string } | { name: 'review' } | { name: 'parent' } | { name: 'words' };
 
 /** Count active study time: visible tab and an interaction in the last 90 seconds. */
 function useActiveTime() {
@@ -60,6 +62,7 @@ export function App() {
         <p className="en" lang="en" dir="ltr">{TITLE.en}</p>
         <button type="button" className="small log-toggle" aria-expanded={logOpen} onClick={() => setLogOpen(!logOpen)} data-testid="log-toggle">📊 Mission log</button>
         <NameTab />
+        <WordBar onOpen={() => go({ name: 'words' })} />
       </header>
       <StorageNotice />
       <div className="layout">
@@ -67,6 +70,7 @@ export function App() {
         {screen.name === 'home' && <Home onUnit={(id) => go({ name: 'unit', id })} onReview={() => go({ name: 'review' })} onParent={() => go({ name: 'parent' })} />}
         {screen.name === 'unit' && <UnitPlayer key={screen.id} unitId={screen.id} onExit={home} />}
         {screen.name === 'review' && <Review onExit={home} />}
+        {screen.name === 'words' && <MyWords onExit={home} />}
         {screen.name === 'parent' && <Parent onExit={home} serverRelease={serverRelease} />}
       </main>
       <aside className={`side ${logOpen ? 'open' : ''}`} aria-label="Mission log">
@@ -74,6 +78,7 @@ export function App() {
       </aside>
       </div>
       <HelperAlien />
+      <SelectionSaver />
     </div>
   );
 }

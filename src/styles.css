@@ -292,3 +292,14 @@ body.is-dragging { user-select: none; -webkit-user-select: none; }
 .cal td.exam { background: #4a3a12; color: #ffe08a; font-weight: 700; }
 .life-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
 .life-card { display: grid; justify-items: start; gap: 4px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+
+/* "My words" bar (every screen) and the selection save button */
+.word-bar { gap: 6px; align-items: center; flex-wrap: nowrap; flex: 1 1 380px; border: 1px dashed var(--line); border-radius: 12px; padding: 4px 8px; background: rgba(20, 30, 70, 0.45); position: relative; }
+.word-bar label { flex: none; }
+.word-bar input { flex: 1 1 160px; min-width: 120px; }
+.word-bar button { width: auto; }
+.word-bar .feedback { position: absolute; top: 100%; inset-inline: 0; z-index: 30; margin-top: 4px; }
+.selection-saver { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 60; max-width: calc(100vw - 32px); }
+.selection-saver button { width: auto; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); }
+.selection-saver span { display: inline-block; background: #2b2a52; border: 1px solid var(--accent-2); border-radius: 12px; padding: 8px 12px; }
+.vocab-prompt { font-size: 1.25rem; }

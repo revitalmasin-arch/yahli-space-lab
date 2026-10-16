@@ -108,6 +108,14 @@ function glossIndex(): GlossDoc[] {
 /** Looks a word up in the chapter dictionary: Hebrew (with or without niqqud and prefixes),
  *  English, or Hebrew typed in English letters. Best match first. */
 export function lookupWord(question: string, max = 3): GlossaryEntry[] {
+  return lookupWordScored(question).slice(0, max).map((s) => s.entry);
+}
+/** Only a confident match: the word itself, a known spelling, or its exact consonants. */
+export function bestWordMatch(text: string): GlossaryEntry | undefined {
+  const top = lookupWordScored(text)[0];
+  return top && top.score >= 15 ? top.entry : undefined;
+}
+function lookupWordScored(question: string): { entry: GlossaryEntry; score: number }[] {
   const tokens = normalize(question).split(' ').filter((t) => t && !LOOKUP_STOP.has(t));
   if (!tokens.length) return [];
   const phrase = tokens.join(' ');
@@ -129,5 +137,5 @@ export function lookupWord(question: string, max = 3): GlossaryEntry[] {
     }
     return { entry: d.entry, score };
   });
-  return scored.filter((s) => s.score > 0).sort((a, b) => b.score - a.score).slice(0, max).map((s) => s.entry);
+  return scored.filter((s) => s.score > 0).sort((a, b) => b.score - a.score);
 }

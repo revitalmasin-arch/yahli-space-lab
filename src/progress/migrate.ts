@@ -1,12 +1,15 @@
 import versions from './schema-version.json';
-import { emptyProgress, type Attempt, type ConceptState, type Progress, type ProductionRecord, type Track, type UnitState } from './model';
+import { emptyProgress, type Attempt, type ConceptState, type Progress, type ProductionRecord, type SavedWord, type Track, type UnitState } from './model';
 
 export const CURRENT_SCHEMA: number = versions.current;
 export const MIN_READABLE_SCHEMA: number = versions.minReadable;
 
 /** MIGRATIONS[n] converts schema n data to schema n+1. Never drop learner records in a migration. */
 export type Migration = (data: any) => any;
-export const MIGRATIONS: Record<number, Migration> = {};
+export const MIGRATIONS: Record<number, Migration> = {
+  // v1 -> v2: "My words" list (starts empty; nothing else changes)
+  1: (d) => ({ ...d, words: Array.isArray(d.words) ? d.words : [] }),
+};
 
 export type MigrateResult =
   | { ok: true; data: any; from: number; migrated: boolean }
@@ -51,6 +54,12 @@ function validProduction(r: any): r is ProductionRecord {
     ['correct', 'incorrect', 'self-ok', 'self-unsure', 'pending', 'confirmed', 'not-yet'].includes(r.result as string) &&
     isBool(r.withBank) && (r.checkedAt === undefined || isStr(r.checkedAt));
 }
+function validWord(w: any): w is SavedWord {
+  const q = w?.quiz;
+  return isObj(w) && isStr(w.id) && w.id.length > 0 && isStr(w.text) && isStr(w.addedAt) &&
+    (w.glossId === undefined || isStr(w.glossId)) && (w.meaning === undefined || isStr(w.meaning)) &&
+    (q === undefined || (isObj(q) && isNum(q.right) && isNum(q.wrong) && isStr(q.lastAt)));
+}
 const validTrack = (t: any): t is Track => isObj(t) && isNum(t.box) && isStr(t.due) && isStr(t.lastAt);
 
 /** Returns a well-formed Progress plus how many records had to be dropped (0 = untouched). */
@@ -93,7 +102,7 @@ export function sanitize(input: any): { progress: Progress; dropped: number } {
   };
   const s = isObj(src.settings) ? src.settings : {};
   const progress: Progress = {
-    schema: 1,
+    schema: 2,
     createdAt: isStr(src.createdAt) ? src.createdAt : base.createdAt,
     updatedAt: isStr(src.updatedAt) ? src.updatedAt : base.updatedAt,
     attempts: keep(src.attempts, validAttempt),
@@ -109,6 +118,7 @@ export function sanitize(input: any): { progress: Progress; dropped: number } {
       deviceLabel: isStr(s.deviceLabel) ? s.deviceLabel.slice(0, 40) : '',
       ...(isStr(s.learnerName) && s.learnerName.trim() ? { learnerName: s.learnerName.trim().slice(0, 30) } : {}),
     },
+    words: keep(src.words, validWord),
   };
   return { progress, dropped };
 }
@@ -148,6 +158,14 @@ export function merge(current: Progress, other: Progress): Progress {
   }
   const time: Record<string, number> = { ...current.time };
   for (const [d, s] of Object.entries(other.time)) time[d] = Math.max(time[d] ?? 0, s);
+  const words = new Map(current.words.map((w) => [w.id, w]));
+  for (const w of other.words) {
+    const mine = words.get(w.id);
+    if (!mine) { words.set(w.id, w); continue; }
+    // keep both sides' information: the earlier add, any meaning, the newer quiz record
+    const quiz = (w.quiz?.lastAt ?? '') > (mine.quiz?.lastAt ?? '') ? w.quiz : mine.quiz;
+    words.set(w.id, { ...mine, addedAt: minStr(mine.addedAt, w.addedAt) ?? mine.addedAt, glossId: mine.glossId ?? w.glossId, meaning: mine.meaning || w.meaning, quiz });
+  }
   const byTime = <T extends { at: string }>(x: T, y: T) => (x.at < y.at ? -1 : x.at > y.at ? 1 : 0);
   return {
     ...current,
@@ -159,5 +177,6 @@ export function merge(current: Progress, other: Progress): Progress {
     units,
     xp: { ...other.xp, ...current.xp },
     time,
+    words: [...words.values()].sort((a, b) => (a.addedAt < b.addedAt ? -1 : 1)),
   };
 }

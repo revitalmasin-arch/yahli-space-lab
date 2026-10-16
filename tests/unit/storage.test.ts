@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import { installStorage, type MemStorage } from './memstorage';
 import { checkImport, importMerge, KEYS, load, makeBackup, save, snapshot } from '../../src/progress/storage';
 
-const fixtureText = () => readFileSync(new URL('../fixtures/progress/v1-sample.json', import.meta.url), 'utf8');
+const fixtureText = () => readFileSync(new URL('../fixtures/progress/v2-sample.json', import.meta.url), 'utf8');
+const v1Text = () => readFileSync(new URL('../fixtures/progress/v1-sample.json', import.meta.url), 'utf8');
 let s: MemStorage;
 beforeEach(() => {
   s = installStorage();
@@ -28,6 +29,25 @@ describe('load', () => {
     l.progress.xp['extra'] = 2;
     expect(save(l.progress, l.readOnly)).toBe(true);
     expect(load().progress.xp['extra']).toBe(2);
+  });
+
+  it('v1 data (production today) loads migrated, keeps a pre-migration copy, and saves as v2 with every record', () => {
+    s.setItem(KEYS.progress, v1Text());
+    const l = load();
+    expect(l.status).toBe('migrated');
+    expect(s.getItem(KEYS.preMigrationPrefix + 1)).toBe(v1Text());
+    expect(l.progress.attempts).toHaveLength(3);
+    expect(save(l.progress, l.readOnly)).toBe(true);
+    const again = load();
+    expect(again.status).toBe('ok');
+    expect(again.progress.schema).toBe(2);
+    expect(again.progress.attempts).toHaveLength(3);
+  });
+
+  it('saved words survive save and reload', () => {
+    s.setItem(KEYS.progress, fixtureText());
+    const l = load();
+    expect(l.progress.words.map((w) => w.glossId ?? w.meaning)).toEqual(['tazpit', 'the pull that keeps planets in orbit']);
   });
 
   it('quarantines unreadable data instead of deleting it', () => {

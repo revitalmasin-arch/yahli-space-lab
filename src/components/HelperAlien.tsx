@@ -7,6 +7,7 @@ import { useHelperState } from './helperState';
 import { askKip, lookupWord, type KipAnswer } from '../lib/kipSearch';
 import type { GlossaryEntry } from '../content/glossary';
 import { WordCard } from './WordCard';
+import { useAddWord } from './WordBar';
 import { conceptPages, formatPages } from '../lib/bookPages';
 import { Bi } from './Bi';
 
@@ -75,7 +76,10 @@ export function HelperAlien() {
   const [q, setQ] = useState('');
   const [answers, setAnswers] = useState<KipAnswer[] | null>(null);
   const [words, setWords] = useState<GlossaryEntry[]>([]);
+  const addWord = useAddWord();
+  const [saved, setSaved] = useState('');
   const ask = () => {
+    setSaved('');
     const found = lookupWord(q, 2);
     setWords(found);
     // the dictionary already explains a single word; lesson notes add the bigger picture
@@ -107,9 +111,14 @@ export function HelperAlien() {
               </form>
               {answers && (
                 <div className="stack" data-testid="kip-answers" role="status">
-                  {words.map((w) => <WordCard key={w.id} entry={w} />)}
+                  {words.map((w) => (
+                    <WordCard key={w.id} entry={w}>
+                      <button type="button" className="small" onClick={() => setSaved(addWord(w.heN))} data-testid="kip-save-word">➕ Save to My words</button>
+                    </WordCard>
+                  ))}
                   {answers.length === 0 && words.length === 0 ? (
-                    <p className="feedback help small-text" data-testid="kip-none">That word isn't in my space dictionary or lab notes. Try another word, or ask Mum! · <span lang="he">הַמִּילָּה לֹא בַּמִּילּוֹן שֶׁלִּי. נַסֵּה מִילָּה אַחֶרֶת.</span></p>
+                    <p className="feedback help small-text" data-testid="kip-none">That word isn't in my space dictionary or lab notes. Try another word, or ask Mum! · <span lang="he">הַמִּילָּה לֹא בַּמִּילּוֹן שֶׁלִּי. נַסֵּה מִילָּה אַחֶרֶת.</span>
+                      <button type="button" className="small" onClick={() => setSaved(addWord(q))} data-testid="kip-save-unknown">➕ Save it to My words — Mum will explain</button></p>
                   ) : (
                     answers.length > 0 && <>
                       <p className="small-text muted">{words.length ? 'More in my lab notes:' : 'Here is what my lab notes say:'}</p>
@@ -124,6 +133,7 @@ export function HelperAlien() {
                   )}
                 </div>
               )}
+              {saved && <p className="small-text feedback help" role="status" data-testid="kip-saved">{saved}</p>}
               {question?.canHelp && (
                 <div className="stack">
                   <button type="button" onClick={() => act(question.hint, 'Look under the question for a hint.')} data-testid="helper-hint">💡 Give me a hint · רֶמֶז</button>

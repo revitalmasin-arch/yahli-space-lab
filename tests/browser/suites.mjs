@@ -281,6 +281,50 @@ export const suites = [
           assert(/תַּצְפִּית/.test(text) && /observation/.test(text) && /pages 168, 170, 171/.test(text), `incomplete card for ${q}: ${text.slice(0, 160)}`);
         }
       },
+      'My words: save from the bar and from Kip, Mum explains, word quiz, kept after reload': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('word-bar-input').fill('תַּצְפִּית');
+        await page.getByTestId('word-bar-add').click();
+        assert(/observation/.test(await page.getByTestId('word-bar-msg').textContent()), 'dictionary word not recognised');
+        await page.getByTestId('word-bar-input').fill('yemama');
+        await page.getByTestId('word-bar-add').click();
+        await page.getByTestId('word-bar-input').fill('מרתק');
+        await page.getByTestId('word-bar-add').click();
+        assert(/Mum will add/.test(await page.getByTestId('word-bar-msg').textContent()), 'unknown word should wait for Mum');
+        // Kip: an unknown word can be saved from his answer box
+        await page.getByTestId('helper-open').click();
+        await page.getByTestId('kip-input').fill('pizza');
+        await page.getByTestId('kip-ask').click();
+        await page.getByTestId('kip-save-unknown').click();
+        assert(/Saved/.test(await page.getByTestId('kip-saved').textContent()), 'Kip did not save the word');
+        await page.getByTestId('helper-open').click();
+        await page.waitForTimeout(500);
+        let p = await stored(page);
+        assert(p.schema === 2 && p.words.length === 4, `words not stored: ${JSON.stringify(p.words)}`);
+        // Mum explains a word in the parent area
+        await page.reload();
+        await page.getByRole('button', { name: /Parent/ }).click();
+        await page.getByTestId('parent-meaning-input').first().fill('מְעַנְיֵין מְאוֹד');
+        await page.getByTestId('parent-meaning-save').first().click();
+        await page.getByRole('button', { name: /Back/ }).first().click();
+        // the quiz
+        await page.getByTestId('my-words-open').click();
+        assert((await page.getByTestId('my-word').count()) === 4, 'My words list incomplete');
+        await page.getByTestId('vocab-start').click();
+        let n = 0;
+        while (await page.getByTestId('vocab-question').count()) {
+          await page.locator('[data-testid="vocab-question"] button[data-ok="true"]').click();
+          await page.getByTestId('vocab-next').click();
+          n++;
+        }
+        assert(n === 3 && (await page.getByTestId('vocab-done').textContent()).includes('3 / 3'), `quiz should ask the 3 explained words, asked ${n}`);
+        await page.waitForTimeout(500);
+        p = await stored(page);
+        assert(p.words.filter((w) => w.quiz?.right === 1).length === 3, 'quiz results not recorded');
+        await page.reload();
+        await page.getByTestId('my-words-open').click();
+        assert((await page.getByTestId('my-word').count()) === 4, 'words lost after reload');
+      },
       'unit bookmark: names the book pages and opens the full explanation': async ({ page, url }) => {
         await page.goto(url);
         await page.getByTestId('open-u2').last().click();

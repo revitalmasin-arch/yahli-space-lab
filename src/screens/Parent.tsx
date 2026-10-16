@@ -7,6 +7,33 @@ import { checkImport, importMerge, makeBackup, quarantinedCopies, rawItem, type 
 import { hebrewEvidence, scienceSummary, unitStatus } from '../lib/learning';
 import { jerusalemDate } from '../lib/dates';
 import { PHOTO_CREDITS } from '../visuals/Photo';
+import { glossaryById } from '../content/glossary';
+
+/** Words Yahli saved in "My words": explain the ones the chapter dictionary does not know. */
+function ParentWords() {
+  const { progress, update, readOnly } = useStore();
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const words = progress.words;
+  const waiting = words.filter((w) => !w.glossId);
+  return (
+    <section className="panel stack" data-testid="parent-words">
+      <h3>My words ({words.length} saved, {waiting.filter((w) => !w.meaning).length} waiting for you)</h3>
+      {words.length === 0 && <p className="muted small-text">No saved words yet.</p>}
+      {words.filter((w) => w.glossId).length > 0 && (
+        <p className="small-text">Explained by the book dictionary: {words.filter((w) => w.glossId).map((w) => `${w.text} (${glossaryById(w.glossId!)?.en ?? ''})`).join(' · ')}</p>
+      )}
+      {waiting.map((w) => (
+        <form key={w.id} className="row" onSubmit={(e) => { e.preventDefault(); const m = (drafts[w.id] ?? '').trim().slice(0, 200); if (m) update((p) => { const x = p.words.find((y) => y.id === w.id); if (x) x.meaning = m; }); }}>
+          <strong dir="auto">{w.text}</strong>
+          <input type="text" dir="auto" aria-label={`Meaning of ${w.text}`} placeholder={w.meaning || 'Write a simple meaning (Hebrew or English)'} value={drafts[w.id] ?? ''}
+            onChange={(e) => setDrafts({ ...drafts, [w.id]: e.target.value })} disabled={readOnly} data-testid="parent-meaning-input" />
+          <button type="submit" className="small" disabled={readOnly} data-testid="parent-meaning-save">{w.meaning ? 'Update' : 'Save'}</button>
+          {w.meaning && <span className="muted small-text" dir="auto">now: {w.meaning}</span>}
+        </form>
+      ))}
+    </section>
+  );
+}
 
 function download(name: string, text: string) {
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
@@ -63,6 +90,7 @@ export function Parent({ onExit, serverRelease }: { onExit: () => void; serverRe
         })}
       </section>
 
+      <ParentWords />
       <section className="panel stack">
         <h3>Summary</h3>
         <ul>
