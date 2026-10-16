@@ -225,6 +225,46 @@ export const suites = [
         await page.waitForTimeout(400);
         assert((await stored(page)).attempts.length === before, 'going back must not delete answers');
       },
+      'Kip the helper: a hint from Kip shows on the card and is recorded as help': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u2').last().click();
+        await page.getByTestId('helper-open').click();
+        await page.getByTestId('helper-hint').click();
+        await page.getByTestId('help-1').waitFor();
+        await page.getByTestId('helper-open').click(); // close Kip
+        await page.locator('section[data-testid^="question-"] button[data-ok="true"]').first().click();
+        await page.getByTestId('solved').getByRole('button', { name: /Next/ }).click();
+        await page.waitForTimeout(500);
+        const a = (await stored(page)).attempts[0];
+        assert(a && a.assistance >= 1 && !a.correctFirstTry && a.finalCorrect, `help from Kip not recorded: ${JSON.stringify(a)}`);
+      },
+      'Kip the helper: lists the words of the current unit': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u2').last().click();
+        await page.getByTestId('helper-open').click();
+        await page.getByTestId('helper-words').click();
+        assert(/מוּאָר/.test(await page.getByRole('dialog').textContent()), 'unit words missing');
+      },
+      'Mission log: opens on tablet width, rocket climbs, unit completion launches (not when celebrations are off)': async ({ page, url }) => {
+        await page.setViewportSize({ width: 800, height: 1280 });
+        await page.goto(url);
+        await page.getByTestId('log-toggle').click();
+        assert(/0 \/ 16/.test(await page.getByTestId('rocket-gauge').textContent()), 'gauge should start at 0 / 16');
+        assert(await page.getByTestId('starting-to-measure').isVisible(), 'should say starting to measure');
+        await page.getByTestId('open-u1').last().click();
+        await driveUnit(page);
+        assert(await page.getByTestId('rocket-launch').isVisible(), 'no launch on unit completion');
+        await page.getByRole('button', { name: /Back home/ }).click();
+        assert(/8 \/ 16/.test(await page.getByTestId('rocket-gauge').textContent()), `gauge after unit 1: ${await page.getByTestId('rocket-gauge').textContent()}`);
+        await page.getByTestId('open-parent').click();
+        await page.getByLabel('Short celebrations').uncheck();
+        await page.getByRole('button', { name: /← Back/ }).first().click();
+        await page.getByTestId('open-u2').last().click();
+        await driveUnit(page);
+        assert((await page.getByTestId('rocket-launch').count()) === 0, 'launch shown although celebrations are off');
+        await page.getByRole('button', { name: /Back home/ }).click();
+        await page.getByTestId('mission-complete').waitFor();
+      },
       'Day 3: unit 5 (asteroid belt, inner/outer) completes tap-only': async ({ page, url }) => {
         await page.goto(url);
         await page.getByTestId('open-u5').last().click();

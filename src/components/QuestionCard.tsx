@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { setHelperQuestion } from './helperState';
 import type { Choice, Question } from '../content/types';
 import { conceptById } from '../content/concepts';
 import { TF_CHOICES } from '../content/questions';
@@ -49,6 +50,7 @@ export function QuestionCard({ q, onDone }: { q: Question; onDone: (o: QuestionO
   const [left, setLeft] = useState<number | null>(null);
   const [matched, setMatched] = useState<Set<number>>(new Set());
 
+  const [forceEnglish, setForceEnglish] = useState(false);
   const raise = (to?: 0 | 1 | 2 | 3) => {
     const next = (to ?? Math.min(3, level + 1)) as 0 | 1 | 2 | 3;
     if (next >= 1 && q.simpler) setUsedSimpler(true);
@@ -110,12 +112,25 @@ export function QuestionCard({ q, onDone }: { q: Question; onDone: (o: QuestionO
     });
 
   const prompt = q.kind === 'tf' && stage === 'fix' && q.fix ? q.fix.prompt : q.prompt;
+
+  // Offer this card's help to the helper alien (same actions as the buttons on the card).
+  useEffect(() => {
+    setHelperQuestion({
+      hint: () => level < 1 && raise(1),
+      another: () => level < 2 && raise(2),
+      english: () => { setForceEnglish(true); setUsedEnglish(true); },
+      promptHe: prompt.heN,
+      canHelp: !solved && level < 3,
+    });
+    return () => setHelperQuestion(undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [level, solved, prompt]);
   const correctChoice = q.kind === 'mc' ? q.choices.find((c) => c.id === q.correct) : q.kind === 'tf' && q.fix ? q.fix.choices.find((c) => c.id === q.fix!.correct) : undefined;
 
   return (
     <section className="panel stack" aria-live="polite" data-testid={`question-${q.id}`}>
       {q.kind === 'tf' && stage === 'fix' && <p className="feedback good">✓ <He x={{ en: '', heN: 'צָדַקְתָּ, זֶה לֹא נָכוֹן!', he: 'צדקת, זה לא נכון!' }} /> Right, it is not true. Now fix it:</p>}
-      <Bi x={prompt} as="h3" onEnglish={() => setUsedEnglish(true)} />
+      <Bi x={prompt} as="h3" onEnglish={() => setUsedEnglish(true)} showEnglish={forceEnglish} />
       {q.visual && <Visual id={q.visual} />}
 
       {q.kind !== 'match' && (

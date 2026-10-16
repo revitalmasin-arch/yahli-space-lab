@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { unitById } from '../content/units';
 import { questionsFor } from '../content/questions';
 import { productionFor } from '../content/production';
@@ -10,13 +10,14 @@ import { Bi, He } from '../components/Bi';
 import { Speak } from '../components/Speak';
 import { Visual } from '../visuals/Visual';
 import { RocketBadge } from '../visuals/Icons';
+import { setHelperUnit } from '../components/helperState';
 import { useActions } from '../progress/actions';
 import { useStore } from '../progress/store';
 import { pickQuestion } from '../lib/learning';
 import type { Context } from '../progress/model';
 
-export const STEPS = ['warmup', 'explain', 'terms', 'interact', 'check', 'produce', 'lookback', 'done'] as const;
-type Step = (typeof STEPS)[number];
+import { STEPS, type Step } from '../lib/steps';
+export { STEPS };
 const STEP_LABEL: Record<Step, string> = {
   warmup: 'Quick check', explain: 'Explore', terms: 'Hebrew words', interact: 'Investigate',
   check: 'Check', produce: 'Say it in Hebrew', lookback: 'Look back', done: 'Done',
@@ -48,6 +49,10 @@ export function UnitPlayer({ unitId, onExit }: { unitId: string; onExit: () => v
   // Furthest stage reached this visit (stages done earlier also count): the learner may jump back
   // to any of these, but not skip ahead past unfinished ones.
   const [reached, setReached] = useState(STEPS.indexOf(step));
+  useEffect(() => {
+    setHelperUnit(unitId);
+    return () => setHelperUnit(undefined);
+  }, [unitId]);
 
   /** Look back after an intervening activity: a different-wording question from this unit. */
   const prepareLookback = (): boolean => {
@@ -209,7 +214,7 @@ export function UnitPlayer({ unitId, onExit }: { unitId: string; onExit: () => v
 
       {step === 'done' && (
         <section className="panel stack" data-testid="unit-done">
-          {progress.settings.celebrations && <RocketBadge />}
+          {progress.settings.celebrations && <div className="launch-wrap" data-testid="rocket-launch"><RocketBadge /></div>}
           <h2>Mission complete! · <He x={{ en: '', heN: 'סִיַּמְתָּ!', he: 'סיימת!' }} /></h2>
           <p>You explored the idea, learned {unit.terms.length} Hebrew words and practised saying them. It comes back for review on another day — that is how it sticks.</p>
           <p className="muted small-text">Finishing a unit is practice, not proof of exam readiness.</p>

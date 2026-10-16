@@ -51,11 +51,36 @@ p, h1, h2, h3, li, strong, label, figcaption, button, .tag { unicode-bidi: plain
 [lang='en'] { font-family: 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.5; }
 .he-n { font-size: 1.12em; line-height: 1.9; }
 
-.app { max-width: 1100px; margin: 0 auto; padding: 12px 16px 48px; overflow-x: hidden; }
+.app { max-width: 1400px; margin: 0 auto; padding: 12px 16px 48px; overflow-x: hidden; }
 .top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 6px 0 4px; }
 .top h1 { margin: 4px 0; font-size: 1.6rem; letter-spacing: 0.01em; text-shadow: 0 0 18px var(--glow); }
 .top .logo { width: 52px; height: 52px; flex: none; filter: drop-shadow(0 0 8px var(--glow)); }
-.name-tab { margin-inline-start: auto; }
+/* Main + Mission Log sidebar. The sidebar sits beside the work on wide screens and opens
+   on demand (header button) on the tablet, so the learning screen keeps its width. */
+.layout { display: block; }
+.side { display: none; }
+.side.open { display: block; margin-top: 8px; }
+.log-toggle { margin-inline-start: auto; }
+@media (min-width: 1180px) {
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+  .side, .side.open { display: block; position: sticky; top: 8px; margin-top: 0; max-height: calc(100vh - 16px); overflow-y: auto; padding-bottom: 96px; }
+  .log-toggle { display: none; }
+}
+.side .panel { margin: 0 0 12px; }
+.side h3 { margin: 0; font-size: 1rem; }
+.rocket-gauge { text-align: center; }
+.rocket-gauge svg { width: 120px; height: 210px; overflow: visible; }
+.rocket-gauge .rocket { transition: transform 0.6s ease; }
+.liftoff .rocket { animation: liftoff 1.8s ease-in forwards; }
+.liftoff .flame { animation: flicker 0.15s infinite alternate; }
+@keyframes liftoff { to { transform: translate(60px, -140px); } }
+@keyframes flicker { to { opacity: 0.55; } }
+.chart { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 4px; vertical-align: middle; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { border-bottom: 1px solid var(--line); padding: 2px 6px; text-align: start; }
+.name-tab { margin-inline-start: 0; }
 .name-tab input { max-width: 180px; }
 .top .lab-id { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: 0.75rem; color: var(--accent-2); border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; }
 .top .en { margin: 0; color: var(--muted); font-size: 0.95rem; }
@@ -165,4 +190,26 @@ button.mission-card .steps > span { display: block; height: 100%; background: li
 @media (max-width: 700px) {
   body { font-size: 17px; }
   .top h1 { font-size: 1.35rem; }
+}
+
+/* Kip, the helper alien: fixed at the bottom corner, opens a small panel above it. */
+.helper { position: fixed; inset-inline-end: 16px; bottom: 16px; z-index: 40; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.helper-button { display: flex; align-items: center; gap: 6px; border-radius: 999px; padding: 6px 14px 6px 6px; background: linear-gradient(160deg, #1d2b6b, #101845); border: 2px solid #5fd39b; box-shadow: 0 0 16px rgba(95, 211, 155, 0.35); }
+.helper-button svg { width: 52px; height: 52px; }
+.helper-label { font-weight: 700; }
+.helper-panel { width: min(360px, calc(100vw - 32px)); max-height: 70vh; overflow-y: auto; margin: 0; }
+.helper-panel button { width: 100%; text-align: start; }
+.helper-panel .row button { width: auto; }
+.app { padding-bottom: 110px; } /* room so Kip never covers the last button */
+@media (prefers-reduced-motion: no-preference) {
+  .helper-button svg { animation: bob 3s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-3px); } }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .launch-wrap .badge-done { animation: unit-launch 1.6s ease-in 0.4s both; }
+  @keyframes unit-launch { 0% { transform: translateY(0); } 15% { transform: translateY(4px); } 100% { transform: translateY(-46px); } }
+}
+@media (min-width: 1180px) {
+  /* Wide screens: keep the Mission Log sidebar clear; Kip floats over the main column instead. */
+  .helper { inset-inline-end: auto; inset-inline-start: 16px; align-items: flex-start; }
 }
