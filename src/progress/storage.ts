@@ -42,6 +42,8 @@ function stamp() {
 
 /** Keep a raw copy under its own key. Old snapshots beyond MAX_SNAPSHOTS are pruned; quarantine copies never are. */
 function keepCopy(s: Storage, prefix: string, raw: string, prune: boolean) {
+  // Idempotent: loading the same unreadable data twice (e.g. StrictMode, two tabs) keeps one copy.
+  if (Object.keys(s).some((k) => k.startsWith(prefix) && s.getItem(k) === raw)) return;
   try {
     s.setItem(prefix + stamp(), raw);
   } catch {
