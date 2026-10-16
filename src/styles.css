@@ -272,3 +272,23 @@ body.is-dragging { user-select: none; -webkit-user-select: none; }
   .miss { animation: miss-shake 0.35s ease; }
   @keyframes miss-shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 }
+/* Model builder */
+.model-track { display: flex; align-items: center; gap: 4px; overflow-x: auto; padding: 8px 4px; background: #02040d; border: 1px solid var(--line); border-radius: 12px; }
+.model-sun { width: 54px; height: 54px; border-radius: 50%; flex: none; }
+.model-slot { flex: 1 0 64px; min-height: 96px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 2px dashed #3a4a92; }
+.model-slot.filled { border-style: solid; border-color: #2f6b55; }
+.model-slot.after-belt { margin-inline-start: 14px; position: relative; }
+.model-slot.after-belt::before { content: ''; position: absolute; inset-inline-start: -12px; top: 10%; bottom: 10%; border-inline-start: 3px dotted #9a8f80; }
+.model-empty { width: 100%; height: 100%; min-height: 90px; background: transparent; border: none; font-family: ui-monospace, Consolas, monospace; font-size: 1.3rem; color: #8fa0d8; }
+.model-planet { display: grid; justify-items: center; gap: 2px; background: transparent; border: none; padding: 4px; min-width: 0; font-size: 0.75rem; }
+.model-planet .tag { white-space: normal; text-align: center; }
+.model-chip { display: inline-flex; align-items: center; gap: 6px; }
+.model-dot { display: inline-block; border-radius: 50%; background: #7fd3ff; }
+/* New diagrams */
+.planet-table { overflow-x: auto; }
+.planet-table .note-row td { color: #ffd27a; }
+.cal { border-collapse: collapse; margin: 0 auto; }
+.cal th, .cal td { width: 36px; height: 30px; text-align: center; border: 1px solid var(--line); font-family: ui-monospace, Consolas, monospace; }
+.cal td.exam { background: #4a3a12; color: #ffe08a; font-weight: 700; }
+.life-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.life-card { display: grid; justify-items: start; gap: 4px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }

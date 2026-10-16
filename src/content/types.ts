@@ -8,7 +8,8 @@ export interface Tx {
   he: string;
 }
 
-/** Printed textbook page (equal to the PDF page index in the assigned chapter). */
+/** Printed textbook page (equal to the PDF page index in the assigned chapter).
+ *  page 0 = a source outside the book; `note` then names it (e.g. NASA). */
 export interface SourceRef {
   page: number;
   note?: string;
@@ -24,7 +25,15 @@ export type VisualId =
   | 'periodic'
   | 'rotation-orbit'
   | 'day-night'
-  | 'life-compare';
+  | 'life-compare'
+  | 'sky'
+  | 'telescope'
+  | 'planet-table'
+  | 'comet'
+  | 'models'
+  | 'calendar'
+  | 'sun-path'
+  | 'clock';
 
 export type AnswerPattern = 'definition' | 'comparison' | 'cause' | 'location' | 'duration';
 
@@ -93,7 +102,9 @@ export type Question = McQuestion | TfQuestion | MatchQuestion;
 export type InteractionSpec =
   | { kind: 'sort'; id: string; prompt: Tx; bins: { id: string; label: Tx }[]; items: { id: string; label: Tx; bin: string; feedback: Tx }[]; visual?: VisualId }
   | { kind: 'sequence'; id: string; prompt: Tx; items: { id: string; label: Tx }[]; /** ids in correct order */ order: string[]; visual?: VisualId; done: Tx }
-  | { kind: 'explore'; id: string; prompt: Tx; visual: VisualId; goal: Tx };
+  | { kind: 'explore'; id: string; prompt: Tx; visual: VisualId; goal: Tx }
+  /** Build a Solar System model: planets onto orbit slots, then feature cards onto planets (pp.176–179). */
+  | { kind: 'model'; id: string; prompt: Tx; features: { id: string; label: Tx; planet: string }[] };
 
 export type ProductionTask =
   | {

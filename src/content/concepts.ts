@@ -1,10 +1,11 @@
 import { t } from '../lib/hebrew';
 import type { Concept } from './types';
+import { MORE_CONCEPTS } from './concepts-more';
 
 // Help-ladder material per concept: step 2 (different explanation + visual) and step 3 (worked example
 // on a parallel item, followed by a NEW question). Questions carry their own step-1 hints.
 
-export const CONCEPTS: Concept[] = [
+const BASE_CONCEPTS: Concept[] = [
   {
     id: 'c-universe',
     unit: 'u1',
@@ -18,7 +19,7 @@ export const CONCEPTS: Concept[] = [
       'Example: Is the Moon part of the universe? The universe is space + all the bodies. The Moon is a body, so yes.',
       'דּוּגְמָה: הַאִם הַיָּרֵחַ חֵלֶק מֵהַיְקוּם? הַיְקוּם = חָלָל + כָּל הַגּוּפִים. הַיָּרֵחַ הוּא גּוּף, לָכֵן כֵּן.',
     ),
-    sources: [{ page: 171 }, { page: 173 }],
+    sources: [{ page: 171 }, { page: 172 }, { page: 173 }],
   },
   {
     id: 'c-nesting',
@@ -33,7 +34,7 @@ export const CONCEPTS: Concept[] = [
       'Example: Is the Sun inside the Milky Way? The Sun is in the Solar System, and the Solar System is inside the Milky Way. So yes.',
       'דּוּגְמָה: הַאִם הַשֶּׁמֶשׁ בְּתוֹךְ שְׁבִיל הֶחָלָב? הַשֶּׁמֶשׁ בְּמַעֲרֶכֶת הַשֶּׁמֶשׁ, וּמַעֲרֶכֶת הַשֶּׁמֶשׁ בְּתוֹךְ שְׁבִיל הֶחָלָב. לָכֵן כֵּן.',
     ),
-    sources: [{ page: 172 }, { page: 173 }],
+    sources: [{ page: 172 }, { page: 173 }, { page: 183 }],
   },
   {
     id: 'c-star',
@@ -48,7 +49,7 @@ export const CONCEPTS: Concept[] = [
       'Example: The North Star (Polaris) shines with its own light. Its own light means it is a star — a body that is מֵאִיר.',
       'דּוּגְמָה: כּוֹכַב הַצָּפוֹן מֵפִיק אוֹר בְּעַצְמוֹ. לָכֵן הוּא כּוֹכָב — גּוּף מֵאִיר.',
     ),
-    sources: [{ page: 174 }, { page: 214 }],
+    sources: [{ page: 174 }, { page: 183 }, { page: 214 }],
   },
   {
     id: 'c-lit',
@@ -108,7 +109,7 @@ export const CONCEPTS: Concept[] = [
       'Example: Saturn has no solid ground and is made mostly of gas, so it belongs to the gas giants.',
       'דּוּגְמָה: לְשַׁבְּתַאי אֵין קַרְקַע מוּצֶקֶת, וְהוּא עָשׂוּי בְּעִיקָּר מִגַּזִּים. לָכֵן הוּא שַׁיָּיךְ לַגַּזִּים הָעֲנָקִיִּים.',
     ),
-    sources: [{ page: 175 }, { page: 179 }, { page: 183 }],
+    sources: [{ page: 175 }, { page: 179 }, { page: 182 }, { page: 183 }],
   },
   {
     id: 'c-dwarf',
@@ -217,6 +218,8 @@ export const CONCEPTS: Concept[] = [
     sources: [{ page: 185 }, { page: 189 }, { page: 190 }],
   },
 ];
+
+export const CONCEPTS: Concept[] = [...BASE_CONCEPTS, ...MORE_CONCEPTS];
 
 export const conceptById = (id: string): Concept => {
   const c = CONCEPTS.find((x) => x.id === id);

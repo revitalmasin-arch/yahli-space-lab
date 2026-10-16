@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { VisualId } from '../content/types';
 import { PhotoBall, PhotoRect, SaturnPhoto, type PhotoKey } from './Photo';
+import { Calendar, Clock, CometMeteor, DayNight, LifeCompare, Models, PlanetTable, Sky, SunPath, Telescope } from './More';
 
 /** Seconds of animation time, advancing only while `playing`. Animations never start by themselves. */
 function useAnimTime(playing: boolean): number {
@@ -152,8 +153,28 @@ export function Visual({ id, notToScale }: { id: VisualId; notToScale?: boolean 
         return <Periodic />;
       case 'rotation-orbit':
         return <RotationOrbit />;
+      case 'sky':
+        return <Sky />;
+      case 'telescope':
+        return <Telescope />;
+      case 'planet-table':
+        return <PlanetTable />;
+      case 'comet':
+        return <CometMeteor />;
+      case 'models':
+        return <Models />;
+      case 'calendar':
+        return <Calendar />;
+      case 'day-night':
+        return <DayNight />;
+      case 'sun-path':
+        return <SunPath />;
+      case 'clock':
+        return <Clock />;
+      case 'life-compare':
+        return <LifeCompare />;
       default:
-        return null; // diagrams for later units are added in phase 4
+        return null;
     }
   })();
   if (!body) return null;

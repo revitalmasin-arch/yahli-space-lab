@@ -4,6 +4,7 @@ import { Visual } from '../visuals/Visual';
 import { Bi, He } from './Bi';
 import { testAttr } from '../lib/testattr';
 import { DragButton } from './DragButton';
+import { ModelBuilder } from './ModelBuilder';
 
 // Interactions: drag a card onto its target, or tap it and then tap the target (tap always works).
 
@@ -14,6 +15,7 @@ function seededOrder<T>(items: T[], seed: number): T[] {
 export function Interaction({ spec, onDone }: { spec: InteractionSpec; onDone: () => void }) {
   if (spec.kind === 'sort') return <Sort spec={spec} onDone={onDone} />;
   if (spec.kind === 'sequence') return <Sequence spec={spec} onDone={onDone} />;
+  if (spec.kind === 'model') return <ModelBuilder spec={spec} onDone={onDone} />;
   return (
     <section className="panel stack">
       <Bi x={spec.prompt} as="h3" />

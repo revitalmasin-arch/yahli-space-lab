@@ -9,7 +9,7 @@ const GLOSSARY_FROM = 214;
 export interface BookPages { pages: number[]; glossary: number[] }
 
 function split(all: number[]): BookPages {
-  const uniq = [...new Set(all)].sort((a, b) => a - b);
+  const uniq = [...new Set(all)].filter((p) => p > 0).sort((a, b) => a - b); // page 0 = outside source
   return { pages: uniq.filter((p) => p < GLOSSARY_FROM), glossary: uniq.filter((p) => p >= GLOSSARY_FROM) };
 }
 

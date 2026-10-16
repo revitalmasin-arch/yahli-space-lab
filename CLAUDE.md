@@ -22,6 +22,11 @@ After each gate run (pass or fail) and at the end of a work session, back up to 
 `OBSIDIAN_VAULT="C:/Users/revit/Documents/AI COURSE/MyObsidian" npm run backup:obsidian`
 This regenerates the vault folder `yahli-space-lab/`: overview, one note per phase with live gate status, these rules, and a full source snapshot. The phase plan lives in `docs/PHASES.md`.
 
+## Content rules (from the parent, 2026-10-16)
+- **Coverage:** together, the units must cover the textbook's printed pages **168–190 inclusive, in depth**, and every part of that material must be both taught and asked (check + review questions). Each unit names the pages it covers (bookmark).
+- **No invented information.** Every fact must come from the PDF (cite the printed page) or from a reliable scientific source (NASA, ESA, IAU, peer-reviewed or official educational sources — cite it). Analogies and teaching wording are fine; facts are not. Where the book and science disagree, follow the book for the exam answer and note the discrepancy for the adult in `docs/SOURCES.md`.
+- The page-coverage regression test must pass before any release.
+
 ## UI conventions (locked on branch UXUI, apply to Day 4 and every later unit)
 - Look: "space lab for a 10-year-old" — starfield background, console panels with `ConsoleTitle` (icon + Hebrew + small English), mission cards with `UnitIcon`. Playful, never babyish.
 - Pictures: real photos via `PhotoBall` / `PhotoRect` / `SaturnPhoto` (`src/visuals/Photo.tsx`) with a drawn fallback underneath. New photos only through `ops/fetch-images.mjs` (license checked, stored locally, credited in the parent area). Diagrams that are not to scale say so.

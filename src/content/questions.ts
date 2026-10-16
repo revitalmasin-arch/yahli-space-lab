@@ -1,5 +1,6 @@
 import { t } from '../lib/hebrew';
 import type { Choice, Question, Tx } from './types';
+import { MORE_QUESTIONS } from './questions-more';
 
 // Questions are original, written to the textbook's terminology and depth (book question numbers noted
 // where a question is modelled on one). Roles: warmup = nonblocking knowledge check; check = in-unit
@@ -10,7 +11,7 @@ const TRUE = (): Choice[] => [ch('true', 'True', 'נָכוֹן'), ch('false', 'N
 export const TF_CHOICES = TRUE();
 const hint = (en: string, heN: string): Tx => t(en, heN);
 
-export const QUESTIONS: Question[] = [
+const BASE_QUESTIONS: Question[] = [
   // ---------------- Unit 1: our place in the universe ----------------
   {
     kind: 'mc', id: 'u1-q1', unit: 'u1', concept: 'c-universe', role: 'warmup', difficulty: 1,
@@ -738,6 +739,8 @@ export const QUESTIONS: Question[] = [
     why: t('True: both motions happen together, all the time.', 'נָכוֹן: שְׁתֵּי הַתְּנוּעוֹת קוֹרוֹת יַחַד, כָּל הַזְּמַן.'),
   },
 ];
+
+export const QUESTIONS: Question[] = [...BASE_QUESTIONS, ...MORE_QUESTIONS];
 
 export const questionById = (id: string): Question => {
   const q = QUESTIONS.find((x) => x.id === id);

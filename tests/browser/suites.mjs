@@ -61,6 +61,21 @@ async function driveUnit(page, opts = {}) {
         continue;
       }
     }
+    // model builder: tap a planet then its orbit slot; then a feature card then its planet
+    const modelChip = page.locator('section[data-testid^="interaction-"] button[data-slot]');
+    if (await modelChip.count()) {
+      const slot = Number(await modelChip.first().getAttribute('data-slot'));
+      await modelChip.first().click();
+      await page.getByTestId(`slot-${slot}`).click();
+      continue;
+    }
+    const featureChip = page.locator('section[data-testid^="interaction-"] button[data-planet]');
+    if (await featureChip.count()) {
+      const planet = await featureChip.first().getAttribute('data-planet');
+      await featureChip.first().click();
+      await page.getByTestId(`model-planet-${planet}`).click();
+      continue;
+    }
     const prod = page.locator('section[data-testid^="production-"]');
     if (await visible(prod)) {
       const chips = prod.locator('.word-bank button[data-pos]');
@@ -337,6 +352,33 @@ export const suites = [
         const gap = page.getByTestId('production-u1-p2');
         await dragTo(page, gap.locator('button[data-ok="true"]'), gap.locator('[data-drop="blank"]'));
         assert(await gap.getByText(/Correct/).isVisible(), 'word dragged into the gap was not accepted');
+      },
+      'pages 168–190: every new unit (8–13) completes tap-only': async ({ page, url }) => {
+        for (const u of ['u10', 'u11', 'u12', 'u8', 'u9', 'u13']) {
+          await page.goto(url);
+          await page.getByTestId(`open-${u}`).last().click();
+          await driveUnit(page);
+        }
+      },
+      'model builder: drag a planet onto its orbit; wrong orbit gives feedback; model check appears': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u11').last().click();
+        await driveUntil(page, 'interaction-u11-model');
+        const box = page.getByTestId('interaction-u11-model');
+        // wrong orbit first: Neptune (slot 7) dropped on orbit 1
+        await dragTo(page, box.locator('button[data-slot="7"]'), page.locator('[data-drop="slot-0"]'));
+        assert(await box.getByText(/Not that orbit/).isVisible(), 'no feedback for a wrong orbit');
+        // right orbit by dragging: Mercury → orbit 1
+        await dragTo(page, box.locator('button[data-slot="0"]'), page.locator('[data-drop="slot-0"]'));
+        await page.getByTestId('model-planet-mercury').waitFor();
+        await driveUntil(page, 'model-check');
+        assert(/Not to scale|not to scale/.test(await page.getByTestId('model-check').textContent()), 'model check missing the scale note');
+      },
+      'the unit bookmark lists the book pages for a new unit': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u10').last().click();
+        await page.getByTestId('bookmark-open').click();
+        assert(/pages 168, 169, 170, 171/.test(await page.getByTestId('bookmark-pages').textContent()), 'u10 should point to pages 168–171');
       },
       'Day 3: unit 5 (asteroid belt, inner/outer) completes tap-only': async ({ page, url }) => {
         await page.goto(url);

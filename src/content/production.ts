@@ -1,10 +1,11 @@
 import { t } from '../lib/hebrew';
 import type { ProductionTask } from './types';
+import { MORE_PRODUCTION } from './production-more';
 
 // Hebrew production: arrange (full word bank) → complete (small bank) → say aloud (no bank).
 // Say/paper tasks are NOT recorded or graded by the app: the learner self-checks or waits for Mum.
 
-export const PRODUCTION: ProductionTask[] = [
+const BASE_PRODUCTION: ProductionTask[] = [
   // Unit 1
   {
     kind: 'arrange', id: 'u1-p1', unit: 'u1', concept: 'c-nesting', pattern: 'location', role: 'unit',
@@ -222,6 +223,8 @@ export const PRODUCTION: ProductionTask[] = [
     rubric: ['A correct example (swing, pendulum, waves, Earth orbiting the Sun…)', 'Reason: it repeats regularly', 'Uses כִּי (because)'],
   },
 ];
+
+export const PRODUCTION: ProductionTask[] = [...BASE_PRODUCTION, ...MORE_PRODUCTION];
 
 export const productionFor = (unit: string, role?: ProductionTask['role']) => PRODUCTION.filter((p) => p.unit === unit && (!role || p.role === role));
 export const productionById = (id: string) => PRODUCTION.find((p) => p.id === id);
