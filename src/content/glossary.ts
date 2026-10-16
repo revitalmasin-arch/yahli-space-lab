@@ -197,7 +197,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     'הַמָּקוֹם שֶׁיֵּשׁ בּוֹ הֲכִי הַרְבֵּה אַסְטֵרוֹאִידִים: בֵּין מַאְדִּים לְצֶדֶק.',
     [175, 176], { alts: ['חגורה', 'belt'] }),
   g('dwarf-planet', 'כּוֹכַב לֶכֶת נַנָּסִי', 'dwarf planet',
-    'A round body that orbits the Sun but is smaller than a planet. Since 2006: Pluto, Charon, Eris and Ceres.',
+    'A round body that orbits the Sun but is smaller than a planet. Since 2006. Examples: Pluto, Eris and Ceres.',
     'גּוּף עָגוֹל שֶׁמַּקִּיף אֶת הַשֶּׁמֶשׁ, אֲבָל קָטָן מִכּוֹכַב לֶכֶת. לְמָשָׁל: פְּלוּטוֹ.',
     [180], { alts: ['ננסי', 'ננסיים', 'כוכבי לכת ננסיים', 'dwarf', 'dwarf planets'] }),
   g('comet', 'שָׁבִיט', 'comet',

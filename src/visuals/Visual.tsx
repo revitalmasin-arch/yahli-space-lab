@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import type { VisualId } from '../content/types';
 import { PhotoBall, PhotoRect, SaturnPhoto, type PhotoKey } from './Photo';
+import { Seasons } from './Seasons';
 import { Calendar, Clock, CometMeteor, DayNight, LifeCompare, Models, PlanetTable, Sky, SunPath, Telescope } from './More';
 
 /** Seconds of animation time, advancing only while `playing`. Animations never start by themselves. */
-function useAnimTime(playing: boolean): number {
+export function useAnimTime(playing: boolean): number {
   const [t, setT] = useState(0);
   const last = useRef<number | null>(null);
   useEffect(() => {
@@ -27,7 +28,7 @@ function useAnimTime(playing: boolean): number {
   return t;
 }
 
-function PlayButton({ playing, onToggle, label }: { playing: boolean; onToggle: () => void; label?: string }) {
+export function PlayButton({ playing, onToggle, label }: { playing: boolean; onToggle: () => void; label?: string }) {
   return (
     <button type="button" className="small" onClick={onToggle} aria-pressed={playing}>
       {playing ? '⏸ עֲצוֹר · Pause' : `▶ ${label ?? 'הַפְעֵל · Play'}`}
@@ -173,6 +174,8 @@ export function Visual({ id, notToScale }: { id: VisualId; notToScale?: boolean 
         return <Clock />;
       case 'life-compare':
         return <LifeCompare />;
+      case 'seasons':
+        return <Seasons />;
       default:
         return null;
     }

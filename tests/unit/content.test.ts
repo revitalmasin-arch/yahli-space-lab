@@ -1,3 +1,5 @@
+import { SONGS } from '../../src/content/songs';
+import { EXPLAIN_HE } from '../../src/content/explain-he';
 import { describe, expect, it } from 'vitest';
 import { sameSentence, stripNiqqud } from '../../src/lib/hebrew';
 import { UNITS } from '../../src/content/units';
@@ -30,6 +32,17 @@ describe('content integrity for ready units', () => {
         expect(u.terms.length).toBeGreaterThanOrEqual(2);
         expect(u.terms.length).toBeLessThanOrEqual(4);
         expect(u.interaction).toBeTruthy();
+      });
+      it('has a memory rhyme (2+ Hebrew lines and its meaning)', () => {
+        const s = SONGS[u.id];
+        expect(s, u.id).toBeTruthy();
+        expect(s.lines.length).toBeGreaterThanOrEqual(2);
+        expect(s.en.length).toBeGreaterThan(20);
+      });
+      it('every Explore screen has a simplified Hebrew version (parent requirement 2026-10-17)', () => {
+        const he = EXPLAIN_HE[u.id] ?? [];
+        expect(he.length, `${u.id}: ${he.length} Hebrew texts for ${u.explain.length} screens`).toBe(u.explain.length);
+        for (const h of he) expect(h).toMatch(/[א-ת]/);
       });
       it('has 3-5 check questions of at least two kinds', () => {
         const checks = qs.filter((q) => q.role === 'check');

@@ -134,6 +134,7 @@ export const MORE_UNITS: Unit[] = [
       { text: 'We see the Sun rise in the east in the morning and set in the west in the evening. The Hebrew words help: מִזְרָח – זְרִיחָה (east – sunrise), מַעֲרָב – עֶרֶב (west – evening). (Book p.188)', visual: 'sun-path' },
       { text: 'The Sun does not really move across our sky. Earth spins from west to east, so the Sun only seems to move from east to west. This is the Sun\'s apparent motion. (Book p.190)', visual: 'sun-path' },
       { text: 'In Israel in winter the daytime is short and the night is long; in summer the day is long. But a יְמָמָה is always 24 hours. We divide it into 24 hours, an hour into 60 minutes and a minute into 60 seconds. (Book pp.189–190)', visual: 'clock' },
+      { text: 'Why does the length of the day change? Earth’s axis is tilted. In June our northern half leans toward the Sun, so it gets more sunlight: long days and short nights (the longest day is about 21 June). In December it leans away: short days and long nights (the shortest day is about 21 December). In spring and autumn day and night are almost equal. Press the months and spin Earth. (Book p.189)', visual: 'seasons' },
     ],
     terms: [
       { id: 'yemama', word: t('a full day (24 hours)', 'יְמָמָה'), meaning: t('a day and a night together', 'יוֹם וְלַיְלָה יַחַד'), sentence: t('A yemama is a day and a night. It lasts 24 hours.', 'יְמָמָה הִיא יוֹם וְלַיְלָה. הִיא נִמְשֶׁכֶת 24 שָׁעוֹת.') },

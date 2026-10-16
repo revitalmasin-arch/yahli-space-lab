@@ -12,6 +12,9 @@ import { Visual } from '../visuals/Visual';
 import { RocketBadge } from '../visuals/Icons';
 import { setHelperUnit } from '../components/helperState';
 import { BookRef } from '../components/BookRef';
+import { EXPLAIN_HE } from '../content/explain-he';
+import { MemorySong } from '../components/MemorySong';
+import { t } from '../lib/hebrew';
 import { useActions } from '../progress/actions';
 import { useStore } from '../progress/store';
 import { pickQuestion } from '../lib/learning';
@@ -160,7 +163,15 @@ export function UnitPlayer({ unitId, onExit }: { unitId: string; onExit: () => v
         <section className="panel stack" data-testid="explain">
           <p lang="en" dir="ltr" style={{ fontSize: '1.15rem' }}>{unit.explain[sub].text}</p>
           <Speak text={unit.explain[sub].text} lang="en" />
+          {EXPLAIN_HE[unit.id]?.[sub] && (
+            <div className="he-simple" data-testid="explain-he">
+              <p className="small-text muted" lang="he" dir="rtl">בְּעִבְרִית פְּשׁוּטָה:</p>
+              <He x={t(unit.explain[sub].text, EXPLAIN_HE[unit.id][sub])} as="p" />
+              <Speak text={EXPLAIN_HE[unit.id][sub]} lang="he" />
+            </div>
+          )}
           <Visual id={unit.explain[sub].visual} notToScale={unit.explain[sub].notToScale} />
+          {sub + 1 === unit.explain.length && <MemorySong unitId={unit.id} />}
           <div className="row end">
             {sub > 0 && <button type="button" onClick={() => setSub(sub - 1)}>← Back</button>}
             {sub + 1 < unit.explain.length
@@ -219,6 +230,7 @@ export function UnitPlayer({ unitId, onExit }: { unitId: string; onExit: () => v
           {progress.settings.celebrations && <div className="launch-wrap" data-testid="rocket-launch"><RocketBadge /></div>}
           <h2>Mission complete! · <He x={{ en: '', heN: 'סִיַּמְתָּ!', he: 'סיימת!' }} /></h2>
           <p>You explored the idea, learned {unit.terms.length} Hebrew words and practised saying them. It comes back for review on another day — that is how it sticks.</p>
+          <MemorySong unitId={unit.id} />
           <p className="muted small-text">Finishing a unit is practice, not proof of exam readiness.</p>
           <div className="row end"><button type="button" className="primary" onClick={onExit}>Back home →</button></div>
         </section>

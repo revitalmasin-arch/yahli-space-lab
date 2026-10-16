@@ -1,6 +1,7 @@
 import { t } from '../lib/hebrew';
 import type { Choice, Question, Tx } from './types';
 import { MORE_QUESTIONS } from './questions-more';
+import { EXTRA_QUESTIONS } from './questions-extra';
 
 // Questions are original, written to the textbook's terminology and depth (book question numbers noted
 // where a question is modelled on one). Roles: warmup = nonblocking knowledge check; check = in-unit
@@ -740,7 +741,7 @@ const BASE_QUESTIONS: Question[] = [
   },
 ];
 
-export const QUESTIONS: Question[] = [...BASE_QUESTIONS, ...MORE_QUESTIONS];
+export const QUESTIONS: Question[] = [...BASE_QUESTIONS, ...MORE_QUESTIONS, ...EXTRA_QUESTIONS];
 
 export const questionById = (id: string): Question => {
   const q = QUESTIONS.find((x) => x.id === id);

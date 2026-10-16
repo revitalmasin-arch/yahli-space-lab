@@ -325,6 +325,26 @@ export const suites = [
         await page.getByTestId('my-words-open').click();
         assert((await page.getByTestId('my-word').count()) === 4, 'words lost after reload');
       },
+      'Explore screens: simplified Hebrew on each; seasons diagram moves; memory rhyme at the end': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u13').last().click();
+        await page.getByRole('button', { name: /Skip/ }).click();
+        for (let k = 0; k < 10 && !(await page.getByTestId('seasons').count()); k++) {
+          assert(/[א-ת]/.test(await page.getByTestId('explain-he').textContent()), `screen ${k + 1} has no Hebrew`);
+          await page.getByRole('button', { name: /^Next →/ }).click();
+        }
+        assert(await page.getByTestId('explain-he').isVisible(), 'seasons screen has no Hebrew');
+        const bar = page.getByTestId('seasons-bar');
+        assert((await bar.getAttribute('data-hours')) === '14', 'June should show about 14 hours of light');
+        await page.getByTestId('seasons-december').click();
+        assert((await bar.getAttribute('data-hours')) === '10', 'December should show about 10 hours of light');
+        const dot = page.getByTestId('seasons-israel');
+        const before = await dot.getAttribute('cx');
+        await page.getByRole('button', { name: /Spin Earth/ }).click();
+        await page.waitForTimeout(600);
+        assert((await dot.getAttribute('cx')) !== before, 'Earth did not spin');
+        assert(/צָפוֹן|צירו|צִירוֹ/.test(await page.getByTestId('memory-song').textContent()), 'memory rhyme missing on the last screen');
+      },
       'unit bookmark: names the book pages and opens the full explanation': async ({ page, url }) => {
         await page.goto(url);
         await page.getByTestId('open-u2').last().click();

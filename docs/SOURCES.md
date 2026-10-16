@@ -38,6 +38,14 @@ The page-coverage test (`tests/unit/coverage.test.ts`) checks that every page 16
 9. **Month length (p.193)** — 29½ days is the time from new moon to new moon (the synodic month); one orbit relative to the stars is ~27.3 days. The app uses the book's 29½.
 10. **Year length** — the book says 365¼ days and does not mention leap years (February 29); the app does not either.
 
+## Added 2026-10-17 (Kip's dictionary, simplified Hebrew, new questions, seasons, rhymes)
+
+- **Chapter dictionary** (`src/content/glossary.ts`, ~100 words) — every meaning is from pp.168–190 or the book's glossary pp.214–216; each entry names its pages. Simple Hebrew wording is ours.
+- **Simplified Hebrew for every Explore screen** (`src/content/explain-he.ts`) — same facts as the English text beside it.
+- **New questions** (`src/content/questions-extra.ts`) — observation (p.170), the telescope's first use (pp.169, 171), observatory (p.171), Stonehenge (p.168), dark-sky observing (p.170), dwarf planets (p.180), Earth's air (p.178), the human orbit model (pp.185–186), what a calendar is for (p.184), day length and tilt (p.189).
+- **Seasons diagram** — the book (p.189) says the axis is tilted; the angle 23.4° and Israel's latitude (~31.8° N) are from NASA / standard geography. The day/night split is computed from them (≈14 h light on 21 June, ≈10 h on 21 December in Israel), matching published sunrise/sunset times for Jerusalem.
+- **Memory rhymes** (`src/content/songs.ts`) — written for the lab; they only repeat facts the unit already teaches. The English planet mnemonic ("My Very Educated Mother Just Served Us Noodles") is a common memory aid, not a fact.
+
 ## Images
 
 Real photos are from Wikimedia Commons with licenses checked by `ops/fetch-images.mjs`

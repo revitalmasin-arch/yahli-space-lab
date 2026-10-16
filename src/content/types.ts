@@ -33,7 +33,8 @@ export type VisualId =
   | 'models'
   | 'calendar'
   | 'sun-path'
-  | 'clock';
+  | 'clock'
+  | 'seasons';
 
 export type AnswerPattern = 'definition' | 'comparison' | 'cause' | 'location' | 'duration';
 

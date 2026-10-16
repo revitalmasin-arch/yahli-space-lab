@@ -24,6 +24,11 @@ export function WordBar({ onOpen }: { onOpen: () => void }) {
   const add = useAddWord();
   const [text, setText] = useState('');
   const [msg, setMsg] = useState('');
+  useEffect(() => {
+    if (!msg) return;
+    const id = window.setTimeout(() => setMsg(''), 5000);
+    return () => window.clearTimeout(id);
+  }, [msg]);
   return (
     <form className="word-bar row" onSubmit={(e) => { e.preventDefault(); const m = add(text); setMsg(m); if (m.startsWith('Saved')) setText(''); }} data-testid="word-bar">
       <label htmlFor="word-bar-input" className="small-text" title="Didn't understand a word? Paste it here">📝 <span lang="he">לֹא הֵבַנְתִּי:</span></label>
