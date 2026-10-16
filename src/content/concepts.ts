@@ -125,6 +125,97 @@ export const CONCEPTS: Concept[] = [
     ),
     sources: [{ page: 175 }, { page: 180 }],
   },
+  {
+    id: 'c-belt',
+    unit: 'u5',
+    name: t('The asteroid belt', 'חֲגוֹרַת הָאַסְטֵרוֹאִידִים'),
+    alt: t(
+      'Picture a ring of rocks around the Sun. It lies in the gap between planet 4 (Mars) and planet 5 (Jupiter).',
+      'דַּמְיֵין טַבַּעַת שֶׁל סְלָעִים סְבִיב הַשֶּׁמֶשׁ. הִיא בֵּין כּוֹכַב לֶכֶת 4 (מַאֲדִים) לְכוֹכַב לֶכֶת 5 (צֶדֶק).',
+    ),
+    altVisual: 'asteroid-belt',
+    worked: t(
+      'Example: Travel out from the Sun: Mercury, Venus, Earth, Mars — then rocks everywhere: the asteroid belt — then Jupiter.',
+      'דּוּגְמָה: יוֹצְאִים מֵהַשֶּׁמֶשׁ: חַמָּה, נוֹגַהּ, כַּדּוּר הָאָרֶץ, מַאֲדִים — וְאָז חֲגוֹרַת הָאַסְטֵרוֹאִידִים — וְאָז צֶדֶק.',
+    ),
+    sources: [{ page: 175 }, { page: 176 }],
+  },
+  {
+    id: 'c-inner-outer',
+    unit: 'u5',
+    name: t('Inner and outer planets', 'כּוֹכְבֵי לֶכֶת פְּנִימִיִּים וְחִיצוֹנִיִּים'),
+    alt: t(
+      'Inner or outer = WHERE the planet is (before or after the asteroid belt). Rocky or gas giant = WHAT it is made of. Two different questions.',
+      'פְּנִימִי אוֹ חִיצוֹנִי — אֵיפֹה הוּא נִמְצָא. אַרְצִי אוֹ גַּז עֲנָק — מִמָּה הוּא עָשׂוּי.',
+    ),
+    altVisual: 'asteroid-belt',
+    worked: t(
+      'Example: Uranus is after the asteroid belt, so it is an outer planet. (That tells us where it is, not what it is made of.)',
+      'דּוּגְמָה: אוּרָנוּס נִמְצָא אַחֲרֵי חֲגוֹרַת הָאַסְטֵרוֹאִידִים. לָכֵן הוּא כּוֹכַב לֶכֶת חִיצוֹנִי.',
+    ),
+    sources: [{ page: 175 }, { page: 176, note: 'inner/outer wording is from the teacher topic list, not the book' }],
+  },
+  {
+    id: 'c-moon-satellite',
+    unit: 'u6',
+    name: t('A moon is a natural satellite', 'יָרֵחַ הוּא לַוְיָן טִבְעִי', 'ירח הוא לוויין טבעי'),
+    alt: t(
+      'A satellite is something that goes around a planet. Nobody built our Moon, so it is a natural satellite of Earth.',
+      'לַוְיָן נָע מִסָּבִיב לְכוֹכַב לֶכֶת. אַף אֶחָד לֹא בָּנָה אֶת הַיָּרֵחַ, לָכֵן הוּא לַוְיָן טִבְעִי.',
+      'לוויין נע מסביב לכוכב לכת. אף אחד לא בנה את הירח, לכן הוא לוויין טבעי.',
+    ),
+    altVisual: 'moon-orbit',
+    worked: t(
+      'Example: Phobos goes around Mars, and it is natural. So Phobos is a moon of Mars.',
+      'דּוּגְמָה: פוֹבּוֹס מַקִּיף אֶת מַאֲדִים, וְהוּא טִבְעִי. לָכֵן הוּא יָרֵחַ שֶׁל מַאֲדִים.',
+    ),
+    sources: [{ page: 193 }, { page: 194 }, { page: 215 }, { page: 179 }],
+  },
+  {
+    id: 'c-moon-light',
+    unit: 'u6',
+    name: t('Moonlight is reflected sunlight', 'הַיָּרֵחַ מַחֲזִיר אֶת אוֹר הַשֶּׁמֶשׁ'),
+    alt: t(
+      'Sunlight hits the Moon and bounces back to our eyes. Without the Sun we could not see the Moon.',
+      'אוֹר הַשֶּׁמֶשׁ פּוֹגֵעַ בַּיָּרֵחַ וְחוֹזֵר אֵלֵינוּ. בְּלִי הַשֶּׁמֶשׁ לֹא הָיִינוּ רוֹאִים אֶת הַיָּרֵחַ.',
+    ),
+    altVisual: 'moon-orbit',
+    worked: t(
+      "Example: Through a telescope we can see Jupiter's moons. Do they make light? No — sunlight shines on them and reflects back. So they are מוּאָרִים.",
+      'דּוּגְמָה: בְּטֶלֶסְקוֹפּ רוֹאִים אֶת הַיְּרֵחִים שֶׁל צֶדֶק. אוֹר הַשֶּׁמֶשׁ מֵאִיר עֲלֵיהֶם וְחוֹזֵר. לָכֵן הֵם מוּאָרִים.',
+    ),
+    sources: [{ page: 193 }, { page: 194 }],
+  },
+  {
+    id: 'c-periodic',
+    unit: 'u7',
+    name: t('Periodic motion', 'תְּנוּעָה מַחֲזוֹרִית'),
+    alt: t(
+      'Periodic = the same motion repeats regularly, again and again, like a swing going back and forth.',
+      'תְּנוּעָה מַחֲזוֹרִית חוֹזֶרֶת עַל עַצְמָהּ שׁוּב וָשׁוּב, כְּמוֹ נַדְנֵדָה.',
+    ),
+    altVisual: 'periodic',
+    worked: t(
+      'Example: A ball rolls down a hill and stops. Does the motion repeat? No — so it is not periodic.',
+      'דּוּגְמָה: כַּדּוּר מִתְגַּלְגֵּל בִּירִידָה וְנֶעֱצָר. הַאִם הַתְּנוּעָה חוֹזֶרֶת? לֹא. לָכֵן הִיא לֹא מַחֲזוֹרִית.',
+    ),
+    sources: [{ page: 185 }, { page: 216, note: 'glossary 94' }],
+  },
+  {
+    id: 'c-rot-orbit',
+    unit: 'u7',
+    name: t('Rotation and orbit', 'סִיבּוּב וְהַקָּפָה'),
+    alt: t(
+      'Rotation: spinning in place, like a spinning top (סְבִיבוֹן). Orbit: travelling around something, like running laps around a playground.',
+      'סִיבּוּב: מִסְתּוֹבְבִים בַּמָּקוֹם, כְּמוֹ סְבִיבוֹן. הַקָּפָה: נָעִים מִסָּבִיב לְמַשֶּׁהוּ, כְּמוֹ רִיצָה סְבִיב מִגְרָשׁ.',
+    ),
+    altVisual: 'rotation-orbit',
+    worked: t(
+      'Example: The Moon travels around Earth. Spinning in place, or travelling around? Travelling around — so it is an orbit (הַקָּפָה).',
+      'דּוּגְמָה: הַיָּרֵחַ נָע מִסָּבִיב לְכַדּוּר הָאָרֶץ. זֶה סִיבּוּב אוֹ הַקָּפָה? הוּא נָע מִסָּבִיב — לָכֵן זוֹ הַקָּפָה.',
+    ),
+    sources: [{ page: 185 }, { page: 189 }, { page: 190 }],
+  },
 ];
 
 export const conceptById = (id: string): Concept => {

@@ -131,6 +131,96 @@ export const PRODUCTION: ProductionTask[] = [
     example: t('A dwarf planet is a round body that orbits the Sun and is smaller than a planet. For example, Pluto.', 'כּוֹכַב לֶכֶת נַנָּסִי הוּא גּוּף עָגוֹל שֶׁמַּקִּיף אֶת הַשֶּׁמֶשׁ וְקָטָן מִכּוֹכַב לֶכֶת. לְמָשָׁל, פְּלוּטוֹ.'),
     rubric: ['Orbits the Sun', 'Smaller than a planet (round)', 'Gives Pluto or Ceres as an example'],
   },
+  // Unit 5
+  {
+    kind: 'arrange', id: 'u5-p1', unit: 'u5', concept: 'c-belt', pattern: 'location', role: 'unit',
+    prompt: t('Put the words in order: "The asteroid belt is between Mars and Jupiter."', 'סַדֵּר אֶת הַמִּלִּים לְמִשְׁפָּט.'),
+    words: ['חֲגוֹרַת הָאַסְטֵרוֹאִידִים', 'נִמְצֵאת', 'בֵּין', 'מַאֲדִים', 'לְצֶדֶק'],
+    meaningEn: 'The asteroid belt is between Mars and Jupiter.',
+  },
+  {
+    kind: 'complete', id: 'u5-p2', unit: 'u5', concept: 'c-inner-outer', pattern: 'location', role: 'unit',
+    prompt: t('Complete the sentence.', 'הַשְׁלֵם אֶת הַמִּשְׁפָּט.'),
+    before: 'צֶדֶק הוּא כּוֹכַב לֶכֶת',
+    after: '.',
+    answer: 'חִיצוֹנִי',
+    bank: ['חִיצוֹנִי', 'פְּנִימִי', 'נַנָּסִי'],
+    meaningEn: 'Jupiter is an outer planet.',
+  },
+  {
+    kind: 'say', id: 'u5-p3', unit: 'u5', concept: 'c-inner-outer', pattern: 'comparison', role: 'unit',
+    prompt: t('Say in Hebrew: what is the difference between inner and outer planets?', 'אֱמוֹר בְּעִבְרִית: מָה הַהֶבְדֵּל בֵּין כּוֹכְבֵי לֶכֶת פְּנִימִיִּים לְחִיצוֹנִיִּים?'),
+    requiredTerms: ['פְּנִימִיִּים', 'חִיצוֹנִיִּים', 'חֲגוֹרַת הָאַסְטֵרוֹאִידִים'],
+    example: t('The inner planets are before the asteroid belt, close to the Sun. The outer planets are after it, far from the Sun.', 'כּוֹכְבֵי הַלֶּכֶת הַפְּנִימִיִּים נִמְצָאִים לִפְנֵי חֲגוֹרַת הָאַסְטֵרוֹאִידִים, קָרוֹב לַשֶּׁמֶשׁ. הַחִיצוֹנִיִּים נִמְצָאִים אַחֲרֶיהָ, רָחוֹק מֵהַשֶּׁמֶשׁ.'),
+    rubric: ['Inner: before the belt / close to the Sun', 'Outer: after the belt / far from the Sun', 'Talks about position, not material'],
+  },
+  {
+    kind: 'say', id: 'u5-p4', unit: 'u5', concept: 'c-belt', pattern: 'location', role: 'review',
+    prompt: t('Say in Hebrew: where is the asteroid belt?', 'אֱמוֹר בְּעִבְרִית: אֵיפֹה נִמְצֵאת חֲגוֹרַת הָאַסְטֵרוֹאִידִים?'),
+    requiredTerms: ['מַאֲדִים', 'צֶדֶק'],
+    example: t('The asteroid belt is between Mars and Jupiter.', 'חֲגוֹרַת הָאַסְטֵרוֹאִידִים נִמְצֵאת בֵּין מַאֲדִים לְצֶדֶק.'),
+    rubric: ['Between Mars and Jupiter (both named)', 'Uses בֵּין … לְ…', 'Understandable Hebrew'],
+  },
+  // Unit 6
+  {
+    kind: 'arrange', id: 'u6-p1', unit: 'u6', concept: 'c-moon-light', pattern: 'cause', role: 'unit',
+    prompt: t('Put the words in order: "The Moon is lit because it reflects sunlight."', 'סַדֵּר אֶת הַמִּלִּים לְמִשְׁפָּט.'),
+    words: ['הַיָּרֵחַ', 'מוּאָר', 'כִּי', 'הוּא', 'מַחֲזִיר', 'אֶת', 'אוֹר הַשֶּׁמֶשׁ'],
+    meaningEn: 'The Moon is lit because it reflects sunlight.',
+  },
+  {
+    kind: 'complete', id: 'u6-p2', unit: 'u6', concept: 'c-moon-satellite', pattern: 'definition', role: 'unit',
+    prompt: t('Complete the sentence.', 'הַשְׁלֵם אֶת הַמִּשְׁפָּט.'),
+    before: 'הַיָּרֵחַ מַקִּיף אֶת',
+    after: '.',
+    answer: 'כַּדּוּר הָאָרֶץ',
+    bank: ['כַּדּוּר הָאָרֶץ', 'מַאֲדִים', 'צֶדֶק'],
+    meaningEn: 'The Moon orbits Earth.',
+  },
+  {
+    kind: 'say', id: 'u6-p3', unit: 'u6', concept: 'c-moon-satellite', pattern: 'definition', role: 'unit',
+    prompt: t('Say in Hebrew: what is a moon? Try to use לַוְיָן טִבְעִי.', 'אֱמוֹר בְּעִבְרִית: מָה הוּא יָרֵחַ?'),
+    requiredTerms: ['יָרֵחַ', 'מַקִּיף'],
+    example: t('A moon is a natural satellite — a natural body that orbits a planet.', 'יָרֵחַ הוּא לַוְיָן טִבְעִי — גּוּף טִבְעִי שֶׁמַּקִּיף כּוֹכַב לֶכֶת.', 'ירח הוא לוויין טבעי — גוף טבעי שמקיף כוכב לכת.'),
+    rubric: ['Orbits a planet', 'Natural (not built by people) / satellite', 'Understandable Hebrew'],
+  },
+  {
+    kind: 'paper', id: 'u6-p4', unit: 'u6', concept: 'c-moon-light', pattern: 'cause', role: 'review',
+    prompt: t('Write one sentence on paper: is the Moon מֵאִיר or מוּאָר? Why? Show it to Mum.', 'כְּתוֹב מִשְׁפָּט עַל דַּף: הַיָּרֵחַ מֵאִיר אוֹ מוּאָר? לָמָּה?'),
+    requiredTerms: ['מוּאָר', 'כִּי'],
+    example: t('The Moon is lit, because sunlight hits it and comes back to us.', 'הַיָּרֵחַ מוּאָר, כִּי אוֹר הַשֶּׁמֶשׁ פּוֹגֵעַ בּוֹ וְחוֹזֵר אֵלֵינוּ.'),
+    rubric: ['Chooses מוּאָר', 'Gives the reason: sunlight reflects off the Moon', 'Uses כִּי (because)'],
+  },
+  // Unit 7
+  {
+    kind: 'arrange', id: 'u7-p1', unit: 'u7', concept: 'c-rot-orbit', pattern: 'comparison', role: 'unit',
+    prompt: t('Put the words in order: "Earth rotates around its axis and orbits the Sun."', 'סַדֵּר אֶת הַמִּלִּים לְמִשְׁפָּט.'),
+    words: ['כַּדּוּר הָאָרֶץ', 'מִסְתּוֹבֵב', 'סְבִיב', 'צִירוֹ', 'וּמַקִּיף', 'אֶת', 'הַשֶּׁמֶשׁ'],
+    meaningEn: 'Earth rotates around its axis and orbits the Sun.',
+  },
+  {
+    kind: 'complete', id: 'u7-p2', unit: 'u7', concept: 'c-periodic', pattern: 'definition', role: 'unit',
+    prompt: t('Complete the sentence.', 'הַשְׁלֵם אֶת הַמִּשְׁפָּט.'),
+    before: 'תְּנוּעָה שֶׁחוֹזֶרֶת עַל עַצְמָהּ בְּאוֹפֶן קָבוּעַ נִקְרֵאת תְּנוּעָה',
+    after: '.',
+    answer: 'מַחֲזוֹרִית',
+    bank: ['מַחֲזוֹרִית', 'מְהִירָה', 'אִיטִּית'],
+    meaningEn: 'Motion that repeats itself regularly is called periodic motion.',
+  },
+  {
+    kind: 'say', id: 'u7-p3', unit: 'u7', concept: 'c-rot-orbit', pattern: 'comparison', role: 'unit',
+    prompt: t('Say in Hebrew: what is the difference between rotation (סִיבּוּב) and orbit (הַקָּפָה)?', 'אֱמוֹר בְּעִבְרִית: מָה הַהֶבְדֵּל בֵּין סִיבּוּב לְהַקָּפָה?'),
+    requiredTerms: ['סִיבּוּב', 'הַקָּפָה', 'צִיר'],
+    example: t('Rotation: Earth spins around its axis. Orbit: Earth travels around the Sun.', 'סִיבּוּב — כַּדּוּר הָאָרֶץ מִסְתּוֹבֵב סְבִיב צִירוֹ. הַקָּפָה — כַּדּוּר הָאָרֶץ נָע מִסָּבִיב לַשֶּׁמֶשׁ.'),
+    rubric: ['Rotation = spinning on its own axis', 'Orbit = travelling around the Sun (another body)', 'Does not say "orbits itself"'],
+  },
+  {
+    kind: 'say', id: 'u7-p4', unit: 'u7', concept: 'c-periodic', pattern: 'cause', role: 'review',
+    prompt: t('Say in Hebrew: give one example of periodic motion and say why it is periodic.', 'אֱמוֹר בְּעִבְרִית: תֵּן דּוּגְמָה לִתְנוּעָה מַחֲזוֹרִית, וְהַסְבֵּר לָמָּה.'),
+    requiredTerms: ['מַחֲזוֹרִית', 'חוֹזֶרֶת'],
+    example: t('A swing is periodic motion, because it repeats again and again.', 'נַדְנֵדָה הִיא תְּנוּעָה מַחֲזוֹרִית, כִּי הִיא חוֹזֶרֶת עַל עַצְמָהּ שׁוּב וָשׁוּב.'),
+    rubric: ['A correct example (swing, pendulum, waves, Earth orbiting the Sun…)', 'Reason: it repeats regularly', 'Uses כִּי (because)'],
+  },
 ];
 
 export const productionFor = (unit: string, role?: ProductionTask['role']) => PRODUCTION.filter((p) => p.unit === unit && (!role || p.role === role));

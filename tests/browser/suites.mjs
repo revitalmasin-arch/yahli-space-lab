@@ -185,6 +185,33 @@ export const suites = [
         const p = await stored(page);
         assert(p.productions.some((r) => r.taskId === 'u4-p1' && r.result === 'correct'), 'arrange task with repeated word not accepted');
       },
+      'Day 3: unit 5 (asteroid belt, inner/outer) completes tap-only': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u5').click();
+        await driveUnit(page, { wrongFor: 'u5-q5' });
+      },
+      'Day 3: unit 6 (the Moon) completes tap-only; the Moon animation plays and pauses': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u6').click();
+        await page.getByRole('button', { name: /Skip/ }).click();
+        await page.getByRole('button', { name: /Play/ }).click();
+        await page.waitForTimeout(400);
+        await page.getByRole('button', { name: /Pause/ }).click();
+        await driveUnit(page);
+      },
+      'Day 3: unit 7: spinning and orbiting are separate motions; unit completes tap-only': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u7').click();
+        await page.getByRole('button', { name: /Skip/ }).click();
+        await page.getByRole('button', { name: /Next/ }).click(); // to the rotation/orbit screen
+        await page.getByRole('button', { name: /Spin/ }).click();
+        await page.waitForTimeout(3400);
+        await page.getByRole('button', { name: /Spin/ }).click();
+        const status = await page.locator('p[role="status"]').filter({ hasText: 'Spins' }).textContent();
+        const [spins, orbits] = [...status.matchAll(/(\d+)/g)].map((m) => Number(m[1]));
+        assert(spins >= 2 && orbits === 0, `spin-only should not orbit: ${status}`);
+        await driveUnit(page);
+      },
     },
   },
 ];
