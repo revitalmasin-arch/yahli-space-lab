@@ -10,6 +10,10 @@ export function Visual({ id, notToScale }: { id: VisualId; notToScale?: boolean 
         return <UniverseZoom />;
       case 'star-planet-light':
         return <StarPlanetLight />;
+      case 'solar-order':
+        return <SolarSystem groups={false} />;
+      case 'planet-groups':
+        return <SolarSystem groups />;
       default:
         return null; // diagrams for later units are added in phase 4
     }
@@ -82,6 +86,68 @@ function UniverseZoom() {
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+const PLANETS = [
+  { he: 'חַמָּה', en: 'Mercury', r: 4, color: '#b0a89a', group: 'rocky' },
+  { he: 'נוֹגַהּ', en: 'Venus', r: 6, color: '#e6c98a', group: 'rocky' },
+  { he: 'כַּדּוּר הָאָרֶץ', en: 'Earth', r: 6.5, color: '#4fa3ff', group: 'rocky' },
+  { he: 'מַאֲדִים', en: 'Mars', r: 5, color: '#d0603a', group: 'rocky' },
+  { he: 'צֶדֶק', en: 'Jupiter', r: 15, color: '#d8b48a', group: 'gas' },
+  { he: 'שַׁבְּתַאי', en: 'Saturn', r: 12, color: '#e8d29a', group: 'gas', rings: true },
+  { he: 'אוּרָנוּס', en: 'Uranus', r: 9, color: '#9fe3e8', group: 'gas' },
+  { he: 'נֶפְּטוּן', en: 'Neptune', r: 9, color: '#4f6fe0', group: 'gas' },
+] as const;
+const GROUP_LABEL = { rocky: 'אַרְצִי · rocky', gas: 'גַּז עֲנָק · gas giant', dwarf: 'נַנָּסִי · dwarf planet' };
+
+/** The Sun and the eight planets in order, the asteroid belt between Mars and Jupiter. Tap a planet. */
+function SolarSystem({ groups }: { groups: boolean }) {
+  const [sel, setSel] = useState<number | null>(null);
+  const [showGroups, setShowGroups] = useState(groups);
+  const x = (i: number) => 70 + i * 52 + (i >= 4 ? 30 : 0); // a gap for the asteroid belt
+  const belt = Array.from({ length: 26 }, (_, i) => ({ x: x(3) + 22 + (i % 5) * 7, y: 40 + ((i * 37) % 120) }));
+  const p = sel !== null ? PLANETS[sel] : null;
+  return (
+    <div>
+      <svg className="visual" viewBox="0 0 520 200" role="img" aria-label="The Sun and the eight planets in order, with the asteroid belt between Mars and Jupiter">
+        <rect width="520" height="200" fill="#050818" />
+        <circle cx="-30" cy="100" r="80" fill="#ffb347" />
+        <text x="18" y="190" fill="#ffe08a" fontSize="11" textAnchor="middle">שֶׁמֶשׁ</text>
+        {showGroups && (
+          <g>
+            <rect x={x(0) - 16} y="20" width={x(3) - x(0) + 32} height="160" rx="10" fill="#4caf6a" opacity="0.12" />
+            <rect x={x(4) - 20} y="20" width={x(7) - x(4) + 40} height="160" rx="10" fill="#7fd3ff" opacity="0.12" />
+            <text x={(x(0) + x(3)) / 2} y="34" fill="#9be3b5" fontSize="11" textAnchor="middle">אַרְצִיִּים · rocky</text>
+            <text x={(x(4) + x(7)) / 2} y="34" fill="#bfe9ff" fontSize="11" textAnchor="middle">גַּזִּים עֲנָקִיִּים · gas giants</text>
+            <circle cx={x(3) + 36} cy="150" r="2.5" fill="#ddd" />
+            <text x={x(3) + 36} y="168" fill="#ddd" fontSize="9" textAnchor="middle">Ceres</text>
+            <circle cx="505" cy="60" r="2.5" fill="#ddd" />
+            <text x="503" y="78" fill="#ddd" fontSize="9" textAnchor="end">Pluto →</text>
+          </g>
+        )}
+        {belt.map((b, i) => <circle key={i} cx={b.x} cy={b.y} r="1.3" fill="#9a8f80" />)}
+        <text x={x(3) + 36} y="190" fill="#aab3dd" fontSize="9" textAnchor="middle">asteroid belt</text>
+        {PLANETS.map((pl, i) => (
+          <g key={pl.en} role="button" tabIndex={0} aria-label={`${i + 1}. ${pl.en}`} onClick={() => setSel(i)} onKeyDown={(e) => e.key === 'Enter' && setSel(i)} style={{ cursor: 'pointer' }}>
+            <circle cx={x(i)} cy="100" r={Math.max(pl.r, 14)} fill="transparent" />
+            {'rings' in pl && <ellipse cx={x(i)} cy="100" rx={pl.r + 9} ry="4" fill="none" stroke="#d9c58a" strokeWidth="2" />}
+            <circle cx={x(i)} cy="100" r={pl.r} fill={pl.color} stroke={sel === i ? '#ffe08a' : 'none'} strokeWidth="2" />
+            <text x={x(i)} y="128" fill="#cfd8ff" fontSize="10" textAnchor="middle">{i + 1}</text>
+            <text x={x(i)} y="143" fill="#eef1ff" fontSize="11" textAnchor="middle">{pl.he}</text>
+          </g>
+        ))}
+      </svg>
+      <div className="row">
+        <span className="muted small-text">Tap a planet · לְחַץ עַל כּוֹכַב לֶכֶת</span>
+        <button type="button" className="small" onClick={() => setShowGroups(!showGroups)} aria-pressed={showGroups}>{showGroups ? 'Hide groups' : 'Show groups · קְבוּצוֹת'}</button>
+      </div>
+      {p && sel !== null && (
+        <p className="feedback help" role="status">
+          <strong>{sel + 1}.</strong> <span lang="he">{p.he}</span> — <span lang="en">{p.en}</span> · <span lang="he">{GROUP_LABEL[p.group]}</span>
+        </p>
+      )}
     </div>
   );
 }

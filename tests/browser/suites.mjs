@@ -117,7 +117,11 @@ export const suites = [
         const mission = page.getByTestId('mission');
         assert(await mission.getByTestId('open-u1').isEnabled(), 'unit 1 not available');
         assert(await mission.getByTestId('open-u2').isEnabled(), 'unit 2 not available');
-        assert(await page.getByTestId('open-u3').isDisabled(), 'unit 3 should be coming soon');
+        // Units without written content are disabled and say so; ready ones are enabled.
+        for (const b of await page.locator('button[data-testid^="open-u"]').all()) {
+          const txt = await b.textContent();
+          assert((await b.isDisabled()) === /coming soon/.test(txt), `inconsistent unit button: ${txt}`);
+        }
       },
       'unit 2 tap-only with wrong answers through every help level; assistance recorded honestly': async ({ page, url }) => {
         await page.goto(url);
@@ -157,6 +161,29 @@ export const suites = [
         await page.goto(url);
         await page.getByTestId('mission').getByTestId('open-u1').click();
         await driveUnit(page);
+      },
+    },
+  },
+  {
+    phase: 4,
+    tests: {
+      'Day 2: unit 3 (planet order) completes tap-only; tapping a planet shows its names': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u3').click();
+        await page.getByRole('button', { name: /Skip/ }).click(); // straight to the explanation
+        await page.locator('g[aria-label="3. Earth"] circle').last().click();
+        const info = await page.getByRole('status').first().textContent();
+        assert(/Earth/.test(info) && /כַּדּוּר הָאָרֶץ/.test(info), `planet info: ${info}`);
+        await driveUnit(page);
+      },
+      'Day 2: unit 4 (groups, dwarf planets) completes tap-only, with a wrong-answer path': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u4').click();
+        const seen = await driveUnit(page, { wrongFor: 'u4-q2' });
+        assert(seen.has('help-1'), 'hint not shown after a wrong answer');
+        await page.waitForTimeout(500);
+        const p = await stored(page);
+        assert(p.productions.some((r) => r.taskId === 'u4-p1' && r.result === 'correct'), 'arrange task with repeated word not accepted');
       },
     },
   },

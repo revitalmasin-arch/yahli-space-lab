@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { ProductionTask } from '../content/types';
 import type { ProductionResult } from '../progress/model';
-import { stripNiqqud } from '../lib/hebrew';
+import { sameSentence, stripNiqqud } from '../lib/hebrew';
 import { Bi, useNiqqud } from './Bi';
 import { Speak } from './Speak';
 import { testAttr } from '../lib/testattr';
@@ -33,11 +33,11 @@ function Arrange({ task, onDone }: { task: Extract<ProductionTask, { kind: 'arra
   const [state, setState] = useState<'work' | 'right' | 'revealed'>('work');
   const sentence = line.map((i) => task.words[i]).join(' ');
   const check = () => {
-    if (line.every((idx, pos) => idx === pos) && line.length === task.words.length) return setState('right');
+    if (sameSentence(task.words, line.map((i) => task.words[i]))) return setState('right');
     const m = misses + 1;
     setMisses(m);
     if (m >= 2) setState('revealed');
-    else setLine(line[0] === 0 ? [0] : []); // keep a correct first word as a scaffold
+    else setLine(task.words[line[0]] === task.words[0] ? [line[0]] : []); // keep a correct first word as a scaffold
   };
   return (
     <section className="panel stack" data-testid={`production-${task.id}`}>

@@ -65,6 +65,66 @@ export const CONCEPTS: Concept[] = [
     ),
     sources: [{ page: 174 }, { page: 183 }, { page: 214 }],
   },
+  {
+    id: 'c-order',
+    unit: 'u3',
+    name: t('Planet order from the Sun', 'סֵדֶר כּוֹכְבֵי הַלֶּכֶת'),
+    alt: t(
+      'Count outward from the Sun: 1 Mercury, 2 Venus, 3 Earth, 4 Mars — then the asteroid belt — 5 Jupiter, 6 Saturn, 7 Uranus, 8 Neptune.',
+      'סוֹפְרִים מֵהַשֶּׁמֶשׁ: 1 חַמָּה, 2 נוֹגַהּ, 3 כַּדּוּר הָאָרֶץ, 4 מַאֲדִים, 5 צֶדֶק, 6 שַׁבְּתַאי, 7 אוּרָנוּס, 8 נֶפְּטוּן.',
+    ),
+    altVisual: 'solar-order',
+    worked: t(
+      'Example: Which planet comes right after Earth? Earth is 3rd, so the next one, 4th, is Mars (מַאֲדִים).',
+      'דּוּגְמָה: מָה בָּא אַחֲרֵי כַּדּוּר הָאָרֶץ? כַּדּוּר הָאָרֶץ שְׁלִישִׁי. הָרְבִיעִי הוּא מַאֲדִים.',
+    ),
+    sources: [{ page: 175 }, { page: 178 }, { page: 179 }, { page: 182 }],
+  },
+  {
+    id: 'c-names',
+    unit: 'u3',
+    name: t('Hebrew and English planet names', 'שְׁמוֹת כּוֹכְבֵי הַלֶּכֶת'),
+    alt: t(
+      'Two names sound like English: אוּרָנוּס = Uranus, נֶפְּטוּן = Neptune. The others are different: חַמָּה Mercury, נוֹגַהּ Venus, מַאֲדִים Mars, צֶדֶק Jupiter, שַׁבְּתַאי Saturn.',
+      'אוּרָנוּס וְנֶפְּטוּן דּוֹמִים לָאַנְגְּלִית. חַמָּה, נוֹגַהּ, מַאֲדִים, צֶדֶק וְשַׁבְּתַאי שׁוֹנִים.',
+    ),
+    altVisual: 'solar-order',
+    worked: t(
+      'Example: Mars is reddish. In Hebrew, red is אָדוֹם — so מַאֲדִים is Mars.',
+      'דּוּגְמָה: מַאֲדִים אֲדַמְדַּם. אָדוֹם ← מַאֲדִים. בְּאַנְגְּלִית: Mars.',
+    ),
+    sources: [{ page: 175 }, { page: 178 }, { page: 179 }],
+  },
+  {
+    id: 'c-groups',
+    unit: 'u4',
+    name: t('Rocky planets and gas giants', 'כּוֹכְבֵי לֶכֶת אַרְצִיִּים וְגַזִּים עֲנָקִיִּים'),
+    alt: t(
+      'Rocky planets have solid ground you could stand on. Gas giants are huge balls made mostly of gas, with no solid surface.',
+      'לְכוֹכְבֵי לֶכֶת אַרְצִיִּים יֵשׁ קַרְקַע מוּצֶקֶת. לַגַּזִּים הָעֲנָקִיִּים אֵין קַרְקַע — הֵם עֲשׂוּיִים בְּעִיקָּר מִגַּזִּים.',
+    ),
+    altVisual: 'planet-groups',
+    worked: t(
+      'Example: Saturn has no solid ground and is made mostly of gas, so it belongs to the gas giants.',
+      'דּוּגְמָה: לְשַׁבְּתַאי אֵין קַרְקַע מוּצֶקֶת, וְהוּא עָשׂוּי בְּעִיקָּר מִגַּזִּים. לָכֵן הוּא שַׁיָּיךְ לַגַּזִּים הָעֲנָקִיִּים.',
+    ),
+    sources: [{ page: 175 }, { page: 179 }, { page: 183 }],
+  },
+  {
+    id: 'c-dwarf',
+    unit: 'u4',
+    name: t('Dwarf planets', 'כּוֹכְבֵי לֶכֶת נַנָּסִיִּים'),
+    alt: t(
+      'A dwarf planet is round and orbits the Sun like a planet, but it is smaller than the planets.',
+      'כּוֹכַב לֶכֶת נַנָּסִי עָגוֹל וּמַקִּיף אֶת הַשֶּׁמֶשׁ, אֲבָל הוּא קָטָן מִכּוֹכְבֵי הַלֶּכֶת.',
+    ),
+    altVisual: 'planet-groups',
+    worked: t(
+      'Example: Eris is round, orbits the Sun, and is smaller than Mercury. So Eris is a dwarf planet.',
+      'דּוּגְמָה: אֵרִיס עָגוֹל, מַקִּיף אֶת הַשֶּׁמֶשׁ, וְקָטָן מֵחַמָּה. לָכֵן אֵרִיס הוּא כּוֹכַב לֶכֶת נַנָּסִי.',
+    ),
+    sources: [{ page: 175 }, { page: 180 }],
+  },
 ];
 
 export const conceptById = (id: string): Concept => {

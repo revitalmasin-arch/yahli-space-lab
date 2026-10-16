@@ -31,7 +31,9 @@ if (!skipTests) {
 mkdirSync(tmp, { recursive: true });
 if (!run('npx vite build --logLevel warn', { RELEASE_ID: id, BUILD_OUT_DIR: join(tmp, 'site') })) fail('build');
 cpSync(join(ROOT, 'ops/server/static-server.mjs'), join(tmp, 'server.mjs'));
-const info = { id, version: pkg.version, schema, builtAt: new Date().toISOString(), checks: { typecheck: !skipTests, unit: !skipTests, smoke: false } };
+const git = (args) => spawnSync(`git ${args}`, { cwd: ROOT, shell: true, encoding: 'utf8' }).stdout?.trim() || null;
+const source = { commit: git('rev-parse --short HEAD'), branch: git('branch --show-current'), uncommittedChanges: !!git('status --porcelain') };
+const info = { id, version: pkg.version, schema, source, builtAt: new Date().toISOString(), checks: { typecheck: !skipTests, unit: !skipTests, smoke: false } };
 writeFileSync(join(tmp, 'release.json'), JSON.stringify(info, null, 2) + '\n');
 
 // Smoke test the built files with the release's own server on a temporary port.

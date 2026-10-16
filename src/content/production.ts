@@ -71,6 +71,66 @@ export const PRODUCTION: ProductionTask[] = [
     example: t('We see Mars because sunlight shines on it.', 'רוֹאִים אֶת מַאֲדִים כִּי אוֹר הַשֶּׁמֶשׁ מֵאִיר עָלָיו.'),
     rubric: ['Gives the cause: sunlight shines on Mars (or: Mars is מוּאָר)', 'Does not say Mars makes its own light', 'One understandable sentence'],
   },
+  // Unit 3
+  {
+    kind: 'arrange', id: 'u3-p1', unit: 'u3', concept: 'c-order', pattern: 'location', role: 'unit',
+    prompt: t('Put the words in order: "Mars is between Earth and Jupiter."', 'סַדֵּר אֶת הַמִּלִּים לְמִשְׁפָּט.'),
+    words: ['מַאֲדִים', 'נִמְצָא', 'בֵּין', 'כַּדּוּר הָאָרֶץ', 'לְצֶדֶק'],
+    meaningEn: 'Mars is between Earth and Jupiter.',
+  },
+  {
+    kind: 'complete', id: 'u3-p2', unit: 'u3', concept: 'c-order', pattern: 'location', role: 'unit',
+    prompt: t('Complete the sentence.', 'הַשְׁלֵם אֶת הַמִּשְׁפָּט.'),
+    before: 'חַמָּה הוּא כּוֹכַב הַלֶּכֶת',
+    after: 'בְּיוֹתֵר לַשֶּׁמֶשׁ.',
+    answer: 'הַקָּרוֹב',
+    bank: ['הַקָּרוֹב', 'הָרָחוֹק', 'הַגָּדוֹל'],
+    meaningEn: 'Mercury is the planet closest to the Sun.',
+  },
+  {
+    kind: 'say', id: 'u3-p3', unit: 'u3', concept: 'c-order', pattern: 'location', role: 'unit',
+    prompt: t('Say the eight planets in order in Hebrew, starting from the Sun.', 'אֱמוֹר אֶת שְׁמוֹנַת כּוֹכְבֵי הַלֶּכֶת לְפִי הַסֵּדֶר, מֵהַשֶּׁמֶשׁ.'),
+    requiredTerms: ['חַמָּה', 'נֶפְּטוּן'],
+    example: t('Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.', 'חַמָּה, נוֹגַהּ, כַּדּוּר הָאָרֶץ, מַאֲדִים, צֶדֶק, שַׁבְּתַאי, אוּרָנוּס, נֶפְּטוּן.'),
+    rubric: ['All eight Hebrew names', 'Correct order from the Sun (one swap = not yet)', 'Recognisable pronunciation'],
+  },
+  {
+    kind: 'say', id: 'u3-p4', unit: 'u3', concept: 'c-order', pattern: 'location', role: 'review',
+    prompt: t('Say in Hebrew: where is Earth in the order of the planets?', 'אֱמוֹר בְּעִבְרִית: אֵיפֹה כַּדּוּר הָאָרֶץ בְּסֵדֶר כּוֹכְבֵי הַלֶּכֶת?'),
+    requiredTerms: ['שְׁלִישִׁי', 'נוֹגַהּ', 'מַאֲדִים'],
+    example: t('Earth is the third planet from the Sun, between Venus and Mars.', 'כַּדּוּר הָאָרֶץ הוּא כּוֹכַב הַלֶּכֶת הַשְּׁלִישִׁי מֵהַשֶּׁמֶשׁ, בֵּין נוֹגַהּ לְמַאֲדִים.'),
+    rubric: ['Says third (שלישי) from the Sun', 'Names Venus and Mars as neighbours', 'Understandable Hebrew'],
+  },
+  // Unit 4
+  {
+    kind: 'arrange', id: 'u4-p1', unit: 'u4', concept: 'c-groups', pattern: 'comparison', role: 'unit',
+    prompt: t('Put the words in order: "Earth is made of rock, but Jupiter is made of gas."', 'סַדֵּר אֶת הַמִּלִּים לְמִשְׁפָּט.'),
+    words: ['כַּדּוּר הָאָרֶץ', 'עָשׂוּי', 'מִסֶּלַע', 'אֲבָל', 'צֶדֶק', 'עָשׂוּי', 'מִגַּזִּים'],
+    meaningEn: 'Earth is made of rock, but Jupiter is made of gas.',
+  },
+  {
+    kind: 'complete', id: 'u4-p2', unit: 'u4', concept: 'c-dwarf', pattern: 'definition', role: 'unit',
+    prompt: t('Complete the sentence.', 'הַשְׁלֵם אֶת הַמִּשְׁפָּט.'),
+    before: 'פְּלוּטוֹ הוּא כּוֹכַב לֶכֶת',
+    after: '.',
+    answer: 'נַנָּסִי',
+    bank: ['נַנָּסִי', 'אַרְצִי', 'גָּדוֹל'],
+    meaningEn: 'Pluto is a dwarf planet.',
+  },
+  {
+    kind: 'say', id: 'u4-p3', unit: 'u4', concept: 'c-groups', pattern: 'comparison', role: 'unit',
+    prompt: t('Say in Hebrew: what is the difference between rocky planets and gas giants?', 'אֱמוֹר בְּעִבְרִית: מָה הַהֶבְדֵּל בֵּין כּוֹכְבֵי לֶכֶת אַרְצִיִּים לְגַזִּים עֲנָקִיִּים?'),
+    requiredTerms: ['אַרְצִיִּים', 'סֶלַע', 'גַּזִּים'],
+    example: t('Rocky planets are made of rock. Gas giants are made mostly of gas and have no solid ground.', 'כּוֹכְבֵי לֶכֶת אַרְצִיִּים עֲשׂוּיִים מִסֶּלַע. גַּזִּים עֲנָקִיִּים עֲשׂוּיִים בְּעִיקָּר מִגַּזִּים, וְאֵין לָהֶם קַרְקַע מוּצֶקֶת.'),
+    rubric: ['Rocky planets: made of rock / solid ground', 'Gas giants: made (mostly) of gas', 'Both group names used; grammar need not be perfect'],
+  },
+  {
+    kind: 'say', id: 'u4-p4', unit: 'u4', concept: 'c-dwarf', pattern: 'definition', role: 'review',
+    prompt: t('Say in Hebrew: what is a dwarf planet? Give one example.', 'אֱמוֹר בְּעִבְרִית: מָה הוּא כּוֹכַב לֶכֶת נַנָּסִי? תֵּן דּוּגְמָה.'),
+    requiredTerms: ['נַנָּסִי', 'מַקִּיף'],
+    example: t('A dwarf planet is a round body that orbits the Sun and is smaller than a planet. For example, Pluto.', 'כּוֹכַב לֶכֶת נַנָּסִי הוּא גּוּף עָגוֹל שֶׁמַּקִּיף אֶת הַשֶּׁמֶשׁ וְקָטָן מִכּוֹכַב לֶכֶת. לְמָשָׁל, פְּלוּטוֹ.'),
+    rubric: ['Orbits the Sun', 'Smaller than a planet (round)', 'Gives Pluto or Ceres as an example'],
+  },
 ];
 
 export const productionFor = (unit: string, role?: ProductionTask['role']) => PRODUCTION.filter((p) => p.unit === unit && (!role || p.role === role));
