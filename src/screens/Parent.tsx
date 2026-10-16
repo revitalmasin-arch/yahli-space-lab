@@ -16,7 +16,7 @@ function download(name: string, text: string) {
   URL.revokeObjectURL(url);
 }
 
-export function Parent({ onExit }: { onExit: () => void }) {
+export function Parent({ onExit, serverRelease }: { onExit: () => void; serverRelease: string | null }) {
   const { progress, update, replaceAll, readOnly } = useStore();
   const { checkOpenAnswer } = useActions();
   const [imp, setImp] = useState<ImportCheck | null>(null);
@@ -35,8 +35,11 @@ export function Parent({ onExit }: { onExit: () => void }) {
         <h2>Parent area</h2>
       </div>
       <p className="muted small-text">
-        Release {__RELEASE_ID__} · v{__APP_VERSION__} · {__APP_ENV__ === 'dev' ? 'DEVELOPMENT' : 'production'} · all numbers here are from this device only.
+        Release <span data-testid="release-id">{__RELEASE_ID__}</span> · v{__APP_VERSION__} · {__APP_ENV__ === 'dev' ? 'DEVELOPMENT' : 'production'} · all numbers here are from this device only.
       </p>
+      {serverRelease && serverRelease !== __RELEASE_ID__ && (
+        <p className="notice" data-testid="new-version">A different version ({serverRelease}) is now on the computer. Reload this page during a break to switch. Progress is kept.</p>
+      )}
 
       <section className="panel stack">
         <h3>Answers waiting for your check ({pending.length})</h3>
