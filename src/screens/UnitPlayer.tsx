@@ -11,6 +11,7 @@ import { Speak } from '../components/Speak';
 import { Visual } from '../visuals/Visual';
 import { RocketBadge } from '../visuals/Icons';
 import { setHelperUnit } from '../components/helperState';
+import { BookRef } from '../components/BookRef';
 import { useActions } from '../progress/actions';
 import { useStore } from '../progress/store';
 import { pickQuestion } from '../lib/learning';
@@ -115,6 +116,7 @@ export function UnitPlayer({ unitId, onExit }: { unitId: string; onExit: () => v
         <button type="button" className="small ghost" onClick={onExit}>← Home · בַּיִת</button>
         <He x={unit.title} as="h2" />
       </div>
+      <BookRef unitId={unitId} />
       <nav className="path" aria-label="Mission path">
         {STEPS.map((s, i) => (
           <button

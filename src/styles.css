@@ -69,13 +69,6 @@ p, h1, h2, h3, h4, li, strong, label, figcaption, button, .tag { unicode-bidi: p
 }
 .side .panel { margin: 0 0 12px; }
 .side h3 { margin: 0; font-size: 1rem; }
-.rocket-gauge { text-align: center; }
-.rocket-gauge svg { width: 120px; height: 210px; overflow: visible; }
-.rocket-gauge .rocket { transition: transform 0.6s ease; }
-.liftoff .rocket { animation: liftoff 1.8s ease-in forwards; }
-.liftoff .flame { animation: flicker 0.15s infinite alternate; }
-@keyframes liftoff { to { transform: translate(60px, -140px); } }
-@keyframes flicker { to { opacity: 0.55; } }
 .chart { width: 100%; max-width: 320px; height: auto; display: block; margin: 0 auto; }
 .legend { display: flex; flex-wrap: wrap; gap: 10px; }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 4px; vertical-align: middle; }
@@ -195,16 +188,19 @@ button.mission-card .steps > span { display: block; height: 100%; background: li
 
 /* Kip, the helper alien: fixed at the bottom corner, opens a small panel above it. */
 .helper { position: fixed; inset-inline-end: 16px; bottom: 16px; z-index: 40; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-.helper-button { display: flex; align-items: center; gap: 6px; border-radius: 999px; padding: 6px 14px 6px 6px; background: linear-gradient(160deg, #1d2b6b, #101845); border: 2px solid #5fd39b; box-shadow: 0 0 16px rgba(95, 211, 155, 0.35); }
-.helper-button svg { width: 52px; height: 52px; }
-.helper-label { font-weight: 700; }
+.kip-button { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 0; background: none; border: none; box-shadow: none; min-width: 0; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55)); }
+.kip-button:hover:not(:disabled) { border: none; box-shadow: none; filter: drop-shadow(0 0 10px rgba(127, 211, 255, 0.6)); }
+.kip-button svg { width: 92px; height: 100px; }
+.kip-label { font-size: 0.78rem; font-weight: 700; color: #c9f7dd; text-shadow: 0 0 6px rgba(95, 211, 155, 0.8), 0 1px 2px #000; margin-top: -4px; }
+.ask-kip input { flex: 1; min-width: 0; }
+.kip-answer { margin: 0; }
 .helper-panel { width: min(360px, calc(100vw - 32px)); max-height: 70vh; overflow-y: auto; margin: 0; }
 .helper-panel button { width: 100%; text-align: start; }
 .helper-panel .row button { width: auto; }
-.app { padding-bottom: 110px; } /* room so Kip never covers the last button */
+.app { padding-bottom: 140px; } /* room so Kip never covers the last button */
 @media (prefers-reduced-motion: no-preference) {
-  .helper-button svg { animation: bob 3s ease-in-out infinite; }
-  @keyframes bob { 50% { transform: translateY(-3px); } }
+  .kip-button svg { animation: bob 3.2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
 }
 @media (prefers-reduced-motion: no-preference) {
   .launch-wrap .badge-done { animation: unit-launch 1.6s ease-in 0.4s both; }
@@ -214,8 +210,52 @@ button.mission-card .steps > span { display: block; height: 100%; background: li
   /* Wide screens: keep the Mission Log sidebar clear; Kip floats over the main column instead. */
   .helper { inset-inline-end: auto; inset-inline-start: 16px; align-items: flex-start; }
 }
-/* Controllers: instrument tiles inside the mission window, under the rocket. */
-.controllers { border-top: 1px dashed var(--line); padding-top: 8px; display: grid; gap: 8px; }
-.controller { background: rgba(6, 10, 30, 0.55); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; box-shadow: inset 0 0 10px rgba(127, 211, 255, 0.08); }
-.controller h4 { margin: 0 0 4px; font-size: 0.92rem; }
-.controller p { margin: 2px 0; }
+
+/* ===== Mission control console (cockpit dashboard) ===== */
+.console {
+  position: relative; border-radius: 18px; padding: 12px; margin: 0 0 12px;
+  background: linear-gradient(160deg, #2a3048 0%, #171b2c 45%, #232940 100%);
+  border: 2px solid #4b5372;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.08), inset 0 -3px 8px rgba(0,0,0,0.6), 0 10px 26px rgba(0,0,0,0.5);
+}
+/* rivets in the corners */
+.console::before, .console::after { content: ''; position: absolute; top: 8px; width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #c9cfe0, #5b6380); }
+.console::before { left: 8px; } .console::after { right: 8px; }
+.console-head { display: flex; align-items: center; justify-content: center; gap: 8px; font-family: ui-monospace, Consolas, monospace; font-size: 0.78rem; letter-spacing: 0.1em; color: #c9d2f0; margin-bottom: 8px; }
+.led { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #555; box-shadow: inset 0 -1px 1px rgba(0,0,0,0.5); }
+.led.green { background: #39e08a; box-shadow: 0 0 8px #39e08a; }
+.led.amber { background: #ffb347; box-shadow: 0 0 8px #ffb347; }
+.led.blue { background: #6fc3ff; box-shadow: 0 0 8px #6fc3ff; }
+.viewport { border-radius: 14px; overflow: hidden; border: 3px solid #0d1022; box-shadow: inset 0 0 18px rgba(0,0,0,0.9), 0 0 0 2px #59628a; background: #02040d; }
+.ship-scene { display: block; width: 100%; max-width: 240px; margin: 0 auto; height: auto; }
+.readout { direction: ltr; unicode-bidi: isolate; margin: 8px 0 4px; text-align: center; font-family: ui-monospace, Consolas, monospace; color: #ffd27a; background: #0a0d18; border: 1px solid #3a4160; border-radius: 8px; padding: 4px 8px; text-shadow: 0 0 6px rgba(255, 179, 71, 0.6); }
+.readout *, .digital b { unicode-bidi: isolate; }
+.readout .lbl, .digital .lbl { font-size: 0.7rem; letter-spacing: 0.08em; color: #9aa6cf; text-shadow: none; }
+.controllers { display: grid; gap: 10px; margin-top: 10px; }
+.plate-title { font-weight: 800; letter-spacing: 0.04em; color: #dfe6ff; }
+.instrument { background: linear-gradient(180deg, #1c2134, #12162a); border: 1px solid #4b5372; border-radius: 12px; padding: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
+.instrument .plate { display: inline-flex; align-items: center; gap: 6px; font-family: ui-monospace, Consolas, monospace; font-size: 0.72rem; letter-spacing: 0.1em; color: #e8ecff; background: #2d3450; border: 1px solid #5b6488; border-radius: 6px; padding: 1px 8px; margin-bottom: 6px; }
+.crt { background: radial-gradient(ellipse at center, #062419 0%, #03140e 75%); border: 2px solid #0b2c20; border-radius: 10px; padding: 6px; box-shadow: inset 0 0 14px rgba(0,0,0,0.85); color: #b7f0d2;
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, #062419 0%, #03140e 75%); }
+.crt .legend { color: #cfeedd; }
+.crt button.ghost { color: #cfeedd; border-color: #1d6b4b; }
+.calibrating { color: #8fe3b5; font-family: ui-monospace, Consolas, monospace; margin: 4px; }
+.digital-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.digital { background: #070a14; border: 1px solid #3a4160; border-radius: 8px; padding: 4px 8px; display: grid; }
+.digital b { font-family: ui-monospace, Consolas, monospace; font-size: 1.6rem; color: #7cf5b3; text-shadow: 0 0 8px rgba(124, 245, 179, 0.6); line-height: 1.2; }
+.odometer { display: flex; align-items: center; gap: 3px; direction: ltr; justify-content: center; }
+.odometer span { font-family: ui-monospace, Consolas, monospace; font-size: 1.5rem; font-weight: 700; color: #f2f5ff; background: linear-gradient(180deg, #2b2f3f, #0e1120 50%, #2b2f3f); border: 1px solid #4b5372; border-radius: 4px; padding: 0 6px; }
+.odometer em { font-style: normal; margin-inline-start: 6px; color: #9fd3ff; font-weight: 700; }
+@media (prefers-reduced-motion: no-preference) {
+  .flame-flicker { animation: flame-flicker 0.12s ease-in-out infinite alternate; transform-origin: 0 0; }
+  @keyframes flame-flicker { from { transform: scale(1, 1); } to { transform: scale(0.92, 1.08); } }
+  .liftoff-ship { animation: ship-liftoff 2.2s cubic-bezier(0.5, 0, 0.9, 0.6) forwards; }
+  @keyframes ship-liftoff { 0% { transform: translate(80px, 150px); } 12% { transform: translate(81px, 152px); } 100% { transform: translate(80px, -120px); } }
+}
+/* Unit bookmark (book pages + full explanation) */
+button.bookmark { border-color: #c9a85a; background: linear-gradient(180deg, #3a3020, #241d12); color: #ffe8b0; }
+.bookref-panel { border-color: #c9a85a; }
+.bookref-panel .book-line { font-size: 1.05rem; }
+.bookref-panel li { margin: 4px 0; }
+.term-line { border-bottom: 1px dashed var(--line); padding-bottom: 6px; }
+.concept-note { border-inline-start: 3px solid var(--accent-2); padding-inline-start: 10px; }

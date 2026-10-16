@@ -238,6 +238,25 @@ export const suites = [
         const a = (await stored(page)).attempts[0];
         assert(a && a.assistance >= 1 && !a.correctFirstTry && a.finalCorrect, `help from Kip not recorded: ${JSON.stringify(a)}`);
       },
+      'Kip answers a typed question from the lab notes, and says so when he cannot': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('helper-open').click();
+        await page.getByTestId('kip-input').fill('מה זה ירח?');
+        await page.getByTestId('kip-ask').click();
+        const ans = await page.getByTestId('kip-answers').textContent();
+        assert(/יָרֵחַ/.test(ans) && /Book: page/.test(ans), `no Moon answer with book pages: ${ans.slice(0, 120)}`);
+        await page.getByTestId('kip-input').fill('pizza basketball');
+        await page.getByTestId('kip-ask').click();
+        assert(/couldn't find/.test(await page.getByTestId('kip-answers').textContent()), 'should admit it found nothing');
+      },
+      'unit bookmark: names the book pages and opens the full explanation': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u2').last().click();
+        await page.getByTestId('bookmark-open').click();
+        assert(/pages 174, 183/.test(await page.getByTestId('bookmark-pages').textContent()), 'wrong book pages for unit 2');
+        const panel = await page.getByTestId('bookmark-panel').textContent();
+        assert(/מוּאָר/.test(panel) && /A star is a huge ball/.test(panel), 'full explanation incomplete');
+      },
       'Kip the helper: lists the words of the current unit': async ({ page, url }) => {
         await page.goto(url);
         await page.getByTestId('open-u2').last().click();
@@ -252,12 +271,15 @@ export const suites = [
         await page.getByTestId('log-toggle').click();
         assert(/XP/.test(await page.getByTestId('controllers').textContent()), 'controllers should hold the progress numbers');
         assert(/0 \/ 16/.test(await page.getByTestId('rocket-gauge').textContent()), 'gauge should start at 0 / 16');
+        const flameAt0 = Number(await page.getByTestId('flame').getAttribute('data-scale'));
         assert(await page.getByTestId('starting-to-measure').isVisible(), 'should say starting to measure');
         await page.getByTestId('open-u1').last().click();
         await driveUnit(page);
         assert(await page.getByTestId('rocket-launch').isVisible(), 'no launch on unit completion');
         await page.getByRole('button', { name: /Back home/ }).click();
         assert(/8 \/ 16/.test(await page.getByTestId('rocket-gauge').textContent()), `gauge after unit 1: ${await page.getByTestId('rocket-gauge').textContent()}`);
+        const flameAt8 = Number(await page.getByTestId('flame').getAttribute('data-scale'));
+        assert(flameAt8 > flameAt0, `flame should grow with progress (${flameAt0} → ${flameAt8})`);
         await page.getByTestId('open-parent').click();
         await page.getByLabel('Short celebrations').uncheck();
         await page.getByRole('button', { name: /← Back/ }).first().click();
@@ -266,6 +288,9 @@ export const suites = [
         assert((await page.getByTestId('rocket-launch').count()) === 0, 'launch shown although celebrations are off');
         await page.getByRole('button', { name: /Back home/ }).click();
         await page.getByTestId('mission-complete').waitFor();
+        // mission complete → the ship is in orbit; celebrations are off, so it is parked, not moving
+        await page.getByTestId('orbit-scene').waitFor();
+        assert((await page.getByTestId('orbit-still').count()) === 1, 'with celebrations off the orbit should be a still picture');
       },
       'Day 3: unit 5 (asteroid belt, inner/outer) completes tap-only': async ({ page, url }) => {
         await page.goto(url);
