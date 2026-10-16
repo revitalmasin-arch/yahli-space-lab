@@ -4,7 +4,9 @@ import { speak } from '../lib/speech';
 import { He, useNiqqud } from './Bi';
 import { Speak } from './Speak';
 import { useHelperState } from './helperState';
-import { askKip, type KipAnswer } from '../lib/kipSearch';
+import { askKip, lookupWord, type KipAnswer } from '../lib/kipSearch';
+import type { GlossaryEntry } from '../content/glossary';
+import { WordCard } from './WordCard';
 import { conceptPages, formatPages } from '../lib/bookPages';
 import { Bi } from './Bi';
 
@@ -72,7 +74,13 @@ export function HelperAlien() {
   const [msg, setMsg] = useState('');
   const [q, setQ] = useState('');
   const [answers, setAnswers] = useState<KipAnswer[] | null>(null);
-  const ask = () => setAnswers(askKip(q));
+  const [words, setWords] = useState<GlossaryEntry[]>([]);
+  const ask = () => {
+    const found = lookupWord(q, 2);
+    setWords(found);
+    // the dictionary already explains a single word; lesson notes add the bigger picture
+    setAnswers(askKip(q, found.length ? 2 : 3));
+  };
   const terms = unit ? unitById(unit).terms : [];
   const act = (fn: () => void, note: string) => {
     fn();
@@ -91,19 +99,20 @@ export function HelperAlien() {
             <>
               <p className="small-text">Hi! I'm Kip, your lab helper. Asking for help is a smart move. · <span lang="he">שָׁלוֹם! אֲנִי קִיפּ.</span></p>
               <form className="stack ask-kip" onSubmit={(e) => { e.preventDefault(); ask(); }}>
-                <label className="small-text" htmlFor="kip-q">Ask me about space — in Hebrew or English · <span lang="he">שְׁאַל אוֹתִי</span></label>
+                <label className="small-text" htmlFor="kip-q">Ask me a word or a question — I translate and explain · <span lang="he">שְׁאַל אוֹתִי מִילָּה אוֹ שְׁאֵלָה</span></label>
                 <div className="row">
-                  <input id="kip-q" type="text" dir="auto" value={q} maxLength={120} onChange={(e) => setQ(e.target.value)} placeholder="e.g. What is a star? / מה זה ירח?" data-testid="kip-input" />
+                  <input id="kip-q" type="text" dir="auto" value={q} maxLength={120} onChange={(e) => setQ(e.target.value)} placeholder="e.g. תצפית / tazpit / What is a comet?" data-testid="kip-input" />
                   <button type="submit" className="small primary" style={{ width: 'auto' }} data-testid="kip-ask">Ask · שְׁאַל</button>
                 </div>
               </form>
               {answers && (
                 <div className="stack" data-testid="kip-answers" role="status">
-                  {answers.length === 0 ? (
-                    <p className="feedback help small-text">I couldn't find that in my lab notes. Try other words, or ask Mum! · <span lang="he">נַסֵּה מִילִּים אֲחֵרוֹת</span></p>
+                  {words.map((w) => <WordCard key={w.id} entry={w} />)}
+                  {answers.length === 0 && words.length === 0 ? (
+                    <p className="feedback help small-text" data-testid="kip-none">That word isn't in my space dictionary or lab notes. Try another word, or ask Mum! · <span lang="he">הַמִּילָּה לֹא בַּמִּילּוֹן שֶׁלִּי. נַסֵּה מִילָּה אַחֶרֶת.</span></p>
                   ) : (
-                    <>
-                      <p className="small-text muted">Here is what my lab notes say:</p>
+                    answers.length > 0 && <>
+                      <p className="small-text muted">{words.length ? 'More in my lab notes:' : 'Here is what my lab notes say:'}</p>
                       {answers.map(({ concept }) => (
                         <div key={concept.id} className="panel stack kip-answer">
                           <strong><He x={concept.name} as="span" /> <span className="muted small-text" lang="en">· {concept.name.en}</span></strong>
@@ -126,7 +135,7 @@ export function HelperAlien() {
               {terms.length > 0 && <button type="button" onClick={() => setView('words')} data-testid="helper-words">📖 What does this word mean?</button>}
               <button type="button" onClick={() => setView('how')}>❓ How does the lab work?</button>
               {msg && <p className="feedback help small-text" role="status">{msg}</p>}
-              <p className="muted small-text">I answer from the lab's lesson notes (I'm not a talking robot yet). For anything else, ask Mum!</p>
+              <p className="muted small-text">I answer from the book's words (pages 168–190 and its dictionary) and the lab's lesson notes. For anything else, ask Mum!</p>
             </>
           )}
           {view === 'words' && (
@@ -156,7 +165,7 @@ export function HelperAlien() {
           )}
         </div>
       )}
-      <button type="button" className="kip-button" onClick={() => { setOpen(!open); setView('menu'); setMsg(''); setAnswers(null); }} aria-expanded={open} aria-label="Ask Kip, the lab helper" data-testid="helper-open">
+      <button type="button" className="kip-button" onClick={() => { setOpen(!open); setView('menu'); setMsg(''); setAnswers(null); setWords([]); }} aria-expanded={open} aria-label="Ask Kip, the lab helper" data-testid="helper-open">
         <KipOnSaucer />
         <span className="kip-label">Ask Kip · עֶזְרָה</span>
       </button>

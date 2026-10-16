@@ -37,3 +37,48 @@ describe('book page bookmarks', () => {
     expect(unitPages('u6').pages).toEqual(expect.arrayContaining([193, 194]));
   });
 });
+
+import { lookupWord } from '../../src/lib/kipSearch';
+
+describe('regression: Kip explains chapter words (reported: "TAZPIT" did not work)', () => {
+  it('finds תצפית from Latin letters, Hebrew with/without niqqud, and English', () => {
+    for (const q of ['TAZPIT', 'tazpit', 'explain tazpit', 'מה זה תצפית?', 'תַּצְפִּית', 'observation']) {
+      expect(lookupWord(q)[0]?.id, q).toBe('tazpit');
+    }
+  });
+  it('handles Hebrew prefixes and translates both ways', () => {
+    expect(lookupWord('בטלסקופ')[0]?.id).toBe('telescope');
+    expect(lookupWord('what is a comet')[0]?.heN).toContain('שָׁבִיט');
+  });
+  it('every dictionary entry has Hebrew, English and a simple explanation', async () => {
+    const { GLOSSARY } = await import('../../src/content/glossary');
+    expect(GLOSSARY.length).toBeGreaterThanOrEqual(70);
+    for (const g of GLOSSARY) {
+      expect(g.heN && g.en && g.simple.heN && g.simple.en, g.id).toBeTruthy();
+    }
+  });
+});
+
+describe('dictionary lookup does not over-match', () => {
+  it('unrelated words find nothing', () => {
+    expect(lookupWord('pizza')).toEqual([]);
+    expect(lookupWord('בננה')).toEqual([]);
+  });
+  it('typed-in-English Hebrew finds the right planet and more', () => {
+    expect(lookupWord('maadim')[0]?.id).toBe('mars');
+    expect(lookupWord('yemama')[0]?.id).toBe('yemama');
+    expect(lookupWord('kochav lechet')[0]?.id).toBe('planet');
+    expect(lookupWord('כוכב לכת')[0]?.id).toBe('planet');
+    expect(lookupWord('הגלקסיות')[0]?.id).toBe('galaxy');
+  });
+});
+
+describe('every dictionary word finds itself', () => {
+  it('by its Hebrew word and by its English word', async () => {
+    const { GLOSSARY } = await import('../../src/content/glossary');
+    for (const g of GLOSSARY) {
+      expect(lookupWord(g.heN)[0]?.id, g.heN).toBe(g.id);
+      expect(lookupWord(g.en)[0]?.id, g.en).toBe(g.id);
+    }
+  });
+});

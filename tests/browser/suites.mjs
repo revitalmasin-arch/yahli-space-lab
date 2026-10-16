@@ -267,7 +267,19 @@ export const suites = [
         assert(/יָרֵחַ/.test(ans) && /Book: page/.test(ans), `no Moon answer with book pages: ${ans.slice(0, 120)}`);
         await page.getByTestId('kip-input').fill('pizza basketball');
         await page.getByTestId('kip-ask').click();
-        assert(/couldn't find/.test(await page.getByTestId('kip-answers').textContent()), 'should admit it found nothing');
+        assert(await page.getByTestId('kip-none').isVisible(), 'should admit it found nothing');
+      },
+      'regression: Kip translates and explains "tazpit" (observation) from the book dictionary': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('helper-open').click();
+        for (const q of ['explain TAZPIT', 'מה זה תצפית?']) {
+          await page.getByTestId('kip-input').fill(q);
+          await page.getByTestId('kip-ask').click();
+          const card = page.getByTestId('word-card').first();
+          assert((await card.getAttribute('data-word')) === 'tazpit', `wrong word for ${q}`);
+          const text = await card.textContent();
+          assert(/תַּצְפִּית/.test(text) && /observation/.test(text) && /pages 168, 170, 171/.test(text), `incomplete card for ${q}: ${text.slice(0, 160)}`);
+        }
       },
       'unit bookmark: names the book pages and opens the full explanation': async ({ page, url }) => {
         await page.goto(url);
