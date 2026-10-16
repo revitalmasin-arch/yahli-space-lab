@@ -6,8 +6,7 @@ import { UnitIcon } from '../visuals/Icons';
 import { useStore } from '../progress/store';
 import { jerusalemDate } from '../lib/dates';
 import { dayInfo, daysUntilExam, PLAN } from '../lib/plan';
-import { dueConcepts, hebrewEvidence, scienceSummary, unitStatus, type UnitStatus } from '../lib/learning';
-import { xpTotal } from '../progress/model';
+import { dueConcepts, unitStatus, type UnitStatus } from '../lib/learning';
 import { STEPS } from './UnitPlayer';
 
 const STATUS: Record<UnitStatus, { label: string; cls: string }> = {
@@ -38,8 +37,6 @@ export function Home({ onUnit, onReview, onParent }: { onUnit: (id: string) => v
   const info = dayInfo(today, exam);
   const left = daysUntilExam(today, exam);
   const due = dueConcepts(progress, today).length;
-  const sci = scienceSummary(progress);
-  const heb = hebrewEvidence(progress);
   const todayUnits = info.kind === 'plan' ? info.day.units : info.kind === 'before' ? info.first.units : [];
 
   const missionCard = (id: string) => {
@@ -107,16 +104,6 @@ export function Home({ onUnit, onReview, onParent }: { onUnit: (id: string) => v
         <div className="cards">{UNITS.map((u) => missionCard(u.id))}</div>
       </Panel>
 
-      <Panel testid="my-progress">
-        <ConsoleTitle icon="📈" he="הַהִתְקַדְּמוּת שֶׁלִּי" en="My progress" />
-        <p>⭐ {xpTotal(progress)} XP <span className="muted small-text">(points for taking part — not a test score)</span></p>
-        {sci.attempts < 5 ? (
-          <p className="muted">Science: starting to measure ({sci.attempts} answers so far).</p>
-        ) : (
-          <p>Science: {sci.unaidedFirstTry} of {sci.attempts} answers right first time without help; {sci.assisted} with help.</p>
-        )}
-        <p>Hebrew answers checked by Mum: {heb.confirmed}. {heb.pending ? `Not yet checked: ${heb.pending}.` : ''}</p>
-      </Panel>
 
       <div className="row end">
         <button type="button" className="small ghost" onClick={onParent} data-testid="open-parent">Parent area · לַהוֹרִים</button>

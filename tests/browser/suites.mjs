@@ -248,7 +248,9 @@ export const suites = [
       'Mission log: opens on tablet width, rocket climbs, unit completion launches (not when celebrations are off)': async ({ page, url }) => {
         await page.setViewportSize({ width: 800, height: 1280 });
         await page.goto(url);
+        assert((await page.getByTestId('my-progress').count()) === 0, 'home should no longer have its own progress panel');
         await page.getByTestId('log-toggle').click();
+        assert(/XP/.test(await page.getByTestId('controllers').textContent()), 'controllers should hold the progress numbers');
         assert(/0 \/ 16/.test(await page.getByTestId('rocket-gauge').textContent()), 'gauge should start at 0 / 16');
         assert(await page.getByTestId('starting-to-measure').isVisible(), 'should say starting to measure');
         await page.getByTestId('open-u1').last().click();
