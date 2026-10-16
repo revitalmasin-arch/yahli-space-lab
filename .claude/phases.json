@@ -1,0 +1,10 @@
+{
+  "current": 1,
+  "phases": {
+    "1": "Foundation: scaffold, content model, progress store with versioned schema + migrations, app shell",
+    "2": "Day 1 learning: unit engine + units 1-2 (place in the universe, star vs planet), Day 1 home route, persistence, review",
+    "3": "Minimal production for Day 1: candidate builds, production server on fixed port 8090, promote/rollback with schema checks, isolation check, release Day 1",
+    "4": "Days 2-5: remaining units, review area, progress and parent views, read-aloud, viewports; released ahead of each study day",
+    "5": "Hebrew README, source/discrepancy notes, final acceptance, private GitHub repo, open the app"
+  }
+}
