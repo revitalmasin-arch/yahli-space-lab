@@ -1,9 +1,11 @@
 :root {
-  --bg: #0b1026;
-  --bg-2: #141b3a;
-  --panel: #1a2350;
-  --panel-2: #222d63;
-  --line: #34407a;
+  --bg: #060a1e;
+  --bg-2: #10173a;
+  --panel: rgba(22, 31, 74, 0.78);
+  --panel-2: #24306e;
+  --line: #3a4a92;
+  --glow: rgba(127, 211, 255, 0.35);
+  --glow-sun: rgba(255, 179, 71, 0.45);
   --text: #eef1ff;
   --muted: #aab3dd;
   --accent: #ffb347; /* sun */
@@ -20,7 +22,23 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  background: radial-gradient(ellipse at top, #1b2457 0%, var(--bg) 60%) fixed, var(--bg);
+  /* Static starfield + soft nebula. No images, works offline. */
+  background:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 28% 72%, #cfe3ff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 47% 33%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 63% 81%, #ffe9c4 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 78% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 58%, #cfe3ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 6% 52%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 37% 9%, #ffe9c4 50%, transparent 51%),
+    radial-gradient(1px 1px at 55% 58%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 94% 90%, #fff 50%, transparent 51%),
+    radial-gradient(ellipse 60% 40% at 85% 10%, rgba(140, 90, 220, 0.22), transparent 70%),
+    radial-gradient(ellipse 55% 45% at 10% 85%, rgba(40, 140, 200, 0.18), transparent 70%),
+    radial-gradient(ellipse at top, #18205a 0%, var(--bg) 65%);
+  background-attachment: fixed;
+  background-color: var(--bg);
   color: var(--text);
   font-family: 'Noto Sans Hebrew', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif;
   font-size: 18px;
@@ -34,8 +52,12 @@ p, h1, h2, h3, li, strong, label, figcaption, button, .tag { unicode-bidi: plain
 .he-n { font-size: 1.12em; line-height: 1.9; }
 
 .app { max-width: 1100px; margin: 0 auto; padding: 12px 16px 48px; overflow-x: hidden; }
-.top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.top h1 { margin: 4px 0; font-size: 1.6rem; }
+.top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 6px 0 4px; }
+.top h1 { margin: 4px 0; font-size: 1.6rem; letter-spacing: 0.01em; text-shadow: 0 0 18px var(--glow); }
+.top .logo { width: 52px; height: 52px; flex: none; filter: drop-shadow(0 0 8px var(--glow)); }
+.name-tab { margin-inline-start: auto; }
+.name-tab input { max-width: 180px; }
+.top .lab-id { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: 0.75rem; color: var(--accent-2); border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; }
 .top .en { margin: 0; color: var(--muted); font-size: 0.95rem; }
 .dev-badge {
   position: sticky; top: 0; z-index: 50; background: #ff7a00; color: #1a0d00; font-weight: 700;
@@ -54,7 +76,9 @@ button, .btn {
 button:hover:not(:disabled) { border-color: var(--accent-2); }
 button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 button:disabled { opacity: 0.45; cursor: default; }
-button.primary { background: var(--accent); color: #2a1600; border-color: var(--accent); font-weight: 700; }
+button { transition: transform 0.08s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+button:active:not(:disabled) { transform: scale(0.97); }
+button.primary { background: linear-gradient(180deg, #ffc56b, #ff9f2e); color: #2a1600; border-color: #ffc56b; font-weight: 800; box-shadow: 0 0 16px var(--glow-sun); }
 button.ghost { background: transparent; }
 button.small { min-height: 40px; padding: 4px 10px; font-size: 0.9rem; }
 button.choice { width: 100%; unicode-bidi: isolate; text-align: start; padding: 10px 14px; }
@@ -66,7 +90,43 @@ select, input[type='text'], input[type='date'] {
   min-height: 44px; font: inherit; border-radius: 10px; border: 2px solid var(--line); background: var(--bg-2); color: var(--text); padding: 4px 10px;
 }
 
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin: 12px 0; }
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin: 12px 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(127, 211, 255, 0.05), 0 8px 24px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(3px);
+}
+/* Console title: icon + Hebrew + small English, with a thin "screen" line under it */
+.console-title { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--line); }
+.console-title .ico { font-size: 1.5rem; filter: drop-shadow(0 0 6px var(--glow)); }
+.console-title h2 { margin: 0; }
+.console-title .en { color: var(--muted); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.panel.mission { border-color: rgba(255, 179, 71, 0.6); box-shadow: 0 0 22px rgba(255, 179, 71, 0.18), 0 8px 24px rgba(0, 0, 0, 0.35); }
+
+/* Mission cards (units) */
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+button.mission-card { display: flex; gap: 12px; align-items: center; width: 100%; text-align: start; padding: 12px; border-radius: 16px; background: linear-gradient(160deg, rgba(36, 48, 110, 0.95), rgba(18, 26, 66, 0.95)); unicode-bidi: isolate; }
+button.mission-card:hover:not(:disabled) { box-shadow: 0 0 14px var(--glow); }
+button.mission-card .unit-ico { width: 56px; height: 56px; flex: none; }
+button.mission-card .body { flex: 1; min-width: 0; display: grid; gap: 2px; }
+button.mission-card .num { font-family: ui-monospace, Consolas, monospace; font-size: 0.72rem; color: var(--accent-2); letter-spacing: 0.08em; }
+button.mission-card .steps { height: 6px; background: var(--bg-2); border-radius: 99px; overflow: hidden; }
+button.mission-card .steps > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--good)); }
+
+/* Countdown: calm "days to launch" readout, no ticking */
+.launch { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.launch .days { font-family: ui-monospace, Consolas, monospace; font-size: 2.4rem; font-weight: 800; color: var(--accent); text-shadow: 0 0 14px var(--glow-sun); min-width: 2ch; text-align: center; }
+
+/* Mission path in units */
+.path { display: flex; gap: 4px; align-items: center; margin: 6px 0; }
+.path .stop { flex: 1; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--bg-2); border: 1px solid var(--line); font-size: 1rem; opacity: 0.55; }
+.path .stop.done { background: rgba(95, 211, 155, 0.18); border-color: var(--good); opacity: 1; }
+.path .stop.now { background: rgba(255, 179, 71, 0.2); border-color: var(--accent); opacity: 1; box-shadow: 0 0 10px var(--glow-sun); }
+.badge-done { width: 96px; height: 96px; display: block; margin: 0 auto; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .top .logo .twinkle { animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 50% { opacity: 0.3; } }
+}
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .row.end { justify-content: flex-end; }
 .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }

@@ -9,6 +9,7 @@ import { Production } from '../components/Production';
 import { Bi, He } from '../components/Bi';
 import { Speak } from '../components/Speak';
 import { Visual } from '../visuals/Visual';
+import { RocketBadge } from '../visuals/Icons';
 import { useActions } from '../progress/actions';
 import { useStore } from '../progress/store';
 import { pickQuestion } from '../lib/learning';
@@ -19,6 +20,10 @@ type Step = (typeof STEPS)[number];
 const STEP_LABEL: Record<Step, string> = {
   warmup: 'Quick check', explain: 'Explore', terms: 'Hebrew words', interact: 'Investigate',
   check: 'Check', produce: 'Say it in Hebrew', lookback: 'Look back', done: 'Done',
+};
+
+const STEP_ICON: Record<Step, string> = {
+  warmup: '🧭', explain: '🔭', terms: '🔤', interact: '🧪', check: '✅', produce: '🗣️', lookback: '🔁', done: '🚀',
 };
 
 interface QItem { q: Question; afterWorked: boolean }
@@ -34,28 +39,49 @@ export function UnitPlayer({ unitId, onExit }: { unitId: string; onExit: () => v
   const used = useRef(new Set<string>());
 
   const warmups = useMemo(() => questionsFor(unitId, 'warmup').map((q) => ({ q, afterWorked: false })), [unitId]);
-  const [checks, setChecks] = useState<QItem[]>(() => questionsFor(unitId, 'check').map((q) => ({ q, afterWorked: false })));
+  const initialChecks = () => questionsFor(unitId, 'check').map((q) => ({ q, afterWorked: false }));
+  const [checks, setChecks] = useState<QItem[]>(initialChecks);
   const tasks = useMemo(() => productionFor(unitId, 'unit'), [unitId]);
   const [lookback, setLookback] = useState<QItem | null>(null);
+  // Bumped when a part is started over, so its question/task components start fresh.
+  const [round, setRound] = useState(0);
+  // Furthest stage reached this visit (stages done earlier also count): the learner may jump back
+  // to any of these, but not skip ahead past unfinished ones.
+  const [reached, setReached] = useState(STEPS.indexOf(step));
+
+  /** Look back after an intervening activity: a different-wording question from this unit. */
+  const prepareLookback = (): boolean => {
+    const concepts = [...new Set(initialChecks().map((c) => c.q.concept))];
+    const q = concepts.map((c) => pickQuestion(progress, c, used.current, ['review'])).find(Boolean);
+    setLookback(q ? { q, afterWorked: false } : null);
+    return !!q;
+  };
 
   const go = (target: Step) => {
     let next = target;
     stepDone(unitId, step);
     setSub(0);
-    if (next === 'lookback') {
-      // Look back after an intervening activity: a different-wording question from this unit.
-      const concepts = [...new Set(checks.map((c) => c.q.concept))];
-      const q = concepts.map((c) => pickQuestion(progress, c, used.current, ['review'])).find(Boolean);
-      if (q) setLookback({ q, afterWorked: false });
-      else {
-        stepDone(unitId, 'lookback');
-        next = 'done';
-      }
+    if (next === 'lookback' && !prepareLookback()) {
+      stepDone(unitId, 'lookback');
+      next = 'done';
     }
     if (next === 'done') stepDone(unitId, 'done');
     setStep(next);
+    setReached((r) => Math.max(r, STEPS.indexOf(next)));
     window.scrollTo({ top: 0 });
   };
+
+  /** Go back to a stage, or start the current one over. Nothing already recorded is removed:
+   *  answers given again are saved as new attempts (not "first time") and XP is never given twice. */
+  const restartAt = (target: Step) => {
+    setSub(0);
+    setRound((r) => r + 1);
+    if (target === 'check') setChecks(initialChecks());
+    if (target === 'lookback' && !prepareLookback()) target = 'done';
+    setStep(target);
+    window.scrollTo({ top: 0 });
+  };
+  const canJump = (s: Step) => done.includes(s) || STEPS.indexOf(s) <= reached;
   const nextOf = (s: Step) => STEPS[STEPS.indexOf(s) + 1];
 
   function onAnswer(item: QItem, list: QItem[], setList: ((l: QItem[]) => void) | null, context: Context) {
@@ -84,15 +110,40 @@ export function UnitPlayer({ unitId, onExit }: { unitId: string; onExit: () => v
         <button type="button" className="small ghost" onClick={onExit}>← Home · בַּיִת</button>
         <He x={unit.title} as="h2" />
       </div>
-      <div className="progress-bar" aria-label={`Step ${stepIndex + 1} of ${STEPS.length}: ${STEP_LABEL[step]}`}>
-        <span style={{ width: `${(stepIndex / (STEPS.length - 1)) * 100}%` }} />
-      </div>
+      <nav className="path" aria-label="Mission path">
+        {STEPS.map((s, i) => (
+          <button
+            key={s}
+            type="button"
+            className={`stop ${s === step ? 'now' : done.includes(s) || i < stepIndex ? 'done' : ''}`}
+            disabled={!canJump(s) || s === step}
+            aria-current={s === step ? 'step' : undefined}
+            aria-label={`Stage ${i + 1}: ${STEP_LABEL[s]}`}
+            title={STEP_LABEL[s]}
+            onClick={() => restartAt(s)}
+            data-testid={`stop-${s}`}
+          >
+            {STEP_ICON[s]}
+          </button>
+        ))}
+      </nav>
       <p className="muted small-text">{STEP_LABEL[step]} · {stepIndex + 1}/{STEPS.length} · about {unit.minutes} min · you can stop any time and come back</p>
+      <div className="row">
+        {stepIndex > 0 && (
+          <button type="button" className="small ghost" onClick={() => restartAt(STEPS[stepIndex - 1])} data-testid="stage-back">← Back a stage · אֲחוֹרָה</button>
+        )}
+        {step !== 'done' && (
+          <button type="button" className="small ghost" onClick={() => restartAt(step)} data-testid="stage-restart">↺ Start this part over · מֵהַהַתְחָלָה</button>
+        )}
+        {stepIndex > 0 && (
+          <button type="button" className="small ghost" onClick={() => restartAt('warmup')} data-testid="unit-restart">⟲ Start the whole unit over</button>
+        )}
+      </div>
 
       {step === 'warmup' && warmups[sub] && (
         <>
           <p className="muted">Quick check — just to see what you already know. It's fine not to know!</p>
-          <QuestionCard key={warmups[sub].q.id} q={warmups[sub].q} onDone={onAnswer(warmups[sub], warmups, null, 'warmup')} />
+          <QuestionCard key={`${warmups[sub].q.id}-${round}`} q={warmups[sub].q} onDone={onAnswer(warmups[sub], warmups, null, 'warmup')} />
           <div className="row end"><button type="button" className="small ghost" onClick={() => go('explain')}>Skip →</button></div>
         </>
       )}
@@ -131,15 +182,15 @@ export function UnitPlayer({ unitId, onExit }: { unitId: string; onExit: () => v
         </section>
       )}
 
-      {step === 'interact' && <Interaction spec={unit.interaction} onDone={() => go('check')} />}
+      {step === 'interact' && <Interaction key={`int-${round}`} spec={unit.interaction} onDone={() => go('check')} />}
 
       {step === 'check' && checks[sub] && (
-        <QuestionCard key={checks[sub].q.id + sub} q={checks[sub].q} onDone={onAnswer(checks[sub], checks, setChecks, 'unit')} />
+        <QuestionCard key={`${checks[sub].q.id}-${sub}-${round}`} q={checks[sub].q} onDone={onAnswer(checks[sub], checks, setChecks, 'unit')} />
       )}
 
       {step === 'produce' && tasks[sub] && (
         <Production
-          key={tasks[sub].id}
+          key={`${tasks[sub].id}-${round}`}
           task={tasks[sub]}
           onDone={(o) => {
             produce(tasks[sub], o);
@@ -152,13 +203,14 @@ export function UnitPlayer({ unitId, onExit }: { unitId: string; onExit: () => v
       {step === 'lookback' && lookback && (
         <>
           <p className="muted">Look back: one more question about this unit, asked a different way.</p>
-          <QuestionCard key={lookback.q.id} q={lookback.q} onDone={onAnswer(lookback, [lookback], null, 'lookback')} />
+          <QuestionCard key={`${lookback.q.id}-${round}`} q={lookback.q} onDone={onAnswer(lookback, [lookback], null, 'lookback')} />
         </>
       )}
 
       {step === 'done' && (
         <section className="panel stack" data-testid="unit-done">
-          <h2>{progress.settings.celebrations ? '🚀 ' : ''}Unit complete! · <He x={{ en: '', heN: 'סִיַּמְתָּ!', he: 'סיימת!' }} /></h2>
+          {progress.settings.celebrations && <RocketBadge />}
+          <h2>Mission complete! · <He x={{ en: '', heN: 'סִיַּמְתָּ!', he: 'סיימת!' }} /></h2>
           <p>You explored the idea, learned {unit.terms.length} Hebrew words and practised saying them. It comes back for review on another day — that is how it sticks.</p>
           <p className="muted small-text">Finishing a unit is practice, not proof of exam readiness.</p>
           <div className="row end"><button type="button" className="primary" onClick={onExit}>Back home →</button></div>

@@ -61,6 +61,16 @@ describe('sanitize', () => {
     expect(progress.xp).toEqual({ 'step:u2:explain': 5, 'unit:u2': 10 });
   });
 
+  it('keeps a learner name (trimmed, max 30) and omits a blank one', () => {
+    const d = fixture();
+    d.settings.learnerName = '  Yahli  ';
+    expect(sanitize(d).progress.settings.learnerName).toBe('Yahli');
+    d.settings.learnerName = '   ';
+    expect(sanitize(d).progress.settings.learnerName).toBeUndefined();
+    d.settings.learnerName = 'x'.repeat(50);
+    expect(sanitize(d).progress.settings.learnerName).toHaveLength(30);
+  });
+
   it('turns total garbage into an empty, valid progress object', () => {
     const { progress } = sanitize('nonsense');
     expect(progress.attempts).toEqual([]);

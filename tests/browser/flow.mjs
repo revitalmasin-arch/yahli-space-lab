@@ -11,6 +11,7 @@ const arg = (name, def) => {
   return i > -1 ? process.argv[i + 1] : def;
 };
 const phase = Number(arg('--phase', '1'));
+const TEST_NOW = '2026-10-16T12:00:00+03:00';
 let url = arg('--url');
 let server;
 
@@ -47,6 +48,8 @@ try {
       // Each test gets a fresh browser context: empty localStorage, like a new device.
       const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, locale: 'he-IL' });
       const page = await context.newPage();
+      // Fixed date so plan-dependent screens are the same on any day the tests run (Day 1 shown as "today's mission").
+      await page.clock.setFixedTime(new Date(TEST_NOW));
       const errors = [];
       page.on('pageerror', (e) => errors.push(e.message));
       try {

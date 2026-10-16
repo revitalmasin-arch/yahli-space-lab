@@ -9,8 +9,10 @@ import { UnitPlayer } from './screens/UnitPlayer';
 import { Review } from './screens/Review';
 import { Parent } from './screens/Parent';
 import { useServerRelease } from './lib/ping';
+import { Logo } from './visuals/Icons';
+import { NameTab } from './components/NameTab';
 
-const TITLE = t("Yahli's Space Lab", 'מַעְבֶּדֶת הֶחָלָל שֶׁל יַהֲלִי');
+const TITLE = t('My Space Lab', 'מַעְבֶּדֶת הֶחָלָל שֶׁלִּי');
 type Screen = { name: 'home' } | { name: 'unit'; id: string } | { name: 'review' } | { name: 'parent' };
 
 /** Count active study time: visible tab and an interaction in the last 90 seconds. */
@@ -50,8 +52,10 @@ export function App() {
     <div className="app">
       {__APP_ENV__ === 'dev' && <div className="dev-badge">DEV — not Yahli's version</div>}
       <header className="top">
+        <Logo />
         <h1 lang="he" dir="rtl">{TITLE.heN}</h1>
         <p className="en" lang="en" dir="ltr">{TITLE.en}</p>
+        <NameTab />
       </header>
       <StorageNotice />
       <main id="main">

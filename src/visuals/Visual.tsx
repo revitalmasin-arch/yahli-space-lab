@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { VisualId } from '../content/types';
+import { PhotoBall, PhotoRect, SaturnPhoto, type PhotoKey } from './Photo';
 
 /** Seconds of animation time, advancing only while `playing`. Animations never start by themselves. */
 function useAnimTime(playing: boolean): number {
@@ -33,19 +34,6 @@ function PlayButton({ playing, onToggle, label }: { playing: boolean; onToggle: 
   );
 }
 
-const LIT_DEFS = (
-  <defs>
-    <linearGradient id="litLeft" x1="0" x2="1">
-      <stop offset="0.5" stopColor="#4fa3ff" />
-      <stop offset="0.5" stopColor="#0d1a33" />
-    </linearGradient>
-    <linearGradient id="moonLitLeft" x1="0" x2="1">
-      <stop offset="0.5" stopColor="#e2e2e2" />
-      <stop offset="0.5" stopColor="#1a1a1a" />
-    </linearGradient>
-  </defs>
-);
-
 /** The Moon orbits Earth; the half facing the Sun is lit. Play/pause and switch the Sun off. */
 function MoonOrbit() {
   const [playing, setPlaying] = useState(false);
@@ -58,14 +46,13 @@ function MoonOrbit() {
     <div>
       <svg className="visual" viewBox="0 0 400 230" role="img" aria-label={sun ? 'The Moon orbits Earth; the side facing the Sun is lit' : 'Sun off: Earth and Moon are dark'}>
         <rect width="400" height="230" fill="#050818" />
-        {LIT_DEFS}
-        <circle cx="30" cy="115" r="40" fill={sun ? '#ffb347' : '#3a2a10'} />
+        <PhotoBall k="sun" cx={30} cy={115} r={40} fallback="#ffb347" shade={sun ? undefined : 'all'} />
         <text x="30" y="175" fill="#ffe08a" fontSize="11" textAnchor="middle">שֶׁמֶשׁ</text>
         {sun && [0, 1, 2].map((i) => <line key={i} x1="75" y1={95 + i * 20} x2="160" y2={95 + i * 20} stroke="#ffb347" opacity="0.4" strokeWidth="2" />)}
         <circle cx={ex} cy={ey} r="75" fill="none" stroke="#34407a" strokeDasharray="4 5" />
-        <circle cx={ex} cy={ey} r="20" fill={sun ? 'url(#litLeft)' : '#0d1a33'} stroke="#34407a" />
+        <PhotoBall k="earth" cx={ex} cy={ey} r={20} fallback="#2f6fd6" shade={sun ? 'right' : 'all'} />
         <text x={ex} y={ey + 38} fill="#cfe8ff" fontSize="11" textAnchor="middle">כַּדּוּר הָאָרֶץ</text>
-        <circle cx={mx} cy={my} r="8" fill={sun ? 'url(#moonLitLeft)' : '#1a1a1a'} stroke="#555" />
+        <PhotoBall k="moon" cx={mx} cy={my} r={9} fallback="#bdbdbd" shade={sun ? 'right' : 'all'} />
         <text x={mx} y={my - 12} fill="#ddd" fontSize="10" textAnchor="middle">יָרֵחַ</text>
       </svg>
       <div className="row">
@@ -126,10 +113,10 @@ function RotationOrbit() {
       <svg className="visual" viewBox="0 0 420 240" role="img" aria-label="Earth spinning on its axis and travelling around the Sun">
         <rect width="420" height="240" fill="#050818" />
         <ellipse cx="210" cy="120" rx="150" ry="75" fill="none" stroke="#34407a" strokeDasharray="4 5" />
-        <circle cx="210" cy="120" r="24" fill="#ffb347" />
+        <PhotoBall k="sun" cx={210} cy={120} r={24} fallback="#ffb347" />
         <text x="210" y="160" fill="#ffe08a" fontSize="11" textAnchor="middle">שֶׁמֶשׁ</text>
         <line x1={ex - 6} y1={ey - 22} x2={ex + 6} y2={ey + 22} stroke="#ffe08a" strokeWidth="1.5" />
-        <circle cx={ex} cy={ey} r="15" fill="#2f6fd6" />
+        <PhotoBall k="earth" cx={ex} cy={ey} r={15} fallback="#2f6fd6" />
         {markVisible && <circle cx={markX} cy={ey - 4} r="3.5" fill="#ff5d5d" />}
         <text x={ex} y={ey + 32} fill="#cfe8ff" fontSize="10" textAnchor="middle">כַּדּוּר הָאָרֶץ</text>
       </svg>
@@ -196,36 +183,31 @@ function UniverseZoom() {
         {stars.map((s, i) => <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#cfd8ff" opacity="0.6" />)}
         {level === 0 && (
           <g>
-            {[[80, 60], [300, 70], [200, 150], [110, 190], [320, 190]].map(([x, y], i) => (
-              <ellipse key={i} cx={x} cy={y} rx="34" ry="12" fill={i === 2 ? '#9fb7ff' : '#7a6fb0'} opacity="0.8" transform={`rotate(${i * 25} ${x} ${y})`} />
-            ))}
-            <text x="200" y="182" fill="#ffe08a" fontSize="12" textAnchor="middle">Milky Way</text>
+            <PhotoRect k="deepfield" x={0} y={0} w={400} h={240} />
+            <text x="200" y="228" fill="#ffe08a" fontSize="12" textAnchor="middle">Thousands of galaxies (Hubble photo) · גָּלַקְסְיוֹת</text>
           </g>
         )}
         {level === 1 && (
           <g>
-            <ellipse cx="200" cy="120" rx="150" ry="55" fill="#6f7fd6" opacity="0.35" />
-            <path d="M200 120 C 260 60, 340 110, 330 150 M200 120 C 140 180, 60 130, 70 90" stroke="#b9c6ff" strokeWidth="10" fill="none" opacity="0.5" />
-            <circle cx="200" cy="120" r="14" fill="#fff3c4" />
-            <circle cx="300" cy="140" r="4" fill="#ffb347" />
-            <text x="300" y="160" fill="#ffe08a" fontSize="12" textAnchor="middle">Solar System</text>
+            <PhotoRect k="milkyway" x={0} y={20} w={400} h={200} />
+            <text x="200" y="40" fill="#ffe08a" fontSize="12" textAnchor="middle">The Milky Way seen from Earth (photo) · שְׁבִיל הֶחָלָב</text>
+            <text x="200" y="215" fill="#cfd8ff" fontSize="11" textAnchor="middle">We are inside it: our Solar System is one small part of it</text>
           </g>
         )}
         {level === 2 && (
           <g>
-            <circle cx="70" cy="120" r="26" fill="#ffb347" />
+            <PhotoBall k="sun" cx={70} cy={120} r={26} fallback="#ffb347" />
             {[45, 65, 85, 110, 150, 190, 230, 265].map((r, i) => (
               <circle key={i} cx="70" cy="120" r={r + 26} fill="none" stroke="#34407a" strokeWidth="1" />
             ))}
-            <circle cx={70 + 85 + 26} cy="120" r="6" fill="#4fa3ff" />
+            <PhotoBall k="earth" cx={70 + 85 + 26} cy={120} r={7} fallback="#4fa3ff" />
             <text x={70 + 85 + 26} y="108" fill="#ffe08a" fontSize="12" textAnchor="middle">Earth</text>
           </g>
         )}
         {level === 3 && (
           <g>
-            <circle cx="200" cy="120" r="80" fill="#2f6fd6" />
-            <path d="M160 80 q30 -20 60 0 q10 30 -20 40 q-30 10 -40 -40z M210 150 q30 -10 40 10 q-10 25 -40 15z" fill="#4caf6a" />
-            <text x="200" y="225" fill="#ffe08a" fontSize="12" textAnchor="middle">Earth — our planet</text>
+            <PhotoBall k="earth" cx={200} cy={115} r={90} fallback="#2f6fd6" />
+            <text x="200" y="228" fill="#ffe08a" fontSize="12" textAnchor="middle">Earth — our planet (Apollo 17 photo)</text>
           </g>
         )}
         <text x="10" y="20" fill="#aab3dd" fontSize="11">space (חלל) is all around</text>
@@ -242,14 +224,14 @@ function UniverseZoom() {
 }
 
 const PLANETS = [
-  { he: 'חַמָּה', en: 'Mercury', r: 4, color: '#b0a89a', group: 'rocky' },
-  { he: 'נוֹגַהּ', en: 'Venus', r: 6, color: '#e6c98a', group: 'rocky' },
-  { he: 'כַּדּוּר הָאָרֶץ', en: 'Earth', r: 6.5, color: '#4fa3ff', group: 'rocky' },
-  { he: 'מַאֲדִים', en: 'Mars', r: 5, color: '#d0603a', group: 'rocky' },
-  { he: 'צֶדֶק', en: 'Jupiter', r: 15, color: '#d8b48a', group: 'gas' },
-  { he: 'שַׁבְּתַאי', en: 'Saturn', r: 12, color: '#e8d29a', group: 'gas', rings: true },
-  { he: 'אוּרָנוּס', en: 'Uranus', r: 9, color: '#9fe3e8', group: 'gas' },
-  { he: 'נֶפְּטוּן', en: 'Neptune', r: 9, color: '#4f6fe0', group: 'gas' },
+  { k: 'mercury', he: 'חַמָּה', en: 'Mercury', r: 5, color: '#b0a89a', group: 'rocky' },
+  { k: 'venus', he: 'נוֹגַהּ', en: 'Venus', r: 7, color: '#e6c98a', group: 'rocky' },
+  { k: 'earth', he: 'כַּדּוּר הָאָרֶץ', en: 'Earth', r: 7.5, color: '#4fa3ff', group: 'rocky' },
+  { k: 'mars', he: 'מַאֲדִים', en: 'Mars', r: 6, color: '#d0603a', group: 'rocky' },
+  { k: 'jupiter', he: 'צֶדֶק', en: 'Jupiter', r: 17, color: '#d8b48a', group: 'gas' },
+  { k: 'saturn', he: 'שַׁבְּתַאי', en: 'Saturn', r: 12, color: '#e8d29a', group: 'gas', rings: true },
+  { k: 'uranus', he: 'אוּרָנוּס', en: 'Uranus', r: 10, color: '#9fe3e8', group: 'gas' },
+  { k: 'neptune', he: 'נֶפְּטוּן', en: 'Neptune', r: 10, color: '#4f6fe0', group: 'gas' },
 ] as const;
 const GROUP_LABEL = { rocky: 'אַרְצִי · rocky', gas: 'גַּז עֲנָק · gas giant', dwarf: 'נַנָּסִי · dwarf planet' };
 
@@ -265,7 +247,7 @@ function SolarSystem({ mode }: { mode: 'order' | 'groups' | 'innerOuter' }) {
     <div>
       <svg className="visual" viewBox="0 0 520 200" role="img" aria-label="The Sun and the eight planets in order, with the asteroid belt between Mars and Jupiter">
         <rect width="520" height="200" fill="#050818" />
-        <circle cx="-30" cy="100" r="80" fill="#ffb347" />
+        <PhotoBall k="sun" cx={-30} cy={100} r={80} fallback="#ffb347" />
         <text x="18" y="190" fill="#ffe08a" fontSize="11" textAnchor="middle">שֶׁמֶשׁ</text>
         {showGroups && (
           <g>
@@ -273,9 +255,9 @@ function SolarSystem({ mode }: { mode: 'order' | 'groups' | 'innerOuter' }) {
             <rect x={x(4) - 20} y="20" width={x(7) - x(4) + 40} height="160" rx="10" fill="#7fd3ff" opacity="0.12" />
             <text x={(x(0) + x(3)) / 2} y="34" fill="#9be3b5" fontSize="11" textAnchor="middle">אַרְצִיִּים · rocky</text>
             <text x={(x(4) + x(7)) / 2} y="34" fill="#bfe9ff" fontSize="11" textAnchor="middle">גַּזִּים עֲנָקִיִּים · gas giants</text>
-            <circle cx={x(3) + 36} cy="150" r="2.5" fill="#ddd" />
+            <PhotoBall k="ceres" cx={x(3) + 36} cy={150} r={4} fallback="#ddd" />
             <text x={x(3) + 36} y="168" fill="#ddd" fontSize="9" textAnchor="middle">Ceres</text>
-            <circle cx="505" cy="60" r="2.5" fill="#ddd" />
+            <PhotoBall k="pluto" cx={505} cy={60} r={4} fallback="#ddd" />
             <text x="503" y="78" fill="#ddd" fontSize="9" textAnchor="end">Pluto →</text>
           </g>
         )}
@@ -293,8 +275,8 @@ function SolarSystem({ mode }: { mode: 'order' | 'groups' | 'innerOuter' }) {
         {PLANETS.map((pl, i) => (
           <g key={pl.en} role="button" tabIndex={0} aria-label={`${i + 1}. ${pl.en}`} onClick={() => setSel(i)} onKeyDown={(e) => e.key === 'Enter' && setSel(i)} style={{ cursor: 'pointer' }}>
             <circle cx={x(i)} cy="100" r={Math.max(pl.r, 14)} fill="transparent" />
-            {'rings' in pl && <ellipse cx={x(i)} cy="100" rx={pl.r + 9} ry="4" fill="none" stroke="#d9c58a" strokeWidth="2" />}
-            <circle cx={x(i)} cy="100" r={pl.r} fill={pl.color} stroke={sel === i ? '#ffe08a' : 'none'} strokeWidth="2" />
+            {'rings' in pl ? <SaturnPhoto cx={x(i)} cy={100} r={pl.r} /> : <PhotoBall k={pl.k as PhotoKey} cx={x(i)} cy={100} r={pl.r} fallback={pl.color} />}
+            {sel === i && <circle cx={x(i)} cy="100" r={pl.r + 3} fill="none" stroke="#ffe08a" strokeWidth="2" />}
             <text x={x(i)} y="128" fill="#cfd8ff" fontSize="10" textAnchor="middle">{i + 1}</text>
             <text x={x(i)} y="143" fill="#eef1ff" fontSize="11" textAnchor="middle">{pl.he}</text>
           </g>
@@ -320,22 +302,12 @@ function StarPlanetLight() {
     <div>
       <svg className="visual" viewBox="0 0 400 200" role="img" aria-label={on ? 'Sun on: planet and moon lit on one side' : 'Sun off: planet and moon dark'}>
         <rect width="400" height="200" fill="#050818" />
-        <defs>
-          <linearGradient id="lit" x1="0" x2="1">
-            <stop offset="0.5" stopColor="#4fa3ff" />
-            <stop offset="0.5" stopColor="#0d1a33" />
-          </linearGradient>
-          <linearGradient id="litMoon" x1="0" x2="1">
-            <stop offset="0.5" stopColor="#d9d9d9" />
-            <stop offset="0.5" stopColor="#1a1a1a" />
-          </linearGradient>
-        </defs>
         {on && [0, 1, 2, 3, 4].map((i) => <line key={i} x1="95" y1={60 + i * 20} x2="215" y2={70 + i * 15} stroke="#ffb347" strokeWidth="2" opacity="0.5" />)}
-        <circle cx="60" cy="100" r="42" fill={on ? '#ffb347' : '#3a2a10'} />
+        <PhotoBall k="sun" cx={60} cy={100} r={42} fallback="#ffb347" shade={on ? undefined : 'all'} />
         <text x="60" y="160" fill="#ffe08a" fontSize="12" textAnchor="middle">Sun · מאיר</text>
-        <circle cx="250" cy="100" r="28" fill={on ? 'url(#lit)' : '#0d1a33'} stroke="#34407a" />
-        <text x="250" y="150" fill="#cfe8ff" fontSize="12" textAnchor="middle">Planet · מואר</text>
-        <circle cx="330" cy="70" r="10" fill={on ? 'url(#litMoon)' : '#1a1a1a'} stroke="#34407a" />
+        <PhotoBall k="earth" cx={250} cy={100} r={28} fallback="#2f6fd6" shade={on ? 'right' : 'all'} />
+        <text x="250" y="150" fill="#cfe8ff" fontSize="12" textAnchor="middle">Planet (Earth) · מואר</text>
+        <PhotoBall k="moon" cx={330} cy={70} r={10} fallback="#bdbdbd" shade={on ? 'right' : 'all'} />
         <text x="330" y="52" fill="#ddd" fontSize="11" textAnchor="middle">Moon · מואר</text>
       </svg>
       <div className="row">

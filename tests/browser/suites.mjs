@@ -82,6 +82,18 @@ async function driveUnit(page, opts = {}) {
   throw new Error('unit did not finish');
 }
 
+/** Answer/advance until the given stage is showing. */
+async function driveUntil(page, testid) {
+  for (let i = 0; i < 40; i++) {
+    if (await visible(page.getByTestId(testid))) return;
+    if (await visible(page.getByTestId('solved'))) { await page.getByTestId('solved').getByRole('button', { name: /Next/ }).click(); continue; }
+    const right = page.locator('section[data-testid^="question-"] button[data-ok="true"]:not([disabled])');
+    if (await right.count()) { await right.first().click(); continue; }
+    await page.waitForTimeout(50);
+  }
+  throw new Error(`never reached ${testid}`);
+}
+
 export const suites = [
   {
     phase: 1,
@@ -92,6 +104,7 @@ export const suites = [
         const h1 = await page.getByRole('heading', { level: 1 }).textContent();
         assert(h1?.includes('מַעְבֶּדֶת'), `unexpected title: ${h1}`);
         assert(await page.getByText("DEV — not Yahli's version").isVisible(), 'dev badge missing');
+        assert(/My Space Lab/.test(await page.locator('header').textContent()), 'English title missing');
       },
       'malformed stored progress: app still renders and a copy is kept': async ({ page, url }) => {
         await setStored(page, url, '{garbage');
@@ -169,7 +182,7 @@ export const suites = [
     tests: {
       'Day 2: unit 3 (planet order) completes tap-only; tapping a planet shows its names': async ({ page, url }) => {
         await page.goto(url);
-        await page.getByTestId('open-u3').click();
+        await page.getByTestId('open-u3').last().click();
         await page.getByRole('button', { name: /Skip/ }).click(); // straight to the explanation
         await page.locator('g[aria-label="3. Earth"] circle').last().click();
         const info = await page.getByRole('status').first().textContent();
@@ -178,21 +191,48 @@ export const suites = [
       },
       'Day 2: unit 4 (groups, dwarf planets) completes tap-only, with a wrong-answer path': async ({ page, url }) => {
         await page.goto(url);
-        await page.getByTestId('open-u4').click();
+        await page.getByTestId('open-u4').last().click();
         const seen = await driveUnit(page, { wrongFor: 'u4-q2' });
         assert(seen.has('help-1'), 'hint not shown after a wrong answer');
         await page.waitForTimeout(500);
         const p = await stored(page);
         assert(p.productions.some((r) => r.taskId === 'u4-p1' && r.result === 'correct'), 'arrange task with repeated word not accepted');
       },
+      'name tab: the learner name is saved, greeted, and kept after reload': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('name-tab').click();
+        await page.getByTestId('name-input').fill('Yahli');
+        await page.getByTestId('name-save').click();
+        await page.waitForTimeout(500);
+        await page.reload();
+        assert(/Yahli/.test(await page.getByTestId('name-tab').textContent()), 'name not shown after reload');
+        assert(/Yahli/.test(await page.getByTestId('greeting').textContent()), 'no greeting');
+      },
+      'go back a stage and start a part over; earlier answers are kept': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u2').last().click();
+        // answer the warm-ups, reach the explanation
+        await driveUntil(page, 'explain');
+        await page.waitForTimeout(500); // save debounce
+        const before = (await stored(page)).attempts.length;
+        await page.getByTestId('stage-back').click();
+        assert(await page.locator('section[data-testid^="question-"]').isVisible(), 'back did not return to the warm-up');
+        await page.getByTestId('stop-explain').click(); // jump forward to a stage already reached
+        await page.getByRole('button', { name: /Next →/ }).click();
+        await page.getByTestId('stage-restart').click(); // explanation starts again from screen 1
+        assert(/\(1\/3\)/.test(await page.getByRole('button', { name: /Next →/ }).textContent()), 'restart did not go back to the first screen');
+        assert(await page.getByTestId('stop-check').isDisabled(), 'skipping ahead to an unreached stage should be blocked');
+        await page.waitForTimeout(400);
+        assert((await stored(page)).attempts.length === before, 'going back must not delete answers');
+      },
       'Day 3: unit 5 (asteroid belt, inner/outer) completes tap-only': async ({ page, url }) => {
         await page.goto(url);
-        await page.getByTestId('open-u5').click();
+        await page.getByTestId('open-u5').last().click();
         await driveUnit(page, { wrongFor: 'u5-q5' });
       },
       'Day 3: unit 6 (the Moon) completes tap-only; the Moon animation plays and pauses': async ({ page, url }) => {
         await page.goto(url);
-        await page.getByTestId('open-u6').click();
+        await page.getByTestId('open-u6').last().click();
         await page.getByRole('button', { name: /Skip/ }).click();
         await page.getByRole('button', { name: /Play/ }).click();
         await page.waitForTimeout(400);
@@ -201,7 +241,7 @@ export const suites = [
       },
       'Day 3: unit 7: spinning and orbiting are separate motions; unit completes tap-only': async ({ page, url }) => {
         await page.goto(url);
-        await page.getByTestId('open-u7').click();
+        await page.getByTestId('open-u7').last().click();
         await page.getByRole('button', { name: /Skip/ }).click();
         await page.getByRole('button', { name: /Next/ }).click(); // to the rotation/orbit screen
         await page.getByRole('button', { name: /Spin/ }).click();

@@ -107,6 +107,7 @@ export function sanitize(input: any): { progress: Progress; dropped: number } {
       celebrations: isBool(s.celebrations) ? s.celebrations : true,
       examDate: isStr(s.examDate) && /^\d{4}-\d{2}-\d{2}$/.test(s.examDate) ? s.examDate : base.settings.examDate,
       deviceLabel: isStr(s.deviceLabel) ? s.deviceLabel.slice(0, 40) : '',
+      ...(isStr(s.learnerName) && s.learnerName.trim() ? { learnerName: s.learnerName.trim().slice(0, 30) } : {}),
     },
   };
   return { progress, dropped };

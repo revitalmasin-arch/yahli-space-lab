@@ -6,6 +6,7 @@ import { useActions } from '../progress/actions';
 import { checkImport, importMerge, makeBackup, quarantinedCopies, rawItem, type ImportCheck } from '../progress/storage';
 import { hebrewEvidence, scienceSummary, unitStatus } from '../lib/learning';
 import { jerusalemDate } from '../lib/dates';
+import { PHOTO_CREDITS } from '../visuals/Photo';
 
 function download(name: string, text: string) {
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
@@ -117,6 +118,15 @@ export function Parent({ onExit, serverRelease }: { onExit: () => void; serverRe
             ))}
           </div>
         )}
+      </section>
+      <section className="panel stack" data-testid="image-credits">
+        <h3>Image credits</h3>
+        <p className="small-text muted">Real space photos, stored on this computer. Licenses were checked when the images were added.</p>
+        <ul className="small-text">
+          {Object.entries(PHOTO_CREDITS).map(([k, c]) => (
+            <li key={k}>{k}: {c.author || c.credit} — {c.license} · <span lang="en" dir="ltr">{c.page}</span></li>
+          ))}
+        </ul>
       </section>
     </div>
   );

@@ -71,6 +71,8 @@ export interface Settings {
   celebrations: boolean;
   examDate: string;
   deviceLabel: string;
+  /** Learner's name for greetings. Optional and additive: older releases ignore it (schema unchanged). */
+  learnerName?: string;
 }
 
 export interface Progress {
