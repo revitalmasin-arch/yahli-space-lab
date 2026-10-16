@@ -66,7 +66,7 @@ export function Home({ onUnit, onReview, onParent }: { onUnit: (id: string) => v
   return (
     <div className="stack">
       <Panel testid="countdown">
-        <ConsoleTitle icon="🛰️" he="עוֹד כַּמָּה יָמִים לַמִּבְחָן" en="Days until the exam" />
+        <ConsoleTitle icon="⏱️" he="עוֹד כַּמָּה יָמִים לְשִׁיגּוּר" en="How many days to launch" />
         {left === null ? (
           <p>The exam date ({exam}) has passed. Well done for all the work!</p>
         ) : left === 0 ? (
