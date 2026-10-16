@@ -322,6 +322,17 @@ export const suites = [
         const leftItem = q.locator('.grid > .stack:first-child button[data-pair="0"]');
         await dragTo(page, leftItem, q.locator('[data-drop="pair-0"]'));
         assert(/correct/.test(await leftItem.getAttribute('class')), 'drag-to-match did not match the pair');
+        // the other direction: drag a MEANING onto its word
+        const meaning1 = q.locator('.grid > .stack:nth-child(2) button[data-pair="1"]');
+        await dragTo(page, meaning1, q.locator('[data-drop="word-1"]'));
+        assert(/correct/.test(await meaning1.getAttribute('class')), 'dragging a meaning onto its word did not match');
+        // a wrong pair gives visible feedback instead of silently doing nothing
+        await dragTo(page, q.locator('.grid > .stack:first-child button[data-pair="2"]'), q.locator('[data-drop="pair-3"]'));
+        await page.getByTestId('match-miss').waitFor();
+        // tap order does not matter: meaning first, then the word
+        await q.locator('.grid > .stack:nth-child(2) button[data-pair="2"]').click();
+        await q.locator('.grid > .stack:first-child button[data-pair="2"]').click();
+        assert(/correct/.test(await q.locator('.grid > .stack:first-child button[data-pair="2"]').getAttribute('class')), 'meaning-then-word tap did not match');
         await driveUntil(page, 'production-u1-p2');
         const gap = page.getByTestId('production-u1-p2');
         await dragTo(page, gap.locator('button[data-ok="true"]'), gap.locator('[data-drop="blank"]'));

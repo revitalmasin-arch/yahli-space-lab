@@ -19,6 +19,7 @@ export function DragButton({
   const end = () => {
     start.current = null;
     setOffset(null);
+    document.body.classList.remove('is-dragging');
   };
   const onPointerDown = (e: RPointerEvent<HTMLButtonElement>) => {
     if (e.button !== 0 || rest.disabled) return;
@@ -31,6 +32,7 @@ export function DragButton({
     if (!s.dragging && Math.hypot(dx, dy) > 8) {
       s.dragging = true;
       e.currentTarget.setPointerCapture(e.pointerId);
+      document.body.classList.add('is-dragging'); // outlines every place you can drop
     }
     if (s.dragging) {
       // Near the top/bottom edge, scroll so a target further down/up can be reached with one finger.

@@ -48,8 +48,10 @@ export function QuestionCard({ q, onDone }: { q: Question; onDone: (o: QuestionO
   const [wrong, setWrong] = useState<Set<string>>(new Set());
   const [solved, setSolved] = useState(false);
   // matching
-  const [left, setLeft] = useState<number | null>(null);
+  const [left, setLeft] = useState<number | null>(null); // selected word
+  const [right, setRight] = useState<number | null>(null); // selected meaning
   const [matched, setMatched] = useState<Set<number>>(new Set());
+  const [missFlash, setMissFlash] = useState(0); // >0: show "not a match" for the latest attempt
 
   const [forceEnglish, setForceEnglish] = useState(false);
   const raise = (to?: 0 | 1 | 2 | 3) => {
@@ -86,21 +88,25 @@ export function QuestionCard({ q, onDone }: { q: Question; onDone: (o: QuestionO
   }
 
   const rights = useMemo(() => (q.kind === 'match' ? shuffled(q.pairs.map((_, i) => i), q.id) : []), [q]);
-  /** Match the selected (or dragged) left item `from` with right item `i`. */
-  function pickRight(i: number, from: number | null = left) {
-    if (q.kind !== 'match' || from === null || matched.has(from) || solved || level === 3) return;
-    if (i === from) {
-      const m = new Set(matched).add(i);
-      setMatched(m);
-      setLeft(null);
-      if (m.size === q.pairs.length) setSolved(true);
+  /** Try pairing word `w` with meaning `m` — from taps in either order or a drag in either direction. */
+  function tryPair(w: number, m: number) {
+    if (q.kind !== 'match' || matched.has(w) || matched.has(m) || solved || level === 3) return;
+    setLeft(null);
+    setRight(null);
+    if (w === m) {
+      const done = new Set(matched).add(w);
+      setMatched(done);
+      setMissFlash(0);
+      if (done.size === q.pairs.length) setSolved(true);
       return;
     }
     const t = tries + 1;
     setTries(t);
-    setLeft(null);
+    setMissFlash(t);
     if (t % 2 === 0) raise(); // matching: one ladder step per two mismatches
   }
+  const tapWord = (w: number) => (right !== null ? tryPair(w, right) : setLeft(left === w ? null : w));
+  const tapMeaning = (m: number) => (left !== null ? tryPair(left, m) : setRight(right === m ? null : m));
 
   const finish = (wantsSibling: boolean) =>
     onDone({
@@ -148,27 +154,33 @@ export function QuestionCard({ q, onDone }: { q: Question; onDone: (o: QuestionO
         </div>
       )}
 
-      {q.kind === 'match' && <p className="muted small-text">Drag each word onto its meaning — or tap the word, then the meaning · גְּרוֹר כָּל מִלָּה לַפֵּירוּשׁ</p>}
+      {q.kind === 'match' && <p className="muted small-text">Drag a word onto its meaning (or a meaning onto its word) — or tap one, then the other · גְּרוֹר מִלָּה לַפֵּירוּשׁ שֶׁלָּהּ</p>}
       {q.kind === 'match' && (
-        <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <div className="grid match-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
           <div className="stack">
             {q.pairs.map((p, i) => (
-              <DragButton key={i} {...testAttr('pair', i)} type="button" className={`choice ${matched.has(i) ? 'correct' : left === i ? 'picked' : ''}`} disabled={matched.has(i) || level === 3} onClick={() => setLeft(i)} aria-pressed={left === i}
-                onDropOn={(t) => t.startsWith('pair-') && pickRight(Number(t.slice(5)), i)}>
-                <He x={p.left} />
-              </DragButton>
+              <div key={i} data-drop={`word-${i}`}>
+                <DragButton {...testAttr('pair', i)} type="button" className={`choice ${matched.has(i) ? 'correct' : left === i ? 'picked' : ''}`} disabled={matched.has(i) || level === 3} onClick={() => tapWord(i)} aria-pressed={left === i}
+                  onDropOn={(t) => t.startsWith('pair-') && tryPair(i, Number(t.slice(5)))}>
+                  <He x={p.left} />
+                </DragButton>
+              </div>
             ))}
           </div>
           <div className="stack">
             {rights.map((i) => (
               <div key={i} data-drop={`pair-${i}`}>
-              <button {...testAttr('pair', i)} type="button" className={`choice ${matched.has(i) ? 'correct' : ''}`} disabled={matched.has(i) || left === null || level === 3} onClick={() => pickRight(i)}>
-                <He x={q.pairs[i].right} />
-              </button>
+                <DragButton {...testAttr('pair', i)} type="button" className={`choice ${matched.has(i) ? 'correct' : right === i ? 'picked' : ''}`} disabled={matched.has(i) || level === 3} onClick={() => tapMeaning(i)} aria-pressed={right === i}
+                  onDropOn={(t) => t.startsWith('word-') && tryPair(Number(t.slice(5)), i)}>
+                  <He x={q.pairs[i].right} />
+                </DragButton>
               </div>
             ))}
           </div>
         </div>
+      )}
+      {q.kind === 'match' && missFlash > 0 && !solved && level < 3 && (
+        <p key={missFlash} className="feedback help small-text miss" role="status" data-testid="match-miss">Not a match — try again · לֹא מַתְאִים, נַסֵּה שׁוּב</p>
       )}
 
       {!solved && level >= 1 && (

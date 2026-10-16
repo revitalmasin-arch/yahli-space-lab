@@ -264,3 +264,11 @@ button.bookmark { border-color: #c9a85a; background: linear-gradient(180deg, #3a
 .dragging { cursor: grabbing; position: relative; z-index: 30; opacity: 0.92; box-shadow: 0 10px 24px rgba(0,0,0,0.55), 0 0 0 2px var(--accent-2); transition: none; }
 .drop-blank { display: inline-block; min-width: 4em; border-bottom: 3px dashed var(--accent-2); padding: 0 6px; }
 [data-drop].bin, .answer-line[data-drop] { transition: border-color 0.15s; }
+/* While dragging, show every place something can be dropped */
+body.is-dragging [data-drop] { outline: 2px dashed var(--accent-2); outline-offset: 3px; border-radius: 12px; }
+body.is-dragging { user-select: none; -webkit-user-select: none; }
+.draggable { user-select: none; -webkit-user-select: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .miss { animation: miss-shake 0.35s ease; }
+  @keyframes miss-shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+}
