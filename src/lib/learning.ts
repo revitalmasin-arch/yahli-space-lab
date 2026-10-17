@@ -121,3 +121,23 @@ export function pickQuestion(p: Progress, concept: string, exclude: Set<string>,
 }
 
 export const isFresh = (p: Progress, qid: string) => !p.attempts.some((a) => a.qid === qid);
+
+// ---- For the parent: ideas the learner found hard ----
+export interface TrickyConcept { concept: string; wrongFirstTry: number; helped: number; attempts: number }
+
+/** Concepts with a wrong first try or help used, most trouble first. Attempts answered right without help on a
+ *  later day still count here: this is a list of what to talk through, not a grade. */
+export function trickyConcepts(p: Progress, max = 8): TrickyConcept[] {
+  const by = new Map<string, TrickyConcept>();
+  for (const a of p.attempts) {
+    const c = by.get(a.concept) ?? { concept: a.concept, wrongFirstTry: 0, helped: 0, attempts: 0 };
+    c.attempts++;
+    if (!a.correctFirstTry) c.wrongFirstTry++;
+    if (a.assistance > 0) c.helped++;
+    by.set(a.concept, c);
+  }
+  return [...by.values()]
+    .filter((c) => c.wrongFirstTry + c.helped > 0)
+    .sort((a, b) => b.wrongFirstTry + b.helped - (a.wrongFirstTry + a.helped) || b.attempts - a.attempts)
+    .slice(0, max);
+}

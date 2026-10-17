@@ -345,6 +345,77 @@ export const suites = [
         assert((await dot.getAttribute('cx')) !== before, 'Earth did not spin');
         assert(/צָפוֹן|צירו|צִירוֹ/.test(await page.getByTestId('memory-song').textContent()), 'memory rhyme missing on the last screen');
       },
+      'screen sizes: no sideways scrolling at 800×1280, 1280×800, 1366×768 (home, unit, seasons, My words, quiz, parent)': async ({ page, url }) => {
+        const wide = [];
+        const check = async (where) => {
+          await page.waitForTimeout(150);
+          const [sw, iw] = await page.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
+          if (sw > iw) wide.push(`${where}: ${sw}px > ${iw}px`);
+        };
+        for (const [w, h] of [[800, 1280], [1280, 800], [1366, 768]]) {
+          await page.setViewportSize({ width: w, height: h });
+          const at = `${w}×${h}`;
+          await page.goto(url);
+          await page.evaluate(() => localStorage.clear()); // each size starts like a new device (test browser only)
+          await page.goto(url);
+          await page.getByTestId('word-bar-input').fill('תצפית');
+          await page.getByTestId('word-bar-add').click();
+          await check(`${at} home`);
+          await page.getByTestId('open-u13').last().click();
+          await page.getByRole('button', { name: /Skip/ }).click();
+          await check(`${at} explore`);
+          while (!(await page.getByTestId('seasons').count())) await page.getByRole('button', { name: /^Next →/ }).click();
+          await check(`${at} seasons`);
+          await page.getByTestId('my-words-open').click();
+          await check(`${at} my words`);
+          await page.getByTestId('vocab-start').click();
+          await check(`${at} quiz`);
+          await page.goto(url);
+          await page.getByTestId('open-parent').click();
+          await check(`${at} parent`);
+        }
+        assert(!wide.length, `sideways scrolling: ${wide.join('; ')}`);
+      },
+      'dates: Day 5 is mixed practice; exam day and after the exam show the right message': async ({ page, url }) => {
+        await page.clock.setFixedTime(new Date('2026-10-21T09:00:00+03:00'));
+        await page.goto(url);
+        const mission = await page.getByTestId('mission').textContent();
+        assert(/Day 5 of 5/.test(mission), `Day 5 not shown: ${mission.slice(0, 120)}`);
+        await page.getByRole('button', { name: /Start mixed review/ }).click();
+        await page.getByTestId('review').waitFor();
+        await page.clock.setFixedTime(new Date('2026-10-22T00:01:00+03:00'));
+        await page.goto(url);
+        assert(/exam is today/.test(await page.getByTestId('countdown').textContent()), 'exam day message missing just after midnight');
+        await page.clock.setFixedTime(new Date('2026-10-23T09:00:00+03:00'));
+        await page.goto(url);
+        assert(/has passed/.test(await page.getByTestId('countdown').textContent()), 'after-exam message missing');
+      },
+      'parent area: hard ideas, paper practice, start fresh keeps a copy, restore brings it back': async ({ page, url }) => {
+        await page.goto(url);
+        await page.getByTestId('open-u1').last().click();
+        await driveUnit(page, { wrongFor: 'u1-q2' });
+        await page.waitForTimeout(500);
+        const before = await stored(page);
+        assert(before.attempts.length > 0, 'no answers recorded before the reset');
+        await page.goto(url);
+        await page.getByTestId('open-parent').click();
+        assert((await page.getByTestId('tricky').locator('li').count()) > 0, 'hard ideas list is empty after a wrong answer');
+        await page.getByTestId('paper-practice').locator('summary').click();
+        assert((await page.getByTestId('paper-practice').locator(':scope > ol > li').count()) >= 5, 'paper practice list too short');
+        assert(await page.getByTestId('fresh-go').isDisabled(), 'start fresh must need the typed confirmation');
+        await page.getByTestId('fresh-confirm').fill('start fresh');
+        await page.getByTestId('fresh-go').click();
+        await page.waitForTimeout(500);
+        const after = await stored(page);
+        assert(after.attempts.length === 0, 'progress did not start fresh');
+        const copies = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('ysl-dev:archive:')).length);
+        assert(copies === 1, `expected one saved copy, found ${copies}`);
+        await page.getByTestId('restore-copy').first().click();
+        await page.waitForTimeout(500);
+        const restored = await stored(page);
+        assert(restored.attempts.length === before.attempts.length, 'restore did not bring the answers back');
+        assert((await page.getByTestId('saved-copy').count()) === 2, 'the fresh progress was not kept as a copy on restore');
+      },
       'unit bookmark: names the book pages and opens the full explanation': async ({ page, url }) => {
         await page.goto(url);
         await page.getByTestId('open-u2').last().click();

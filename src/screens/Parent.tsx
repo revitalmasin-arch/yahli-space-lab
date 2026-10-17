@@ -1,13 +1,106 @@
 import { useState } from 'react';
-import { productionById } from '../content/production';
+import { PRODUCTION, productionById } from '../content/production';
+import { CONCEPTS } from '../content/concepts';
+import { conceptPages, formatPages } from '../lib/bookPages';
 import { UNITS } from '../content/units';
 import { useStore } from '../progress/store';
 import { useActions } from '../progress/actions';
-import { checkImport, importMerge, makeBackup, quarantinedCopies, rawItem, type ImportCheck } from '../progress/storage';
-import { hebrewEvidence, scienceSummary, unitStatus } from '../lib/learning';
+import { archivedCopies, checkImport, importMerge, makeBackup, quarantinedCopies, rawItem, restoreCopy, startFresh, type ImportCheck } from '../progress/storage';
+import { hebrewEvidence, scienceSummary, trickyConcepts, unitStatus } from '../lib/learning';
 import { jerusalemDate } from '../lib/dates';
 import { PHOTO_CREDITS } from '../visuals/Photo';
 import { glossaryById } from '../content/glossary';
+
+/** Ideas Yahli found hard: what to talk through together (not a grade). */
+function TrickyIdeas() {
+  const { progress } = useStore();
+  const list = trickyConcepts(progress);
+  return (
+    <section className="panel stack" data-testid="tricky">
+      <h3>Ideas to go over together</h3>
+      {list.length === 0 ? <p className="muted small-text">Nothing yet — this fills in as Yahli answers questions.</p> : (
+        <ul className="small-text" dir="ltr">
+          {list.map((c) => {
+            const concept = CONCEPTS.find((x) => x.id === c.concept);
+            return (
+              <li key={c.concept}>
+                <strong>{concept?.name.en ?? c.concept}</strong> <span lang="he" dir="rtl">({concept?.name.heN})</span> — wrong first try {c.wrongFirstTry} of {c.attempts}, help used {c.helped} · book {formatPages(conceptPages(c.concept))}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+/** Day 5 (21 Oct): written practice with Mum. Questions and what a good answer includes. */
+function PaperPractice() {
+  const tasks = PRODUCTION.filter((t) => t.kind === 'paper' || t.kind === 'say');
+  return (
+    <details className="panel stack" data-testid="paper-practice">
+      <summary><strong>Practice questions for Day 5 — spoken and on paper ({tasks.length}, with marking guide)</strong></summary>
+      <ol className="small-text" dir="ltr">
+        {tasks.map((t) => t.kind === 'paper' || t.kind === 'say' ? (
+          <li key={t.id}>
+            <span lang="he" dir="rtl">{t.prompt.heN}</span> <span className="muted">({t.prompt.en})</span>
+            <ul>{t.rubric.map((r) => <li key={r}>{r}</li>)}</ul>
+            <p className="muted">Example answer: <span lang="he" dir="rtl">{t.example.heN}</span></p>
+          </li>
+        ) : null)}
+      </ol>
+    </details>
+  );
+}
+
+/** Start fresh: keeps a copy first and never deletes; any copy can be restored. */
+function StartFresh() {
+  const { progress, replaceAll, readOnly } = useStore();
+  const [typed, setTyped] = useState('');
+  const [msg, setMsg] = useState('');
+  const [, refresh] = useState(0);
+  const copies = archivedCopies();
+  const confirmWord = 'START FRESH';
+  return (
+    <section className="panel stack" data-testid="start-fresh">
+      <h3>Start fresh (a copy is kept)</h3>
+      <p className="small-text">Saves everything Yahli did as a copy on this device, then starts the lab from zero. Name and settings stay. Nothing is deleted — you can bring any copy back below. Close other tabs of the lab first.</p>
+      <div className="row">
+        <input type="text" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={`type ${confirmWord}`} aria-label={`Type ${confirmWord} to confirm`} disabled={readOnly} data-testid="fresh-confirm" />
+        <button type="button" className="small" disabled={readOnly || typed.trim().toUpperCase() !== confirmWord} data-testid="fresh-go"
+          onClick={() => {
+            const next = startFresh(progress);
+            if (!next) { setMsg('Could not save a copy (storage full?), so nothing was changed.'); return; }
+            replaceAll(next);
+            setTyped('');
+            setMsg('Done: a copy was saved and the lab starts from zero.');
+            refresh((n) => n + 1);
+          }}>Start fresh</button>
+      </div>
+      {msg && <p className="notice" role="status" data-testid="fresh-msg">{msg}</p>}
+      {copies.length > 0 && (
+        <>
+          <p className="small-text"><strong>Saved copies</strong> (newest first):</p>
+          <ul className="small-text">
+            {copies.map((c) => (
+              <li key={c.key} className="row" data-testid="saved-copy">
+                <span>{c.savedAt ? new Date(c.savedAt).toLocaleString('he-IL') : c.key} — {c.attempts} answers, {c.words} words{c.learnerName ? ` (${c.learnerName})` : ''}</span>
+                <button type="button" className="small ghost" disabled={readOnly} data-testid="restore-copy"
+                  onClick={() => {
+                    const back = restoreCopy(c.key, progress);
+                    if (!back) { setMsg('This copy could not be restored; nothing was changed.'); return; }
+                    replaceAll(back);
+                    setMsg('Restored. The progress from before the restore was saved as a copy too.');
+                    refresh((n) => n + 1);
+                  }}>Restore</button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
 
 /** Words Yahli saved in "My words": explain the ones the chapter dictionary does not know. */
 function ParentWords() {
@@ -90,6 +183,8 @@ export function Parent({ onExit, serverRelease }: { onExit: () => void; serverRe
         })}
       </section>
 
+      <TrickyIdeas />
+      <PaperPractice />
       <ParentWords />
       <section className="panel stack">
         <h3>Summary</h3>
@@ -147,6 +242,7 @@ export function Parent({ onExit, serverRelease }: { onExit: () => void; serverRe
           </div>
         )}
       </section>
+      <StartFresh />
       <section className="panel stack" data-testid="image-credits">
         <h3>Image credits</h3>
         <p className="small-text muted">Real space photos, stored on this computer. Licenses were checked when the images were added.</p>
