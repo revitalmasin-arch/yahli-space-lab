@@ -1,0 +1,19 @@
+{
+  "phase": 5,
+  "passed": true,
+  "at": "2026-10-17T13:06:29.385Z",
+  "results": [
+    {
+      "step": "guardrails",
+      "ok": true
+    },
+    {
+      "step": "regression",
+      "ok": true
+    },
+    {
+      "step": "e2e",
+      "ok": true
+    }
+  ]
+}
