@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { installStorage, type MemStorage } from './memstorage';
-import { checkImport, importMerge, KEYS, load, makeBackup, save, snapshot } from '../../src/progress/storage';
+import { archivedCopies, checkImport, importMerge, KEYS, load, makeBackup, restoreCopy, save, snapshot, startFresh } from '../../src/progress/storage';
 
 const fixtureText = () => readFileSync(new URL('../fixtures/progress/v2-sample.json', import.meta.url), 'utf8');
 const v1Text = () => readFileSync(new URL('../fixtures/progress/v1-sample.json', import.meta.url), 'utf8');
@@ -136,5 +136,45 @@ describe('backup import', () => {
       await new Promise((r) => setTimeout(r, 2)); // distinct timestamps
     }
     expect(keys(KEYS.snapshotPrefix)).toHaveLength(3);
+  });
+});
+
+describe('start fresh (parent area) keeps a copy and never deletes', () => {
+  it('saves a copy, then starts empty but keeps the settings', () => {
+    s.setItem(KEYS.progress, fixtureText());
+    const before = load().progress;
+    const fresh = startFresh(before)!;
+    expect(fresh.attempts).toEqual([]);
+    expect(fresh.words).toEqual([]);
+    expect(fresh.settings).toEqual(before.settings);
+    const copies = archivedCopies();
+    expect(copies).toHaveLength(1);
+    expect(copies[0].attempts).toBe(before.attempts.length);
+    expect(JSON.parse(s.getItem(copies[0].key)!)).toEqual(before);
+  });
+
+  it('restore brings the copy back and saves the newer work as another copy', () => {
+    s.setItem(KEYS.progress, fixtureText());
+    const before = load().progress;
+    const fresh = startFresh(before)!;
+    fresh.xp['after-reset'] = 1;
+    const back = restoreCopy(archivedCopies()[0].key, fresh)!;
+    expect(back.attempts).toEqual(before.attempts);
+    expect(archivedCopies()).toHaveLength(2); // the work done after the reset is kept too
+    expect(archivedCopies().some((c) => JSON.parse(s.getItem(c.key)!).xp['after-reset'] === 1)).toBe(true);
+  });
+
+  it('changes nothing when the copy cannot be saved (storage full)', () => {
+    s.setItem(KEYS.progress, fixtureText());
+    const before = load().progress;
+    const orig = s.setItem.bind(s);
+    s.setItem = () => { throw new Error('QuotaExceededError'); };
+    expect(startFresh(before)).toBeNull();
+    s.setItem = orig;
+    expect(archivedCopies()).toHaveLength(0);
+  });
+
+  it('only restores from saved copies', () => {
+    expect(restoreCopy(KEYS.progress, load().progress)).toBeNull();
   });
 });

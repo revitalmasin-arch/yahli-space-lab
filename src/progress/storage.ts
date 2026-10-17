@@ -10,6 +10,8 @@ export const KEYS = {
   snapshotPrefix: `${NS}:snapshot:`,
   quarantinePrefix: `${NS}:quarantine:`,
   preMigrationPrefix: `${NS}:pre-migration:v`,
+  /** copies saved by "start fresh" and before a restore; never pruned */
+  archivePrefix: `${NS}:archive:`,
 };
 const MAX_SNAPSHOTS = 3;
 
@@ -179,4 +181,64 @@ export function checkImport(text: string, current: Progress): ImportCheck {
 export function importMerge(current: Progress, incoming: Progress): Progress {
   snapshot(current);
   return merge(current, incoming);
+}
+
+// ---- Start fresh (parent area): keep a copy first, never delete ----
+
+export interface ArchivedCopy { key: string; savedAt: string; attempts: number; words: number; learnerName?: string }
+
+/** Saves the progress as a copy that is never pruned. Returns false (and nothing should be reset) if it could not be saved. */
+export function archiveCopy(p: Progress): boolean {
+  const s = ls();
+  if (!s) return false;
+  const raw = JSON.stringify(p);
+  // never overwrite an earlier copy, even when two are saved in the same millisecond
+  let key = KEYS.archivePrefix + stamp();
+  for (let n = 2; s.getItem(key) !== null; n++) key = `${KEYS.archivePrefix}${stamp()}-${n}`;
+  try {
+    s.setItem(key, raw);
+  } catch {
+    return false;
+  }
+  return s.getItem(key) === raw;
+}
+
+export function archivedCopies(): ArchivedCopy[] {
+  const s = ls();
+  if (!s) return [];
+  return Object.keys(s)
+    .filter((k) => k.startsWith(KEYS.archivePrefix))
+    .sort()
+    .reverse()
+    .flatMap((key): ArchivedCopy[] => {
+      try {
+        const d = JSON.parse(s.getItem(key) ?? '');
+        return [{ key, savedAt: String(d.updatedAt ?? ''), attempts: Array.isArray(d.attempts) ? d.attempts.length : 0, words: Array.isArray(d.words) ? d.words.length : 0, learnerName: d.settings?.learnerName }];
+      } catch {
+        return [{ key, savedAt: '', attempts: 0, words: 0 }];
+      }
+    });
+}
+
+/** "Start fresh": saves a copy of the current progress, then returns empty progress that keeps the settings.
+ *  Returns null when the copy could not be saved — the caller must then change nothing. */
+export function startFresh(current: Progress): Progress | null {
+  if (!archiveCopy(current)) return null;
+  return { ...emptyProgress(), settings: { ...current.settings } };
+}
+
+/** Brings a saved copy back. The current progress is saved as a copy first, so nothing is lost either way. */
+export function restoreCopy(key: string, current: Progress): Progress | null {
+  const raw = rawItem(key);
+  if (!raw || !key.startsWith(KEYS.archivePrefix)) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  const m = migrate(parsed);
+  if (!m.ok) return null;
+  if (!archiveCopy(current)) return null;
+  return sanitize(m.data).progress;
 }
